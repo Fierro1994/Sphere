@@ -1,0 +1,29 @@
+.checkbox_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.checkbox_container input{
+    background-color: #fff;
+    cursor: pointer;
+    content: '';
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+    flex-grow: 0;
+    border: 1px solid #adb5bd;
+    border-radius: 0.25em;
+    margin-right: 0.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 50% 50%;
+    transition: all 0.4s ease-out;
+}
+
+.checkbox_container label{
+    padding-right: 1vw;
+color: #fff;
+font-size: 14px;
+}
