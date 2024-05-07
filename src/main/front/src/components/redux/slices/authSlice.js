@@ -83,7 +83,12 @@ export const loginUser = createAsyncThunk(
       token.data.body.itemsMenus.forEach( (item) =>{
         listItems.push({id: item.id, name:item.name,isEnabled: item.isEnabled, nametwo:item.nametwo})     
      })
+     const listModulesMainPage = []
+     token.data.body.listModulesMainPage.forEach( (item) =>{
+      listModulesMainPage.push({id: item.id, name:item.name,isEnabled: item.isEnabled, nametwo:item.nametwo, pathImage: item.pathImage})     
+   })
       localStorage.setItem("menuModules", JSON.stringify(listItems))
+      localStorage.setItem("mainPageModules", JSON.stringify(listModulesMainPage))
       localStorage.setItem("access", token.data.body.accessToken);
       localStorage.setItem("theme",token.data.body.theme)
       return token.data;

@@ -10,19 +10,21 @@ import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import authService from "./components/auth/services/authService";
 import MomentsPage from "./pages/MomentsPage/PreviewPage/MomentsPage";
 import MomentsAddPage from "./pages/MomentsPage/AddPage/MomentsAddPage";
-import SettingsPageMainPage from "./pages/SettingsPage/settingsPageConstruktorMainPage/SettingsPageMainPage";
+import SettingsPageMainPage from "./pages/SettingsPage/settingsPageConstruktorMainPage/konstrMainPage/SettingsPageMainPage";
 import Galery from "./pages/GaleryPage/Galery";
 import SecurityPage from "./pages/SettingsPage/SecurityPage/SecurityPage";
 import MomentsModuleView from "./pages/MomentsPage/module/MomentsModuleView";
 import GaleryAdd from "./pages/GaleryPage/GalleryAddPage/GalleryAdd";
 import MessagesPage from "./pages/MessagesPage/MessagesPage";
-import KonstruktModuleProfile from "./pages/SettingsPage/settingsPageConstruktorMainPage/Modules/KonstruktModuleProfile";
 import KonstruktProfilePage from "./pages/SettingsPage/settingsPageConstruktorMainPage/konstruktorProfilepage/KonstruktProfilePage";
 import ArhivPage from "./pages/MomentsPage/arhivPage/ArhivPage";
 import FriendsPage from "./pages/FriendsPage/FriendsPage";
 import VideoGaleryPage from "./pages/GaleryPage/VideoGaleryPage/VideoGaleryPage";
+import TreePage from "./pages/TreePage/TreePage";
 
 function App() {
+
+
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   useEffect(() => {
@@ -65,6 +67,8 @@ function App() {
             <Route path="/app/gallery/add" element={<RequireAuth><GaleryAdd/></RequireAuth>} />
             <Route path="/app/gallery/video" element={<RequireAuth><VideoGaleryPage/></RequireAuth>} />
 
+            <Route path="/app/familytree" element={<RequireAuth><TreePage/></RequireAuth>} />
+
             
           </Routes>
         </div>
@@ -72,5 +76,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

@@ -15,6 +15,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -26,9 +27,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.WebUtils;
 
 import javax.sql.rowset.serial.SerialBlob;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -64,6 +70,8 @@ public class AuthService {
     ItemsMenuService itemsMenuService;
     @Autowired
     MainPageModuleService mainPageModuleService;
+    @Autowired
+    ImagePromoService imagePromoService;
 
 
     @Value("${spring.mail.username}")
@@ -97,12 +105,13 @@ public class AuthService {
 
         }
         List<ItemsMenu> itemsMenus = userDetails.getItemsMenu().stream().toList();
+        List<MainPageModule> listModulesMainPage = userDetails.getListModulesMainPage().stream().toList();
         ETheme theme = userDetails.getTheme();
         return ResponseEntity.ok()
-                .body(new AuthResponse(jwt, itemsMenus, theme));
+                .body(new AuthResponse(jwt, itemsMenus, listModulesMainPage, theme));
     }
 
-    public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException {
+    public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException, IOException {
               if (userRepository.existsByEmail(createUserRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
@@ -126,7 +135,9 @@ public class AuthService {
         Set<Role> roles = new HashSet<>();
         List<ItemsMenu> itemsMenus = new ArrayList<>();
         List<MainPageModule> mainPageModules = new ArrayList<>();
+        List<ImagePromo> imagePromos = new ArrayList<>();
         user.setThemes(ETheme.BLACK);
+
 
 
         if (strRoles == null) {
@@ -135,6 +146,7 @@ public class AuthService {
             itemsMenus.addAll(itemsMenuService.setDefaultUserItemsMenu());
             mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
             roles.add(userRole);
+            imagePromos.addAll(imagePromoService.defaultUpload());
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
@@ -151,6 +163,11 @@ public class AuthService {
                         itemsMenus.addAll(itemsMenuService.setDefaultUserItemsMenu());
                         mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
                         roles.add(userRole);
+                        try {
+                            imagePromos.addAll(imagePromoService.defaultUpload());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                 }
             });
         }
@@ -158,6 +175,7 @@ public class AuthService {
         user.setRoles(roles);
         user.setItemsMenus(itemsMenus);
         user.setMainPageModules(mainPageModules);
+        user.setImagePromos(imagePromos);
         userRepository.save(user);
 
         boolean isValidEmail = emailValidator.test(createUserRequest.getEmail());

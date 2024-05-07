@@ -8,6 +8,7 @@ import BlackMainPageSet from "./BlackTheme/mainpageset.module.css";
 import BlackGaleryStyle from "./BlackTheme/galerypage.module.css";
 import BlackMenuStyle from "./BlackTheme/circlemenu.module.css"
 import WhiteMenuStyle from "./WhiteTheme/circlemenu.module.css"
+import BlackThemeSliderPromo from "./BlackTheme/sliderpromo.module.css"
 
 function setupStyles (name) {
  var style = ""
@@ -28,6 +29,10 @@ function setupStyles (name) {
 
     if (name === "settingstyle") {
       style = BlackThemeSetings
+      return style;
+    }
+    if (name === "sliderPromo") {
+      style = BlackThemeSliderPromo
       return style;
     }
     if (name === "momentsrecordstyle") {

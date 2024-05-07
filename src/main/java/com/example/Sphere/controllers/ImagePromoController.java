@@ -14,6 +14,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/imagepromo")
+@CrossOrigin(value = "http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
 public class ImagePromoController {
     @Autowired

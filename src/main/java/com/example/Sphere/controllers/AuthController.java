@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 
@@ -32,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<SimpleResponse> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException {
+    public ResponseEntity<SimpleResponse> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException, IOException {
              if (userRepository.existsByEmail(createUserRequest.getEmail())) {
             throw new AlreadyExistException("Пользователь с таким e-mail уже существует!");
         }

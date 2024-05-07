@@ -1,16 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Login from "../../components/auth/Login/Login";
 import { useSelector } from "react-redux";
 import Content from "./Content";
 import setupStyles from "../stylesModules/setupStyles";
 import styledefault from "../stylesModules/BlackTheme/mainstyle.module.css";
-import MainAvatarViewer from "../serviceElement/MainAvatarViewer";
+import MainAvatarViewer from "../../components/menu_comp/MainAvatarViewer";
 
 const Home = () => {
   const auth = useSelector((state) => state.auth);
   const style = setupStyles("mainstyle")
   const style2 = setupStyles("circlemenu")
-  
   const toggleSlice = useSelector((state) => state.toggle);
   return (
     <>

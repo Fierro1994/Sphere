@@ -15,7 +15,7 @@ const GaleryView =() => {
         <th>Галерея</th>
       </tr>
       <tr>
-      <GaleryFileManager/>
+      <td><GaleryFileManager/></td> 
       </tr>
   </thead>
 </table>

@@ -7,10 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.example.Sphere.entity.ETheme;
-import com.example.Sphere.entity.ImagePromo;
-import com.example.Sphere.entity.ItemsMenu;
-import com.example.Sphere.entity.User;
+import com.example.Sphere.entity.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,11 +29,15 @@ public class UserDetailsImpl implements UserDetails {
     private ETheme theme;
     private Collection<? extends GrantedAuthority> authorities;
     private List<ItemsMenu> itemsMenu;
+
+
+    private List<MainPageModule> listModulesMainPage;
     private LocalDateTime lastTimeOnline;
     private List<ImagePromo> imagePromos;
 
+
     public UserDetailsImpl(Long id,Blob avatar,String email, String firstName,  String lastName,  String password,
-                           Collection<? extends GrantedAuthority> authorities, Boolean enabled, List<ItemsMenu> itemsMenu, LocalDateTime lastTimeOnline, ETheme theme, List<ImagePromo> imagePromos) {
+                           Collection<? extends GrantedAuthority> authorities, Boolean enabled, List<ItemsMenu> itemsMenu, List<MainPageModule> listModulesMainPage, LocalDateTime lastTimeOnline, ETheme theme, List<ImagePromo> imagePromos) {
         this.id = id;
         this.avatar = avatar;
         this.firstName = firstName;
@@ -45,6 +46,7 @@ public class UserDetailsImpl implements UserDetails {
         this.password = password;
         this.authorities = authorities;
         this.itemsMenu = itemsMenu;
+        this.listModulesMainPage = listModulesMainPage;
         this.enabled = enabled;
         this.lastTimeOnline = lastTimeOnline;
         this.theme = theme;
@@ -57,6 +59,7 @@ public class UserDetailsImpl implements UserDetails {
                 .collect(Collectors.toList());
         List<ItemsMenu> itemsMenus = user.getItemsMenus().stream()
                 .toList();
+        List<MainPageModule> mainPageModuleList = user.getMainPageModules().stream().toList();
 
         return new UserDetailsImpl(
                 user.getId(),
@@ -68,6 +71,7 @@ public class UserDetailsImpl implements UserDetails {
                 authorities,
                 user.getEnabled(),
                 itemsMenus,
+                mainPageModuleList,
                 user.getLastTimeOnline(),
                 user.getThemes(),
                 user.getImagePromos()
@@ -95,6 +99,10 @@ public class UserDetailsImpl implements UserDetails {
     public List<ItemsMenu> getItemsMenu(){
         return itemsMenu;
     }
+    public List<MainPageModule> getListModulesMainPage() {
+        return listModulesMainPage;
+    }
+
 
     public String getEmail() {
         return email;

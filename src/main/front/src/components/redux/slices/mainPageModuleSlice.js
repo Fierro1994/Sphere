@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {jwtDecode} from "jwt-decode";
 import { instanceWidthCred } from "../../auth/api/api";
-import authService from "../../auth/services/authService";
 
 
 const initialState = {
@@ -36,6 +34,7 @@ export const getMainPageModules = createAsyncThunk(
         userId: data
       });
       (response.data.body.menu).forEach( (item) =>{
+        
         listmodules.push({id: item.id, name:item.name,isEnabled: item.isEnabled, nametwo:item.nametwo, pathImage: item.pathImage})     
        })
        localStorage.setItem("mainPageModules", JSON.stringify(listmodules))
@@ -58,7 +57,7 @@ const mainPageModuleSlice = createSlice({
     extraReducers: (builder) => {
      builder.addCase(getMainPageModules.fulfilled, (state, action) => {
         return {...state,
-            listMainPageModule: action.payload
+            listMainPageModule: JSON.parse(localStorage.getItem("mainPageModules"))
         };
     });
     },

@@ -77,6 +77,7 @@ public class FileManager {
 
     public ResponseEntity<?> downloadAll(User user) throws IOException {
         List<ImagePromo> imagePromos = user.getImagePromos();
+
         List<String> imageKeys = new ArrayList<>();
         imagePromos.forEach(el -> {
             imageKeys.add(el.getKey());

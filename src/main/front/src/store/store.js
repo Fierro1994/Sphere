@@ -4,13 +4,15 @@ import mainmenuReducer from "../components/redux/slices/mainMenuSlice";
 import mainpagemoduleReducer from "../components/redux/slices/mainPageModuleSlice";
 import galleryReducer from "../components/redux/slices/galerySlice";
 import getToggle from "../components/view/toggleSlice";
+import promoReducer from "../components/redux/slices/promoSlice"
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     gallery: galleryReducer,
     mainmenu: mainmenuReducer,
     mainpagemodule: mainpagemoduleReducer,
-    toggle: getToggle
+    toggle: getToggle,
+    promo: promoReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

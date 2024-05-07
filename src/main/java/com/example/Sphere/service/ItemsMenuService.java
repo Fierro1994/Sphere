@@ -33,9 +33,9 @@ public class ItemsMenuService {
        itemsMenus.add(new ItemsMenu(EModulesMenu.PROFILE_INFO,true, "Мой профиль"));
        itemsMenus.add(new ItemsMenu(EModulesMenu.MESSAGES, true, "Сообщения"));
        itemsMenus.add(new ItemsMenu(EModulesMenu.FRIENDS, true, "Друзья"));
+       itemsMenus.add(new ItemsMenu(EModulesMenu.TREE, true, "Семья"));
        itemsMenus.add(new ItemsMenu(EModulesMenu.GALERY, true, "Галерея"));
        itemsMenus.add(new ItemsMenu(EModulesMenu.MOMENTS, true, "Моменты"));
-
        itemsMenuRepository.saveAll(itemsMenus);
        return itemsMenus;
     }

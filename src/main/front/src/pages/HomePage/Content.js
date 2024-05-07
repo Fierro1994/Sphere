@@ -1,22 +1,19 @@
 import setupStyles from "../stylesModules/setupStyles";
+import mainPageModuleChanger from "../../components/mainpagemodules/mainPageModuleChanger";
 
 const Content =() => {
-
   const style = setupStyles("mainstyle")
-   
-   return (
+  const listMainPageModules = JSON.parse(localStorage.getItem("mainPageModules"))
+  const result = mainPageModuleChanger(listMainPageModules)
 
+return (
 <div className={style.tablemain}>
-<form className={style.form_profile}>
-<table className={style.tablemain}>
-  <thead>
-      <tr>
-        <th>Главная страница</th>
-      </tr>
-  </thead>
-</table>
+  {result.map((element, i) =>
+  {
+    return (<span key={i}>{element}</span>)
+  }
+  )}
 
-</form>
  </div>
    )
 }

@@ -27,17 +27,13 @@ public class MainPageModuleService {
     public List<MainPageModule> setDefaultUserPageModule(){
 
         List<MainPageModule> pageModules = new ArrayList<>();
-        List<String> pathImgList = new ArrayList<>() ;
-        pathImgList.add("assets/promo_1.jpg");
-        pathImgList.add("assets/promo_2.jpg");
-        pathImgList.add("assets/promo_3.jpg");
         pageModules.add(new MainPageModule(EMainPageModules.HEADER,true, "Верхний блок"));
         pageModules.add(new MainPageModule(EMainPageModules.NAVIGATION,true, "Навигация"));
         pageModules.add(new MainPageModule(EMainPageModules.ACTUAL,true, "Актуальное"));
         pageModules.add(new MainPageModule(EMainPageModules.CARTS,true, "Инфо-блоки"));
         pageModules.add(new MainPageModule(EMainPageModules.CONTENT,true, "Контент"));
         pageModules.add(new MainPageModule(EMainPageModules.INFO,true, "Информация"));
-        pageModules.add(new MainPageModule(EMainPageModules.PROMO,true, "Промо-блок", pathImgList));
+        pageModules.add(new MainPageModule(EMainPageModules.PROMO,true, "Промо-блок"));
         mainModulePageRepos.saveAll(pageModules);
         return pageModules;
     }
