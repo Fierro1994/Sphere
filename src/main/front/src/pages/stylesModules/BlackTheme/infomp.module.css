@@ -1,0 +1,11 @@
+.info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+
+}
+
+.info_item{
+    width: 100%;
+}

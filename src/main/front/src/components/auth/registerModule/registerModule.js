@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import style from "../Login/login.module.css";
 import { useForm } from "react-hook-form";
 import Avatar from "react-avatar-edit";
-import avatar_img from "../../../assets/avatar_mainpage.jpg"
 
 
 const Register = () => {

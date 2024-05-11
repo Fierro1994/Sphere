@@ -55,7 +55,13 @@ public class User {
     private List<ImagePromo> imagePromos = new ArrayList<>();
     @OneToMany
     @JoinColumn(name = "user_id")
+    private List<HeaderAvatar> headerAvatars = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "user_id")
     private List<Gallery> galleries = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<InfoModule> infoModules = new ArrayList<>();
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private ETheme themes;

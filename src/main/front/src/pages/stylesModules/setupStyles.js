@@ -9,6 +9,8 @@ import BlackGaleryStyle from "./BlackTheme/galerypage.module.css";
 import BlackMenuStyle from "./BlackTheme/circlemenu.module.css"
 import WhiteMenuStyle from "./WhiteTheme/circlemenu.module.css"
 import BlackThemeSliderPromo from "./BlackTheme/sliderpromo.module.css"
+import BlackThemeMPHead from "./BlackTheme/mphead.module.css";
+import BlackThemeMPInfo from "./BlackTheme/infomp.module.css";
 
 function setupStyles (name) {
  var style = ""
@@ -20,6 +22,14 @@ function setupStyles (name) {
   if(theme === "BLACK"){
     if (name === "mainstyle") {
       style = BlackTheme
+      return style;
+    }
+    if (name === "headerMP") {
+      style = BlackThemeMPHead
+      return style;
+    }
+    if (name === "infoMP") {
+      style = BlackThemeMPInfo
       return style;
     }
     if (name === "circlemenu") {

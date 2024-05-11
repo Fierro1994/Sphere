@@ -5,6 +5,8 @@ import mainpagemoduleReducer from "../components/redux/slices/mainPageModuleSlic
 import galleryReducer from "../components/redux/slices/galerySlice";
 import getToggle from "../components/view/toggleSlice";
 import promoReducer from "../components/redux/slices/promoSlice"
+import headerReducer from "../components/redux/slices/headerSlice"
+import infoMpReducer from "../components/redux/slices/infoMpSlice"
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -12,7 +14,9 @@ export const store = configureStore({
     mainmenu: mainmenuReducer,
     mainpagemodule: mainpagemoduleReducer,
     toggle: getToggle,
-    promo: promoReducer
+    promo: promoReducer,
+    header: headerReducer,
+    infomp:infoMpReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

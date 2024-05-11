@@ -34,10 +34,13 @@ public class UserDetailsImpl implements UserDetails {
     private List<MainPageModule> listModulesMainPage;
     private LocalDateTime lastTimeOnline;
     private List<ImagePromo> imagePromos;
+    private List<HeaderAvatar> headerAvatars;
+    private List<InfoModule> infoModules;
 
 
     public UserDetailsImpl(Long id,Blob avatar,String email, String firstName,  String lastName,  String password,
-                           Collection<? extends GrantedAuthority> authorities, Boolean enabled, List<ItemsMenu> itemsMenu, List<MainPageModule> listModulesMainPage, LocalDateTime lastTimeOnline, ETheme theme, List<ImagePromo> imagePromos) {
+                           Collection<? extends GrantedAuthority> authorities, Boolean enabled, List<ItemsMenu> itemsMenu, List<MainPageModule> listModulesMainPage, LocalDateTime lastTimeOnline, ETheme theme, List<ImagePromo> imagePromos,
+                           List<HeaderAvatar> headerAvatars, List<InfoModule> infoModules) {
         this.id = id;
         this.avatar = avatar;
         this.firstName = firstName;
@@ -51,6 +54,8 @@ public class UserDetailsImpl implements UserDetails {
         this.lastTimeOnline = lastTimeOnline;
         this.theme = theme;
         this.imagePromos = imagePromos;
+        this.headerAvatars = headerAvatars;
+        this.infoModules = infoModules;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -74,7 +79,9 @@ public class UserDetailsImpl implements UserDetails {
                 mainPageModuleList,
                 user.getLastTimeOnline(),
                 user.getThemes(),
-                user.getImagePromos()
+                user.getImagePromos(),
+                user.getHeaderAvatars(),
+                user.getInfoModules()
 
         );
 
@@ -103,6 +110,21 @@ public class UserDetailsImpl implements UserDetails {
         return listModulesMainPage;
     }
 
+    public List<HeaderAvatar> getHeaderAvatars() {
+        return headerAvatars;
+    }
+
+    public void setHeaderAvatars(List<HeaderAvatar> headerAvatars) {
+        this.headerAvatars = headerAvatars;
+    }
+
+    public List<InfoModule> getInfoModules() {
+        return infoModules;
+    }
+
+    public void setInfoModules(List<InfoModule> infoModules) {
+        this.infoModules = infoModules;
+    }
 
     public String getEmail() {
         return email;

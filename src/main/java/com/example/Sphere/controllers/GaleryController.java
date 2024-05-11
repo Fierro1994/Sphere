@@ -1,7 +1,7 @@
 package com.example.Sphere.controllers;
 
 import com.example.Sphere.entity.Gallery;
-import com.example.Sphere.models.request.GetAllImagePromoReq;
+import com.example.Sphere.models.request.GetAllIReq;
 import com.example.Sphere.service.GalleryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class GaleryController {
     }
 
     @PostMapping(path = "/listgallery")
-    public ResponseEntity<?> showAll(@RequestBody GetAllImagePromoReq req) throws IOException {
+    public ResponseEntity<?> showAll(@RequestBody GetAllIReq req) throws IOException {
         return ResponseEntity.ok(galleryService.showAll(req.getUserId()));
     }
 

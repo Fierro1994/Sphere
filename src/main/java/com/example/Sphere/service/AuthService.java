@@ -72,7 +72,10 @@ public class AuthService {
     MainPageModuleService mainPageModuleService;
     @Autowired
     ImagePromoService imagePromoService;
-
+    @Autowired
+    HeaderAvatarService headerAvatarService;
+    @Autowired
+    InfoModuleService infoModuleService;
 
     @Value("${spring.mail.username}")
     private String userName;
@@ -136,7 +139,10 @@ public class AuthService {
         List<ItemsMenu> itemsMenus = new ArrayList<>();
         List<MainPageModule> mainPageModules = new ArrayList<>();
         List<ImagePromo> imagePromos = new ArrayList<>();
+        List<HeaderAvatar> headerAvatars = new ArrayList<>();
+        List<InfoModule> infoModules = new ArrayList<>();
         user.setThemes(ETheme.BLACK);
+        userRepository.save(user);
 
 
 
@@ -146,7 +152,9 @@ public class AuthService {
             itemsMenus.addAll(itemsMenuService.setDefaultUserItemsMenu());
             mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
             roles.add(userRole);
-            imagePromos.addAll(imagePromoService.defaultUpload());
+            imagePromos.addAll(imagePromoService.defaultUpload(user.getId()));
+            headerAvatars.addAll(headerAvatarService.defaultUpload(user.getId()));
+            infoModules.addAll(infoModuleService.setDefaultInfo(user.getId()));
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
@@ -164,7 +172,17 @@ public class AuthService {
                         mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
                         roles.add(userRole);
                         try {
-                            imagePromos.addAll(imagePromoService.defaultUpload());
+                            imagePromos.addAll(imagePromoService.defaultUpload(user.getId()));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            headerAvatars.addAll(headerAvatarService.defaultUpload(user.getId()));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        try {
+                            infoModules.addAll(infoModuleService.setDefaultInfo(user.getId()));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -176,6 +194,7 @@ public class AuthService {
         user.setItemsMenus(itemsMenus);
         user.setMainPageModules(mainPageModules);
         user.setImagePromos(imagePromos);
+        user.setHeaderAvatars(headerAvatars);
         userRepository.save(user);
 
         boolean isValidEmail = emailValidator.test(createUserRequest.getEmail());

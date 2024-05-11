@@ -1,7 +1,7 @@
 package com.example.Sphere.controllers;
 
 import com.example.Sphere.models.request.GetAllIReq;
-import com.example.Sphere.service.ImagePromoService;
+import com.example.Sphere.service.HeaderAvatarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,37 +11,37 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping(value = "/imagepromo")
+@RequestMapping(value = "/header")
 @CrossOrigin(value = "http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
-public class ImagePromoController {
+public class HeaderAvatarController {
     @Autowired
-    ImagePromoService imagePromoService;
+    HeaderAvatarService headerAvatarService;
     @PostMapping(path = "/upload")
     public ResponseEntity<?> upload(@RequestParam("file") String file, String name, Long size, Long userId) throws IOException {
-        return new ResponseEntity<>(imagePromoService.upload( file, name, size, userId),HttpStatus.CREATED);
+        return new ResponseEntity<>(headerAvatarService.upload( file, name, size, userId),HttpStatus.CREATED);
 
     }
     @GetMapping(path = "/{id}/{key}")
     public ResponseEntity<Object> download(@PathVariable("id") Long id, @PathVariable("key") String key) {
         try {
-            return imagePromoService.download(id, key);
+            return headerAvatarService.download(id, key);
 
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PostMapping(path = "/listpromo")
+    @PostMapping(path = "/listheader")
     public ResponseEntity<?> showAll(@RequestBody GetAllIReq req ) throws IOException {
-        return  ResponseEntity.ok(imagePromoService.showAll(req.getUserId()));
+        return  ResponseEntity.ok(headerAvatarService.showAll(req.getUserId()));
     }
 
     @DeleteMapping(value = "/{id}/{key}")
     public ResponseEntity<?> delete(@PathVariable("id") Long id, @PathVariable("key") String key) {
         try {
 
-            return  ResponseEntity.ok(imagePromoService.delete(id, key));
+            return  ResponseEntity.ok(headerAvatarService.delete(id, key));
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -6,11 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ImagePromoReq {
     private Long userId;
-    private MultipartFile file;
+    private String image;
+    private String name;
+    private Long size;
 }

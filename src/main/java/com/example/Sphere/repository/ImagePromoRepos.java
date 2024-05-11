@@ -1,6 +1,7 @@
 package com.example.Sphere.repository;
 
 import com.example.Sphere.entity.ImagePromo;
+import com.example.Sphere.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

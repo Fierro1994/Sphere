@@ -15,6 +15,7 @@ const EasyCrop = ({image}) => {
   const style = setupStyles("galerypagestyle")
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
     setCroppedAreaPixels(croppedAreaPixels);
+    setCroppedImage(croppedImage)
   }, []);
 
   const showCroppedImage = useCallback(async () => {
@@ -24,7 +25,6 @@ const EasyCrop = ({image}) => {
         croppedAreaPixels,
         rotation
       );
-      console.log("donee", { croppedImage });
       setCroppedImage(croppedImage);
       setShowCropper(false)
     } catch (e) {

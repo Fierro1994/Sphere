@@ -28,69 +28,14 @@ p{
 }
 
 
-.header_button_container{
-    display: flex;
-    column-gap: 1vw;
-}
-
-.header{
-    padding: 1vw;
-    margin: 1vw;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    justify-content: space-around;
-}
- 
-
-
-.header_main{
-    border-radius: 50%;
-    width: 8vw;
-    height: 8vw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.4s ease-out;
-    overflow: hidden;
-    position: relative;
-}
-
-.header_main:hover{
-    background-color: #c9aef04f;
-    transition: all 0.4s ease-out;
-    box-shadow: -3px -3px 10px 3px rgb(49, 36, 58), 3px 3px 10px 3px rgb(18, 18, 43);
-}
-
-.header_main img {
-    transition: all 0.4s ease-out;
-    position: absolute;
-     width: 10vw;
-     left: -0.7vw;
-     top: -1vw;
-}
-
-.header_main img:hover {
-    transition: all 0.4s ease-out;
-    transform: scale(1.2);
-}
 
 
 
 
-.popup_header {
-    border: 1px solid #fff;
-    background-color: #050505;
-    position: absolute;
-    z-index: 10;
-    left: 45vw;
-    top: 30vh;
-    width: 45vw;
-    height: 50vh;
-    opacity: 0;
-    transform: scale(0);
-    transition: all 0.4s ease-out;
-  }
+
+
+
+
 
   .popup_a{
     text-decoration: none;
@@ -119,20 +64,7 @@ p{
 
 
 
-.info{
-    width: 15vw;
-    height: 17vh;
-    transition: all 0.4s ease-out;
-    column-gap: 1vw;
-    text-align: center;
-    padding-top: 0;
 
-}
-.info:hover{
-    border: 1px solid #caaef0;
-    background-color: #c9aef04f;
-    transition: all 0.4s ease-out;
-}
 
 
 .nav{
@@ -209,43 +141,13 @@ p{
 
 
 .slider_container{
-    padding: 1vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 1vw;
     position: relative;
-    height: 17vh;
-    overflow: hidden;
+    height: 11vw;
 }
-
-.slider_container img {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-
-  .slider_container img.active {
-    opacity: 1;
-  }
-
-  .slider_container button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1;
-  }
-  
-  .slider_container .previos {
-    left: 2vw;
-  }
-  
-  .slider_container .next {
-    right: 2vw;
-  }
-
-
 .content{
     width: 55vw;
     height: 40vh;
