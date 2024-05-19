@@ -1,11 +1,90 @@
 .info{
+    position: relative;
+    border-radius: 6%;
+    background-color: #1c1c1c96;
+    width: 18vw;
+    height: 13vw;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: left;
 
+
+}
+
+.cntrl_btn svg{
+    cursor: pointer;
+    position: absolute;
+    font-size: 1.2vw;
+    right: 0.4vw;
+    top: 0.4vw;
+    color: rgb(137 137 137);
+    transition: all 0.3s ease-out;
+    transform: scale(1);
+}
+
+
+.cntrl_btn svg:hover{
+    transition: all 0.3s ease-out;
+    transform: scale(1.2);
 }
 
 .info_item{
-    width: 100%;
+    width: 100%;    
+    padding: 1vw;
+
 }
+
+.popup_cont{
+    transition: all 0.3s ease-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 6%;
+    background-color: #0c0c0c;
+    width: 18vw;
+    height: 13vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
+}
+
+.inp_block{
+    display: flex;
+    justify-content: center;
+}
+
+.inp_block input{
+    margin-bottom: 11px;
+    margin-left: 5px;
+    border: 1px solid #7b7b7b;
+    width: 14vw;
+    color: #fff;
+    background: #181818;
+    border-radius: 5%;
+}
+
+.block_div{
+    margin-top: 1vw;
+}
+
+.submit_btn{
+    left: 5vw;
+    position: relative;
+    padding-left: 0.3vw;
+    padding-right: 0.3vw;
+    font-size: 0.8vw;
+    background: none;
+    color: #fff;
+    border: none;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #fff;
+    transition: all 0.3s ease-out;
+}
+
+.submit_btn:hover{
+    color: #030303;
+    background-color: #fff;
+    transition: all 0.3s ease-out;
+    }

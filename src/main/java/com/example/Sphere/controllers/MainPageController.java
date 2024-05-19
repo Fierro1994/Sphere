@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
 
 @RestController
-@CrossOrigin(value = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/api/mainpage/settings")
 @RequiredArgsConstructor
 public class MainPageController {

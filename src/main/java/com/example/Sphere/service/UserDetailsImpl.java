@@ -17,6 +17,7 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private Long id;
+    private String userId;
     private Blob avatar;
     private String firstName;
     private String lastName;
@@ -38,10 +39,11 @@ public class UserDetailsImpl implements UserDetails {
     private List<InfoModule> infoModules;
 
 
-    public UserDetailsImpl(Long id,Blob avatar,String email, String firstName,  String lastName,  String password,
+    public UserDetailsImpl(Long id,String userId, Blob avatar,String email, String firstName,  String lastName,  String password,
                            Collection<? extends GrantedAuthority> authorities, Boolean enabled, List<ItemsMenu> itemsMenu, List<MainPageModule> listModulesMainPage, LocalDateTime lastTimeOnline, ETheme theme, List<ImagePromo> imagePromos,
                            List<HeaderAvatar> headerAvatars, List<InfoModule> infoModules) {
         this.id = id;
+        this.userId = userId;
         this.avatar = avatar;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -68,6 +70,7 @@ public class UserDetailsImpl implements UserDetails {
 
         return new UserDetailsImpl(
                 user.getId(),
+                user.getUserId(),
                 user.getAvatar(),
                 user.getEmail(),
                 user.getFirstName(),
@@ -128,6 +131,14 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Override

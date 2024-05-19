@@ -1,19 +1,22 @@
 package com.example.Sphere.controllers;
 
+import com.example.Sphere.models.request.GetAllIReq;
 import com.example.Sphere.models.request.LastTimeOnline;
 import com.example.Sphere.models.request.MenuSettingsAddReq;
 import com.example.Sphere.models.request.MenuSettingsGetReq;
 import com.example.Sphere.service.ItemsMenuService;
 import com.example.Sphere.service.ProfileService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 @RestController
-@CrossOrigin(value = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/api/profile/settings")
+@CrossOrigin(value ="http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
 public class ProfileControllers {
     private final ItemsMenuService settingsService;

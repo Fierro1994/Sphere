@@ -2,6 +2,8 @@ package com.example.Sphere.models.request;
 
 import lombok.*;
 
+import java.sql.Blob;
+import java.util.List;
 import java.util.Set;
 @Data
 @NoArgsConstructor

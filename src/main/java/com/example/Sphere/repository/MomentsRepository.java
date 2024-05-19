@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface MomentsRepository extends JpaRepository<Moments, Long> {
-    Optional<Moments> findBySerialId(String serialId);
+    Optional<Moments> findByKey(String key);
 }

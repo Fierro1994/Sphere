@@ -31,11 +31,11 @@ public class HeaderAvatarService {
     private String nameFolder = "header";
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> upload(String file, String name, Long size, Long userId) throws IOException {
+    public ResponseEntity<?> upload(String file, String name, Long size, String userId) throws IOException {
         String key = UUID.randomUUID().toString();
 
         HeaderAvatar createdFile = new HeaderAvatar(name, size, key, LocalDateTime.now());
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findByuserId(userId).get();
         List<HeaderAvatar> headerAvatars = user.getHeaderAvatars();
 
         Optional<HeaderAvatar> defhead = headerAvatarRepos.findByName("defheadavatar");
@@ -58,7 +58,7 @@ public class HeaderAvatarService {
         Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key);
         File directory = new File(path.getParent().toString());
         if (!directory.exists()) {
-            directory.mkdir();
+            directory.mkdirs();
         }
         File convertFile = new File("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key);
         convertFile.createNewFile();
@@ -85,7 +85,7 @@ public class HeaderAvatarService {
     }
 
     @Transactional(rollbackFor = {IOException.class})
-    public List<HeaderAvatar> defaultUpload(Long userId) throws IOException {
+    public List<HeaderAvatar> defaultUpload(String userId) throws IOException {
         String key = UUID.randomUUID().toString();
         FileInputStream img = new FileInputStream("src/main/resources/header/defheadavatar.jpg");
         HeaderAvatar createdFile = new HeaderAvatar("defheadavatar",122L, key, LocalDateTime.now());
@@ -100,7 +100,7 @@ public class HeaderAvatarService {
             File directory = new File(path.getParent().toString());
 
             if (!directory.exists()) {
-                directory.mkdir();
+                directory.mkdirs();
             }
             FileOutputStream fileOut = new FileOutputStream(path.toString());
             while (img.available() > 0) {
@@ -121,7 +121,7 @@ public class HeaderAvatarService {
 
 
 
-    public ResponseEntity<Object> download(Long id, String key) throws IOException {
+    public ResponseEntity<Object> download(String id, String key) throws IOException {
         Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
         File file = new File(path.toUri());
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
@@ -143,8 +143,8 @@ public class HeaderAvatarService {
     }
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> delete(Long id, String key) throws IOException {
-        User user = userRepository.findById(id).get();
+    public ResponseEntity<?> delete(String id, String key) throws IOException {
+        User user = userRepository.findByuserId(id).get();
         List<HeaderAvatar> headerAvatars = user.getHeaderAvatars();
 
         HeaderAvatar file = headerAvatarRepos.findByKey(key).get();
@@ -168,9 +168,9 @@ public class HeaderAvatarService {
         return ResponseEntity.ok().body(imageKeys);
     }
 
-    public ResponseEntity<?> showAll(Long id) throws IOException {
+    public ResponseEntity<?> showAll(String id) throws IOException {
 
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findByuserId(id).get();
         List<HeaderAvatar> headerAvatars = user.getHeaderAvatars();
         List<String> imageKeys = new ArrayList<>();
         headerAvatars.forEach(element->{

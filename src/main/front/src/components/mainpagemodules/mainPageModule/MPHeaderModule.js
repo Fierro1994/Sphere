@@ -137,7 +137,6 @@ const MPHeaderModule = ({info}) => {
                         image={image}
                         crop={crop}
                         rotation={rotation}
-                        cropShape={"round"}
                         zoom={zoom}
                         zoomSpeed={0.5}
                         maxZoom={3}

@@ -8,13 +8,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.Blob;
 import java.util.List;
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
 public class AuthResponse {
+    private byte[] avatar;
     private String accessToken;
+    private String userId;
+    private String email;
     private List<ItemsMenu> itemsMenus;
     private List<MainPageModule> listModulesMainPage;
     private ETheme theme;

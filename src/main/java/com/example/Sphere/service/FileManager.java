@@ -27,12 +27,12 @@ import java.util.List;
 
 @Service
 public class FileManager {
-    public void upload(MultipartFile file, String key, Long id, String nameFolder) throws IOException {
+    public void upload(MultipartFile file, String key, String id, String nameFolder) throws IOException {
         Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
         System.out.println("size do" + file.getSize());
         File directory = new File(path.getParent().toString());
         if (!directory.exists()) {
-            directory.mkdir();
+            directory.mkdirs();
         }
         File convertFile = new File("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
         convertFile.createNewFile();
@@ -59,7 +59,7 @@ public class FileManager {
         writer.dispose();
     }
 
-    public ResponseEntity<Object> download(Long id, String key, String nameFolder) throws IOException {
+    public ResponseEntity<Object> download(String id, String key, String nameFolder) throws IOException {
         Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
         File file = new File(path.toUri());
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
@@ -85,7 +85,7 @@ public class FileManager {
         return ResponseEntity.ok().body(imageKeys);
     }
 
-    public void delete(Long id, String key, String nameFolder) throws IOException {
+    public void delete(String id, String key, String nameFolder) throws IOException {
         Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
         Files.delete(path);
     }

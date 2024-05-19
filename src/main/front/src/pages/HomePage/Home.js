@@ -13,11 +13,10 @@ const Home = () => {
   const toggleSlice = useSelector((state) => state.toggle);
   return (
     <>
-      {auth._id ?
+      {auth.firstName?
         <div className={style.container}>
           <div className={style2.menu_items}>
             <MainAvatarViewer nameModule={"menuModules"} namePage={"MainModule"} showSet={true} />
-            :
           </div>
           <div className={toggleSlice.toggle ? style.containerContent : style.containerContent + " " + style.containerContentClose}>
             <Content />

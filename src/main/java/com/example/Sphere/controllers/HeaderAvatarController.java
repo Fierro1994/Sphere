@@ -12,18 +12,17 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/header")
-@CrossOrigin(value = "http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
 public class HeaderAvatarController {
     @Autowired
     HeaderAvatarService headerAvatarService;
     @PostMapping(path = "/upload")
-    public ResponseEntity<?> upload(@RequestParam("file") String file, String name, Long size, Long userId) throws IOException {
+    public ResponseEntity<?> upload(@RequestParam("file") String file, String name, Long size, String userId) throws IOException {
         return new ResponseEntity<>(headerAvatarService.upload( file, name, size, userId),HttpStatus.CREATED);
 
     }
     @GetMapping(path = "/{id}/{key}")
-    public ResponseEntity<Object> download(@PathVariable("id") Long id, @PathVariable("key") String key) {
+    public ResponseEntity<Object> download(@PathVariable("id") String id, @PathVariable("key") String key) {
         try {
             return headerAvatarService.download(id, key);
 
@@ -38,7 +37,7 @@ public class HeaderAvatarController {
     }
 
     @DeleteMapping(value = "/{id}/{key}")
-    public ResponseEntity<?> delete(@PathVariable("id") Long id, @PathVariable("key") String key) {
+    public ResponseEntity<?> delete(@PathVariable("id") String id, @PathVariable("key") String key) {
         try {
 
             return  ResponseEntity.ok(headerAvatarService.delete(id, key));

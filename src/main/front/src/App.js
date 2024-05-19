@@ -21,6 +21,8 @@ import ArhivPage from "./pages/MomentsPage/arhivPage/ArhivPage";
 import FriendsPage from "./pages/FriendsPage/FriendsPage";
 import VideoGaleryPage from "./pages/GaleryPage/VideoGaleryPage/VideoGaleryPage";
 import TreePage from "./pages/TreePage/TreePage";
+import SearchFrPage from "./pages/FriendsPage/searchPage/SearchFrPage";
+import SubscribPage from "./pages/FriendsPage/subscribePage/SubscribPage";
 
 function App() {
 
@@ -29,11 +31,7 @@ function App() {
   const auth = useSelector((state) => state.auth);
   useEffect(() => {
     dispatch(loadUser(null));
-    if (auth._id){
-      authService.SetOnlineTime(auth._id)
-      dispatch(getLastTimeOnline(auth._id))
-    }
-  }, [dispatch]);
+  }, []);
   return (
     <div className="App">
       <BrowserRouter>
@@ -41,9 +39,11 @@ function App() {
           <Routes>
            <Route path="/app/profile" element={<RequireAuth><ProfilePage /></RequireAuth>}/> 
            <Route path="/app/messages" element={<RequireAuth><MessagesPage /></RequireAuth>}/> 
+
            <Route path="/app/friends" element={<RequireAuth><FriendsPage /></RequireAuth>}/> 
-           
-           
+            <Route path="/app/friends/search/allusers" element={<RequireAuth><SearchFrPage /></RequireAuth>}/> 
+            <Route path="/app/friends/subscribe" element={<RequireAuth><SubscribPage /></RequireAuth>}/> 
+          
            
              <Route path="/" element={<RequireAuth><Home /></RequireAuth>}/>
             <Route path="/app/moments/" element={<RequireAuth><MomentsPage /></RequireAuth>}/>

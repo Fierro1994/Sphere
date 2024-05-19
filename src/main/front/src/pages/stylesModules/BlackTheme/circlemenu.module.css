@@ -14,6 +14,7 @@
 }
 
 .item_menu_a {
+    user-select: none;
     font-size: 0.8vw;
     cursor: pointer;
     display: flex;
@@ -41,6 +42,7 @@
 
 
 .open_menu {
+user-select: none;
     border-radius: 50%;
     background: #111;
     cursor: pointer;
@@ -284,6 +286,7 @@
 
 
 .timeOnline {
+    user-select: none;
     top: 78%;
     left: 41.5%;
     font-size: 0.8vw;

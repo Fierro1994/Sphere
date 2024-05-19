@@ -19,14 +19,14 @@ public class GaleryController {
     GalleryService galleryService;
 
     @PostMapping
-    public ResponseEntity<Gallery> upload(@RequestParam("file") MultipartFile file, Long userId) throws IOException {
+    public ResponseEntity<Gallery> upload(@RequestParam("file") MultipartFile file, String userId) throws IOException {
 
         return new ResponseEntity<>(galleryService.upload(file, userId), HttpStatus.CREATED);
 
     }
 
     @GetMapping(path = "/{id}/{key}")
-    public ResponseEntity<Object> download(@PathVariable("id") Long id, @PathVariable("key") String key) {
+    public ResponseEntity<Object> download(@PathVariable("id") String id, @PathVariable("key") String key) {
         try {
             return galleryService.download(id, key);
 
@@ -41,7 +41,7 @@ public class GaleryController {
     }
 
     @DeleteMapping(value = "/{id}/{key}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id, @PathVariable("key") String key) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id, @PathVariable("key") String key) {
         try {
             galleryService.delete(id, key);
             return new ResponseEntity<>(HttpStatus.OK);

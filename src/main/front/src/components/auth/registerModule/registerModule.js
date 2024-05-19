@@ -1,27 +1,34 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
-import style from "../Login/login.module.css";
 import { useForm } from "react-hook-form";
 import Avatar from "react-avatar-edit";
-
-
+import getCroppedImg from "../../../pages/GaleryPage/GalleryAddPage/Crop";
+import Cropper from "react-easy-crop";
+import style from "../Login/login.module.css";
+import { MdOutlineAddAPhoto } from "react-icons/md";
 const Register = () => {
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const [src, setSrc] = useState(null)
   const [preview, setPreview] = useState("")
- 
-
+  const [file, setFile] = useState(null);
+  const [fileData, setFileData] = useState(null);
+  const [showCropper, setShowCropper] = useState(true)
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const [croppedImage, setCroppedImage] = useState(null);
   const onClose =()=>{
     setPreview("")
 }
 const onCrop = view =>{
     setPreview(view) 
 }
-
 
   const {
     handleSubmit,
@@ -33,21 +40,43 @@ const onCrop = view =>{
     mode: "onBlur"
   });
 
+  const handleImageUpload = async (e) => {
+    setFileData(e.target.files[0])
+    setFile(URL.createObjectURL(e.target.files[0]));
+ };
+
+ const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
+  setCroppedAreaPixels(croppedAreaPixels);
+}, []);
+
+const showCroppedImage = useCallback(async () => {
+  try {
+     const croppedImage = await getCroppedImg(
+        file,
+        croppedAreaPixels,
+        rotation
+     );
+     setCroppedImage(croppedImage);
+     setShowCropper(false)
+  } catch (e) {
+     console.error(e);
+  }
+}, [croppedAreaPixels, rotation, file]);
   useEffect(() => {
     // if (auth.registerStatus) {
     //   navigate("/");
     // }
   }, [auth._id, navigate, preview, setPreview]);
 
-  const formData = new FormData();
+  
   const onSubmit = (data) => {
-    
+    const formData = new FormData();
     formData.append("email", data.email)
     formData.append("password", data.password)
     formData.append("firstName", data.firstName)
     formData.append("lastName", data.lastName)
     formData.append("roles", data.roles)
-    formData.append("preview", preview)
+    formData.append("avatar", croppedImage)
       dispatch(registerUser(formData))
       
     }
@@ -60,33 +89,54 @@ const onCrop = view =>{
   return (
 <div>
     <form className={style.form_signin} onSubmit={handleSubmit(onSubmit)}>
+      <div className={style.cont}>
       <div className={style.form_container}>
-      <div className={style.avatar_img_cont}>
-<Avatar
-    label={"Выберите фото профиля"}
-    labelStyle={{color:"white",
-        fontSize:"1vw",
-        cursor: "pointer",
-        width: "100%",
-        background: "url('/src/assets/169815923239.jpg')"}}
-    width={400}
-    height={300}
-    
-    onCrop={onCrop}
-    
-    onClose={onClose}
-    
-    src={src}
-    
-/>
-<input className={style.hide}
-        name ="preview"
-        id="preview"
-        value={preview}
-        type="text"
-        {...register("preview") }></input>
-        
-</div>
+     
+                  {!file&& <div className={style.avatar_change} >   
+        <label className={style.cont_av_img}> <MdOutlineAddAPhoto className={style.avatar_svg}/>  <input
+                           type="file"
+                           name="cover"
+                           onChange={handleImageUpload}
+                           accept="img/jpeg, video/, img/jpg"
+                           style={{ display: "none" }}
+                          
+                        />
+                    </label></div>}
+                    {file &&  <div className={style.avatar_img_cont}>
+      {!croppedImage && <Cropper
+                        image={file}
+                        crop={crop}
+                        rotation={rotation}
+                        cropShape="round"
+                        zoom={zoom}
+                        zoomSpeed={0.5}
+                        maxZoom={3}
+                        zoomWithScroll={true}
+                        showGrid={true}
+                        aspect={4 / 4}
+                        onCropChange={setCrop}
+                        onCropComplete={onCropComplete}
+                        onZoomChange={setZoom}
+                        onRotationChange={setRotation}
+                     />}
+{croppedImage && (
+                         <div className={style.avatar_img_cont_crop}>
+                           <img className={style.promo_img} src={croppedImage} alt="cropped" />
+                     </div>
+                     )}
+
+                     </div>
+                     }
+
+
+        {file && !croppedImage && <button className={style.cut_btn}
+                     onClick={(e) => {
+                        e.preventDefault()
+                        showCroppedImage()
+                     }}>
+                    Готово
+                  </button>}   
+
       <div>
         <input
           name="email"
@@ -207,6 +257,7 @@ const onCrop = view =>{
         </div>
         <div>  {auth? <p className={style.error}></p> : <></>}</div>
         {auth.registerStatus === "pending" && <div style={{color : "white"}}>ожидайте регистрации..</div>}
+      </div>
       </div>
       </div>
     </form>

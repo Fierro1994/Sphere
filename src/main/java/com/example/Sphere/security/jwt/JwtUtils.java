@@ -41,28 +41,10 @@ public class JwtUtils {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        Blob blob = userDetails.getAvatar();
-        byte[]  blobAsBytes = null;
-        int blobLength = 1;
-        if(blob!=null){
-             blobLength = (int) blob.length();
-            blobAsBytes = blob.getBytes(1, blobLength);
-        }
-
-
-
-
-
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", userDetails.getId());
+        claims.put("userId", userDetails.getId());
         claims.put("firstName", userDetails.getFirstName());
         claims.put("lastName", userDetails.getLastName());
-        claims.put("email", userDetails.getEmail());
-        claims.put("roles",roles);
-        claims.put("activateEmail", userDetails.getEnabled());
-        claims.put("avatar", blobAsBytes);
-        claims.put("theme", userDetails.getTheme().name());
-
 
         return Jwts.builder()
                 .setIssuedAt(new Date())

@@ -18,8 +18,8 @@ import java.sql.SQLException;
 
 
 @RestController
-@CrossOrigin(value = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/api/auth")
+@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
 @RequiredArgsConstructor
 public class AuthController {
 

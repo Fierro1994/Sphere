@@ -41,15 +41,15 @@ public class GalleryService {
     private String nameFolder = "gallery";
 
     @Transactional(rollbackFor = {IOException.class})
-    public Gallery upload(MultipartFile file, Long userId) throws IOException {
+    public Gallery upload(MultipartFile file, String userId) throws IOException {
         String key = UUID.randomUUID().toString();
         Gallery createdFile = new Gallery(file.getOriginalFilename(), file.getSize(), key, LocalDateTime.now());
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findByuserId(userId).get();
 
         Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key);
         File directory = new File(path.getParent().toString());
         if (!directory.exists()) {
-            directory.mkdir();
+            directory.mkdirs();
         }
         File convertFile = new File("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key);
         convertFile.createNewFile();
@@ -79,7 +79,7 @@ public class GalleryService {
         return createdFile;
     }
 
-    public ResponseEntity<Object> download(Long id, String key) throws IOException {
+    public ResponseEntity<Object> download(String id, String key) throws IOException {
         Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
         File file = new File(path.toUri());
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
@@ -101,7 +101,7 @@ public class GalleryService {
     }
 
     @Transactional(rollbackFor = {IOException.class})
-    public void delete(Long id, String key) throws IOException {
+    public void delete(String id, String key) throws IOException {
         Gallery file = galleryRepos.findByKey(key).get();
         galleryRepos.delete(file);
         Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
@@ -109,8 +109,8 @@ public class GalleryService {
         fileManager.delete(id, key,nameFolder);
     }
 
-    public ResponseEntity<?> showAll(Long id) throws IOException {
-        User user = userRepository.findById(id).get();
+    public ResponseEntity<?> showAll(String id) throws IOException {
+        User user = userRepository.findByuserId(id).get();
         List<Gallery> galleryList = user.getGalleries();
         List<String> imageKeys = new ArrayList<>();
         galleryList.forEach(el -> {

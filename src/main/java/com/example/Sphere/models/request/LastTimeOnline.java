@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class LastTimeOnline {
-    private Long userId;
+    private String userId;
 }

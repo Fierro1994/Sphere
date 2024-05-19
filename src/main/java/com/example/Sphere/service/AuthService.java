@@ -15,6 +15,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +33,9 @@ import org.springframework.web.util.WebUtils;
 
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Blob;
@@ -76,7 +79,6 @@ public class AuthService {
     HeaderAvatarService headerAvatarService;
     @Autowired
     InfoModuleService infoModuleService;
-
     @Value("${spring.mail.username}")
     private String userName;
 
@@ -94,12 +96,12 @@ public class AuthService {
             if(loginRequest.getRememberMe()){
                 if(refreshTokenRepository.findByUserId(userDetails.getId()).isPresent()){
                     refreshTokenService.deleteOldRefreshTokenByUserId(userDetails.getId());
-                    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+                    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUserId());
                     cookie = refreshTokenService.generateRefreshJwtCookie(refreshToken.getToken(), 50000);
                     response.addCookie(cookie);
                 }
                 if(refreshTokenRepository.findByUserId(userDetails.getId()).isEmpty()){
-                    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+                    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getUserId());
                     cookie = refreshTokenService.generateRefreshJwtCookie(refreshToken.getToken(), 50000);
                     response.addCookie(cookie);
                 }
@@ -110,29 +112,49 @@ public class AuthService {
         List<ItemsMenu> itemsMenus = userDetails.getItemsMenu().stream().toList();
         List<MainPageModule> listModulesMainPage = userDetails.getListModulesMainPage().stream().toList();
         ETheme theme = userDetails.getTheme();
+        String email = userDetails.getEmail();
+        String userId = userDetails.getUserId();
+        Blob blob = userDetails.getAvatar();
+        byte[]  blobAsBytes = null;
+        int blobLength = 1;
+        if(blob!=null){
+            blobLength = (int) blob.length();
+            blobAsBytes = blob.getBytes(1, blobLength);
+        }
+
         return ResponseEntity.ok()
-                .body(new AuthResponse(jwt, itemsMenus, listModulesMainPage, theme));
+                .body(new AuthResponse(blobAsBytes, jwt, userId,  email, itemsMenus, listModulesMainPage, theme));
     }
 
     public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException, IOException {
               if (userRepository.existsByEmail(createUserRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
+
+        int length = 14;
+        boolean useLetters = true;
+        boolean useNumbers = true;
+        String userId = RandomStringUtils.random(length, useLetters, useNumbers);
+
         String partSeparator = ",";
         Blob b =null;
-            if(createUserRequest.getAvatar()!=null){
-                String encodedImg = createUserRequest.getAvatar().split(partSeparator)[1];
-                byte[] result = Base64.getDecoder().decode(encodedImg);
-                 b = new SerialBlob(result);
-            }
+        if(createUserRequest.getAvatar()!=null){
+            String encodedImg = createUserRequest.getAvatar().split(partSeparator)[1];
+            byte[] result = Base64.getDecoder().decode(encodedImg);
+            b = new SerialBlob(result);
+        }
 
 
         User user = new User(
+                userId,
                 b,
                 createUserRequest.getEmail(),
                 encoder.encode(createUserRequest.getPassword()),
                 createUserRequest.getFirstName(),
                 createUserRequest.getLastName());
+
+
+        userRepository.save(user);
 
         Set<String> strRoles = createUserRequest.getRoles();
         Set<Role> roles = new HashSet<>();
@@ -152,9 +174,9 @@ public class AuthService {
             itemsMenus.addAll(itemsMenuService.setDefaultUserItemsMenu());
             mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
             roles.add(userRole);
-            imagePromos.addAll(imagePromoService.defaultUpload(user.getId()));
-            headerAvatars.addAll(headerAvatarService.defaultUpload(user.getId()));
-            infoModules.addAll(infoModuleService.setDefaultInfo(user.getId()));
+            imagePromos.addAll(imagePromoService.defaultUpload(user.getUserId()));
+            headerAvatars.addAll(headerAvatarService.defaultUpload(user.getUserId()));
+            infoModules.addAll(infoModuleService.setDefaultInfo(user.getUserId()));
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
@@ -172,17 +194,17 @@ public class AuthService {
                         mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
                         roles.add(userRole);
                         try {
-                            imagePromos.addAll(imagePromoService.defaultUpload(user.getId()));
+                            imagePromos.addAll(imagePromoService.defaultUpload(user.getUserId()));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                         try {
-                            headerAvatars.addAll(headerAvatarService.defaultUpload(user.getId()));
+                            headerAvatars.addAll(headerAvatarService.defaultUpload(user.getUserId()));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                         try {
-                            infoModules.addAll(infoModuleService.setDefaultInfo(user.getId()));
+                            infoModules.addAll(infoModuleService.setDefaultInfo(user.getUserId()));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -304,7 +326,7 @@ public class AuthService {
                             throw new RuntimeException(e);
                         }
                         refreshTokenService.deleteOldRefreshTokenByUserId(user.getId());
-                        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+                        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getUserId());
                         cookie = refreshTokenService.generateRefreshJwtCookie(refreshToken.getToken(), 50000);
                         response.addCookie(cookie);
                         return ResponseEntity.ok()
@@ -319,9 +341,9 @@ public class AuthService {
 
 
     public ResponseEntity<?> logout(LogoutRequest logoutRequest) {
-
-        if(refreshTokenRepository.findByUserId(logoutRequest.getUserId()).isPresent()) {
-            refreshTokenService.deleteOldRefreshTokenByUserId(logoutRequest.getUserId());
+        User user = userRepository.findByuserId(logoutRequest.getUserId()).get();
+        if(refreshTokenRepository.findByUser(user).isPresent()) {
+            refreshTokenService.deleteOldRefreshTokenByUserId(user.getId());
             return ResponseEntity.ok(new SimpleResponse("logout sucessful"));
         }
         return ResponseEntity.ok(new SimpleResponse("logout sucessful"));

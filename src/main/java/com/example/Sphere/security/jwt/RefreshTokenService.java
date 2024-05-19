@@ -21,9 +21,9 @@ public class RefreshTokenService {
     @Value("${jwt.refresh.lifetime}")
     private Long refreshExp;
 
-    public RefreshToken createRefreshToken(Long userId) {
+    public RefreshToken createRefreshToken(String userId) {
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(userRepository.findById(userId).get());
+        refreshToken.setUser(userRepository.findByuserId(userId).get());
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshExp));
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshTokenRepository.save(refreshToken);

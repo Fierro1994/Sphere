@@ -31,11 +31,11 @@ public class ImagePromoService {
     private String nameFolder = "imagepromo";
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> upload(String file, String name, Long size, Long userId) throws IOException {
+    public ResponseEntity<?> upload(String file, String name, Long size, String userId) throws IOException {
         String key = UUID.randomUUID().toString();
 
         ImagePromo createdFile = new ImagePromo(name, size, key, LocalDateTime.now());
-        User user = userRepository.findById(userId).get();
+        User user = userRepository.findByuserId(userId).get();
         List<ImagePromo> imagePromos = user.getImagePromos();
 
         Optional<ImagePromo> defpromo = imagePromoRepos.findByName("promo_1");
@@ -108,7 +108,7 @@ public class ImagePromoService {
     }
 
     @Transactional(rollbackFor = {IOException.class})
-    public List<ImagePromo> defaultUpload(Long userId) throws IOException {
+    public List<ImagePromo> defaultUpload(String userId) throws IOException {
         String key1 = UUID.randomUUID().toString();
         String key2 = UUID.randomUUID().toString();
         String key3 = UUID.randomUUID().toString();
@@ -130,7 +130,7 @@ public class ImagePromoService {
             File directory = new File(path.getParent().toString());
 
             if (!directory.exists()) {
-                directory.mkdir();
+                directory.mkdirs();
             }
             FileOutputStream fileOut = new FileOutputStream(path.toString());
                 while (img1.available() > 0) {
@@ -147,7 +147,7 @@ public class ImagePromoService {
             File directory2 = new File(path2.getParent().toString());
 
             if (!directory2.exists()) {
-                directory2.mkdir();
+                directory2.mkdirs();
             }
             FileOutputStream fileOut2 = new FileOutputStream(path2.toString());
             while (img2.available() > 0) {
@@ -164,7 +164,7 @@ public class ImagePromoService {
                 File directory3 = new File(path3.getParent().toString());
 
                 if (!directory3.exists()) {
-                    directory3.mkdir();
+                    directory3.mkdirs();
                 }
             FileOutputStream fileOut3 = new FileOutputStream(path3.toString());
             while (img3.available() > 0) {
@@ -184,7 +184,7 @@ public class ImagePromoService {
 
 
 
-    public ResponseEntity<Object> download(Long id, String key) throws IOException {
+    public ResponseEntity<Object> download(String id, String key) throws IOException {
         Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
         File file = new File(path.toUri());
         InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
@@ -206,8 +206,8 @@ public class ImagePromoService {
     }
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> delete(Long id, String key) throws IOException {
-        User user = userRepository.findById(id).get();
+    public ResponseEntity<?> delete(String id, String key) throws IOException {
+        User user = userRepository.findByuserId(id).get();
         List<ImagePromo> imagePromos = user.getImagePromos();
 
         ImagePromo file = imagePromoRepos.findByKey(key).get();
@@ -231,9 +231,9 @@ public class ImagePromoService {
         return ResponseEntity.ok().body(imageKeys);
     }
 
-    public ResponseEntity<?> showAll(Long id) throws IOException {
+    public ResponseEntity<?> showAll(String id) throws IOException {
 
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findByuserId(id).get();
         List<ImagePromo> imagePromos = user.getImagePromos();
         List<String> imageKeys = new ArrayList<>();
         imagePromos.forEach(element->{

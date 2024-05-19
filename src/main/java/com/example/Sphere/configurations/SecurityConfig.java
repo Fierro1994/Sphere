@@ -52,6 +52,7 @@ public class SecurityConfig {
     }
 
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CookieClearingLogoutHandler cookies = new CookieClearingLogoutHandler("refresh");
@@ -59,12 +60,12 @@ public class SecurityConfig {
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(authEntryPointJwt))
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) ->
-                    auth.requestMatchers("/static/**","/*","/app/login/**", "/api/auth/register/**", "/api/auth/signin/**", "/api/auth/confirm", "/api/auth/refresh", "/api/auth/logout", "/api/profile/settings/getmenuelement","/api/profile/settings/updatemenuelement", "/api/profile/settings/setlasttimeonline", "/api/profile/settings/getlasttimeonline",
-                                    "/api/settings/interface/**", "/api/mainpage/settings/**", "/assets/**", "/src/assets/**", "/imagepromo/**", "/gallery/**", "/src/main/front/src/**", "/header/**", "/infomodule/**"
-                            ).permitAll()
-                            .requestMatchers("/app/teacher").hasRole("TEACHER")
-                            .requestMatchers("/app/student").hasRole("STUDENT")
-                            .anyRequest().authenticated()
+                        auth.requestMatchers("/static/**","/*","/app/login/**", "/api/auth/register/**", "/api/auth/signin/**", "/api/auth/confirm", "/api/auth/refresh", "/api/auth/logout", "/api/profile/settings/getmenuelement","/api/profile/settings/updatemenuelement", "/api/profile/settings/setlasttimeonline", "/api/profile/settings/getlasttimeonline",
+                                        "/api/settings/interface/**", "/api/mainpage/settings/**", "/assets/**", "/src/assets/**", "/imagepromo/**", "/gallery/**", "/src/main/front/src/**", "/header/**", "/infomodule/**"
+                                ).permitAll()
+                                .requestMatchers("/app/teacher").hasRole("TEACHER")
+                                .requestMatchers("/app/student").hasRole("STUDENT")
+                                .anyRequest().permitAll()
                 )
                 .authenticationProvider(daoAuthenticationProvider())
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
@@ -77,6 +78,7 @@ public class SecurityConfig {
         return http.build();
 
     }
+
 
 
 

@@ -1,23 +1,30 @@
+import { useDispatch, useSelector } from "react-redux";
 import setupStyles from "../stylesModules/setupStyles";
+import { searchFriends, updateFriendsList } from "../../components/redux/slices/friendsSlice";
+import { useEffect } from "react";
 
 const FriendsView =() => {
 
-  const style = setupStyles("mainstyle")
-   
-   return (
+  const style = setupStyles("friendsPage")
+  const auth = useSelector((state) => state.auth);
+  const friendsSl = useSelector((state) => state.friendsred);
+const dispatch = useDispatch()
 
-<div className={style.tablemain}>
-<form className={style.form_profile}>
-<table className={style.tablemain}>
-  <thead>
-      <tr>
-        <th>Друзья</th>
-      </tr>
-  </thead>
-</table>
 
-</form>
- </div>
+
+useEffect(() => {
+  dispatch(updateFriendsList(auth.email));
+
+}, []);
+  
+  const result =  () =>{
+   return( <></>)
+
+  }
+  return (
+<>
+<h2>Друзья</h2>
+</>
    )
 }
 

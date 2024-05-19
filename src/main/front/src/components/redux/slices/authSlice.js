@@ -19,19 +19,20 @@ const initialState = {
   theme: localStorage.getItem("theme"),
   firstName: user2.firstName,
   lastName: user2.lastName,
-  email: user2.email,
-  _id: user2.id,
-  activated: user2.activateEmail,
-  roles: user2.roles,
-  avatar: user2.avatar,
+  email: localStorage.getItem("email"),
+  _id: localStorage.getItem("userId"),
+  activated: "",
+  roles: "",
+  avatar: localStorage.getItem("avatar"),
   registerStatus: "",
   registerError: "",
   loginStatus: "",
   loginError: "",
   userLoaded: false,
   isEnabled: false,
-  onlineTime: localStorage.getItem("lastTimeOnline"),
 };
+
+
 
 export const setSelectedTheme = createAsyncThunk(
   "auth/setSelectedTheme",
@@ -59,7 +60,7 @@ export const registerUser = createAsyncThunk(
         firstName: data.get("firstName"),
         lastName: data.get("lastName"),
         password: data.get("password"),
-        avatar: data.get("preview"),
+        avatar: data.get("avatar"),
         roles:[data.get("roles")]
       });
       return token.data;
@@ -74,48 +75,32 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({email, password, checkbox}, { rejectWithValue }) => {
     try {
-      const token = await instanceWidthCred.post(`/api/auth/signin`, {
+      const response = await instanceWidthCred.post(`/api/auth/signin`, {
         email: email,
         password: password,
         rememberMe: checkbox
       });
       const listItems = []
-      token.data.body.itemsMenus.forEach( (item) =>{
+      response.data.body.itemsMenus.forEach( (item) =>{
         listItems.push({id: item.id, name:item.name,isEnabled: item.isEnabled, nametwo:item.nametwo})     
      })
      const listModulesMainPage = []
-     token.data.body.listModulesMainPage.forEach( (item) =>{
+     response.data.body.listModulesMainPage.forEach( (item) =>{
       listModulesMainPage.push({id: item.id, name:item.name,isEnabled: item.isEnabled, nametwo:item.nametwo, pathImage: item.pathImage})     
    })
       localStorage.setItem("menuModules", JSON.stringify(listItems))
+      localStorage.setItem("userId", response.data.body.userId)
+      localStorage.setItem("email", response.data.body.email)
       localStorage.setItem("mainPageModules", JSON.stringify(listModulesMainPage))
-      localStorage.setItem("access", token.data.body.accessToken);
-      localStorage.setItem("theme",token.data.body.theme)
-      return token.data;
+      localStorage.setItem("access", response.data.body.accessToken);
+      localStorage.setItem("theme",response.data.body.theme)
+      localStorage.setItem("avatar",response.data.body.avatar)
+      return response.data.body;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
   }
 );
-
-export const getLastTimeOnline = createAsyncThunk(
-  "auth/getLastTimeOnline",
-  async ({_id}, { rejectWithValue }) => {
-    try {
-      const response = await instanceWidthCred.post(`/api/profile/settings/getlasttimeonline`, {
-        userId: initialState._id
-      });
-      var date = new Date(response.data.body.localDateTime)
-      var dateFormat = date.getHours() + ":" +  date.getMinutes()
-      localStorage.setItem("lastTimeOnline",  dateFormat);
-      return response.data.body.localDateTime;
-    } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
-
 
 
 const authSlice = createSlice({
@@ -129,11 +114,11 @@ const authSlice = createSlice({
         return {
           ...state,
           token,
-          avatar: user.avatar,
+          avatar: localStorage.getItem("avatar"),
           firstName: user.firstName,
           lastName: user.lastName,
-          email: user.email,
-          _id: user.id,
+          email:localStorage.getItem("email"),
+          _id: localStorage.getItem("userId"),
           isEnabled: user.activateEmail,
         };
        
@@ -147,6 +132,9 @@ const authSlice = createSlice({
       localStorage.removeItem("lastTimeOnline")
       localStorage.removeItem("mainPageModules");
       localStorage.removeItem("theme");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("email");
+      localStorage.removeItem("avatar");
       return {
         ...state,
         token: "",
@@ -161,7 +149,6 @@ const authSlice = createSlice({
         registerError: "",
         loginStatus: "",
         loginError: "",
-  onlineTime: ""
       };
     },
   },
@@ -189,18 +176,18 @@ const authSlice = createSlice({
     });
     builder.addCase(loginUser.fulfilled, (state, action) => {
       if (action.payload) {
-        const user = jwtDecode(action.payload.body.accessToken);
+        const user = jwtDecode(action.payload.accessToken);
         return {
           ...state,
-          token: action.payload.body.accessToken,
-          theme:user.theme,
+          token: action.payload.accessToken,
+          theme:action.payload.theme,
           firstName: user.firstName,
           lastName: user.lastName,
-          email: user.email,
-          _id: user.id,
+          email: action.payload.email,
+          avatar: action.payload.avatar,
+          _id: action.payload.userId,
           activated: user.activateEmail,
           roles: user.roles,
-          avatar: user.avatar,
           loginStatus: "success",
           userLoaded: false,
           isEnabled: user.activateEmail
@@ -214,7 +201,6 @@ const authSlice = createSlice({
         loginError: action.payload,
       };
     });
-
   builder.addCase(setSelectedTheme.fulfilled, (state, action) => {
     return {...state,
       theme: action.payload

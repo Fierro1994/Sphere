@@ -12,7 +12,7 @@
 
 }
 .header_main{
-    border-radius: 50%;
+    border-radius: 19%;
     width: 8vw;
     height: 8vw;
     display: flex;
@@ -168,7 +168,7 @@
 
 .popup_quad_shadow{
     opacity: 0.5;
-    background-color: #4b4848;
+    background-color: #67676761;
     z-index: 4;
     position: absolute;
     left: 22%;
@@ -181,7 +181,7 @@
 
 
 .promo_img{
-    border-radius: 50%;
+    border-radius: 19%;
     overflow: hidden;
     opacity: 1; 
     transition: all 0.3s ease-out;

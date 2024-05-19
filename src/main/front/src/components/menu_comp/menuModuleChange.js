@@ -22,6 +22,10 @@ import FriendsModule from "./menuModules/FriendsModule.js";
 import SettingsPageModuleKonstruktor from '../../pages/SettingsPage/modules/SettingsPageModuleKonstruktor.js';
 import KonstruktModuleProfile from '../../pages/SettingsPage/settingsPageConstruktorMainPage/Modules/KonstruktModuleProfile.js';
 import TreeModules from './menuModules/TreeModules.js';
+import FriendsModuleLeft from '../../pages/FriendsPage/modules/FriendsModuleLeft.js';
+import SubscribeUsersModule from '../../pages/FriendsPage/modules/SubscribeUsersModule.js';
+import BlockUserModule from '../../pages/FriendsPage/modules/BlockUserModule.js';
+import SearchFriendModule from '../../pages/FriendsPage/modules/SearchFriendModule.js';
 
 function menuModuleChange(nameModule) {
   let listMenuModules = []
@@ -60,7 +64,12 @@ function menuModuleChange(nameModule) {
     listModuleName.push(<SettingsPageModuleSecurity />)
     listModuleName.push(<SettingsPageModuleKonstruktor />)
   }
-
+  if (nameModule === "friendsModule") {
+    listModuleName.push(<FriendsModuleLeft />)
+    listModuleName.push(<SearchFriendModule />)
+    listModuleName.push(<SubscribeUsersModule />)
+    listModuleName.push(<BlockUserModule />)
+  }
   if (nameModule === "settingsConstruktor") {
     listModuleName.push(<SettingsPageModuleInterface />)
     listModuleName.push(<SettingsPageModuleSecurity />)

@@ -51,15 +51,15 @@ const Slider = () => {
     setSlide(slide === 0 ? promosl.promoList.length - 1 : slide - 1);
   };
 
-  function useInterval(callback, delay) {
+  async function useInterval(callback, delay) {
     const savedCallback = useRef();
     useEffect(() => {
       savedCallback.current = callback;
     }, [callback]);
 
     useEffect(() => {
-      function tick() {
-        savedCallback.current();
+      async function tick() {
+       await savedCallback.current();
       }
       if (delay !== null) {
         let id = setInterval(tick, delay);

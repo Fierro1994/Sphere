@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AddMomentsRequest {
     private Long userId;
-    private String path;
-    private String article;
+    private String name;
+    private Long size;
 }

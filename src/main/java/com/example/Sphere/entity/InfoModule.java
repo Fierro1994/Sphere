@@ -14,12 +14,11 @@ public class InfoModule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String infotext;
     private int block;
 
-    public InfoModule(String name, String infotext, int block) {
+
+    public InfoModule(String name, int block) {
         this.name = name;
-        this.infotext = infotext;
         this.block = block;
     }
 }

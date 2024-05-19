@@ -5,7 +5,8 @@ const initialState = {
     infoList: [],
     isPendDel: false,
     isFulDel: false,
-    isRejDel: false
+    isRejDel: false,
+    isUpdFul: false
 
 };
 
@@ -32,13 +33,10 @@ export const uploadInfo = createAsyncThunk(
   "info/upload",
   async (data,{ rejectWithValue }) => {
     try {
-      const config = {headers: {'Content-Type': 'multipart/form-data'}}
       const response = await instanceWidthCred.post(PATH +"upload", {
-        userId: data.get("id"),
-        file: data.get("file"),
-        size: data.get("size"),
-        name: data.get("name"),
-      }, config);
+        userId: data.get("userId"),
+        infoModules: JSON.parse(data.get("infoModules")),
+      });
                 return response.data.body;
     } catch (error) {
       console.log(error.response.data);
@@ -91,6 +89,7 @@ const infoMpSlice = createSlice({
         return {
           ...state,
           infoList: action.payload,
+          isUpdFul:true
         
         };
       });
