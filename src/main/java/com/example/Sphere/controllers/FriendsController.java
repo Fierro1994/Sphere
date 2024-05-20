@@ -18,21 +18,21 @@ public class FriendsController {
 
     @RequestMapping(value = "/subscribe", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> subscribeUserRequest(@RequestBody SubscribeReq subscribeUserRequestEntity) {
-        return this.userFriendsService.addSubscriptions(subscribeUserRequestEntity);
+        return userFriendsService.addSubscriptions(subscribeUserRequestEntity);
     }
 //
     @RequestMapping(value = "/getsubscriberlist", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> getsubscriberlist(@RequestBody GetAllIReq GetAllIReq) {
-        return this.userFriendsService.getSubscriberList(GetAllIReq.getUserId());
+        return userFriendsService.getSubscriberList(GetAllIReq.getUserId());
     }
     @RequestMapping(value = "/getsubscriptionslist", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> getsubscriptionslist(@RequestBody GetAllIReq GetAllIReq) {
-        return this.userFriendsService.getSubscribtionsList(GetAllIReq.getUserId());
+        return userFriendsService.getSubscribtionsList(GetAllIReq.getUserId());
     }
 
     @RequestMapping(value = "/getfriendslist", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> getfriendslist(@RequestBody GetAllIReq GetAllIReq) {
-        return this.userFriendsService.getfriendslist(GetAllIReq.getUserId());
+        return userFriendsService.getfriendslist(GetAllIReq.getUserId());
     }
 
 }

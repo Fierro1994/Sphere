@@ -40,6 +40,9 @@ public class MomentsService {
     @Transactional(rollbackFor = {IOException.class})
     public ResponseEntity<?> upload(MultipartFile file, String userId, String startTrim, String endTrim) throws IOException, EncoderException {
         String key = UUID.randomUUID().toString();
+        String keySmall = UUID.randomUUID().toString();
+
+
         String format = "mp4";
         Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + file.getName() );
         File directory = new File(path.getParent().toString());

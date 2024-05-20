@@ -6,11 +6,7 @@ import com.example.Sphere.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,27 +16,23 @@ public class SearchService {
     @Autowired
     UserRepository userRepository;
 
-
+    private String nameFolder = "avatars";
     public ResponseEntity<?> getAllUsers(String userId) throws IOException {
         User user = userRepository.findByuserId(userId).get();
         List<User> userList = userRepository.findAll();
         List<SearchFrResultRes> resultRes = new ArrayList<>();
 
         userList.forEach((element->{
-        if (!element.getUserId().equals(user.getUserId()) && !element.getSubscribers().contains(user) && !element.getSubscriptions().contains(user)){
-            Blob blob = element.getAvatar();
-            byte[]  blobAsBytes = null;
-            int blobLength = 1;
-            if(blob!=null){
-                try {
-                    blobLength = (int) blob.length();
-                    blobAsBytes = blob.getBytes(1, blobLength);
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
+        if (!element.getUserId().equals(user.getUserId()) && !element.getSubscribers().contains(user) && !element.getSubscriptions().contains(user) &&!element.getFriends().contains(user) && !user.getFriends().contains(element)){
+
+            String avatar = "";
+            if (element.getAvatar().get(0).getName().equals("defavatar")){
+                avatar = element.getAvatar().get(0).getName();
+            }else {
+                avatar = element.getAvatar().get(0).getKeySmall();
             }
             resultRes.add(new SearchFrResultRes(element.getUserId(),
-                    blobAsBytes,
+                    avatar,
                     element.getFirstName(),
                     element.getLastName(),
                     element.getLastTimeOnline()

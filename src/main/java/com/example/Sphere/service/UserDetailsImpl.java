@@ -1,6 +1,5 @@
 package com.example.Sphere.service;
 
-import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +17,7 @@ public class UserDetailsImpl implements UserDetails {
 
     private Long id;
     private String userId;
-    private Blob avatar;
+    private List<Avatar> avatar;
     private String firstName;
     private String lastName;
 
@@ -35,13 +34,12 @@ public class UserDetailsImpl implements UserDetails {
     private List<MainPageModule> listModulesMainPage;
     private LocalDateTime lastTimeOnline;
     private List<ImagePromo> imagePromos;
-    private List<HeaderAvatar> headerAvatars;
     private List<InfoModule> infoModules;
 
 
-    public UserDetailsImpl(Long id,String userId, Blob avatar,String email, String firstName,  String lastName,  String password,
+    public UserDetailsImpl(Long id,String userId, List<Avatar> avatar,String email, String firstName,  String lastName,  String password,
                            Collection<? extends GrantedAuthority> authorities, Boolean enabled, List<ItemsMenu> itemsMenu, List<MainPageModule> listModulesMainPage, LocalDateTime lastTimeOnline, ETheme theme, List<ImagePromo> imagePromos,
-                           List<HeaderAvatar> headerAvatars, List<InfoModule> infoModules) {
+                           List<InfoModule> infoModules) {
         this.id = id;
         this.userId = userId;
         this.avatar = avatar;
@@ -56,7 +54,6 @@ public class UserDetailsImpl implements UserDetails {
         this.lastTimeOnline = lastTimeOnline;
         this.theme = theme;
         this.imagePromos = imagePromos;
-        this.headerAvatars = headerAvatars;
         this.infoModules = infoModules;
     }
 
@@ -83,7 +80,6 @@ public class UserDetailsImpl implements UserDetails {
                 user.getLastTimeOnline(),
                 user.getThemes(),
                 user.getImagePromos(),
-                user.getHeaderAvatars(),
                 user.getInfoModules()
 
         );
@@ -111,14 +107,6 @@ public class UserDetailsImpl implements UserDetails {
     }
     public List<MainPageModule> getListModulesMainPage() {
         return listModulesMainPage;
-    }
-
-    public List<HeaderAvatar> getHeaderAvatars() {
-        return headerAvatars;
-    }
-
-    public void setHeaderAvatars(List<HeaderAvatar> headerAvatars) {
-        this.headerAvatars = headerAvatars;
     }
 
     public List<InfoModule> getInfoModules() {
@@ -178,10 +166,10 @@ public class UserDetailsImpl implements UserDetails {
         return enabled;
     }
 
-    public void setAvatar(Blob avatar) {
+    public void setAvatar(List<Avatar> avatar) {
         this.avatar = avatar;
     }
-    public Blob getAvatar() {
+    public List<Avatar> getAvatar() {
         return avatar;
     }
 

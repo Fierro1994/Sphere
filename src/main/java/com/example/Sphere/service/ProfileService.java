@@ -22,6 +22,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,17 +31,24 @@ public class ProfileService {
     private final UserRepository userRepository;
 
     public ResponseEntity<?> setlasttimeonline(String userId) {
-        User user = userRepository.findByuserId(userId).get();
-        LocalDateTime time = LocalDateTime.now();
-        user.setLastTimeOnline(time);
-        userRepository.save(user);
-        return  ResponseEntity.ok(new LastTimeOnlineRes(time));
+       Optional<User> user = userRepository.findByuserId(userId);
+       if (user.isPresent()){
+           LocalDateTime time = LocalDateTime.now();
+           user.get().setLastTimeOnline(time);
+           userRepository.save(user.get());
+           return  ResponseEntity.ok(new LastTimeOnlineRes(time));
+       }else {
+           return ResponseEntity.ok(new SimpleResponse("User не найден"));
+       }
+
     }
 
     public ResponseEntity<?> getlasttimeonline(String userId) {
-
-       LocalDateTime time =  userRepository.findByuserId(userId).get().getLastTimeOnline();
+        Optional<User> user = userRepository.findByuserId(userId);
+        if (user.isPresent()){LocalDateTime time =  user.get().getLastTimeOnline();
         return ResponseEntity.ok(new LastTimeOnlineRes(time));
+        }
+        else   return ResponseEntity.ok(new SimpleResponse("User не найден"));
 
     }
 }

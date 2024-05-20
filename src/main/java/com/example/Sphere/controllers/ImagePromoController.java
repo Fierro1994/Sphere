@@ -17,7 +17,7 @@ public class ImagePromoController {
     @Autowired
     ImagePromoService imagePromoService;
     @PostMapping(path = "/upload")
-    public ResponseEntity<?> upload(@RequestParam("file") String file, String name, Long size, String userId) throws IOException {
+    public ResponseEntity<?> upload(@RequestParam("file") String file, String name, int size, String userId) throws IOException {
         return new ResponseEntity<>(imagePromoService.upload( file, name, size, userId),HttpStatus.CREATED);
 
     }

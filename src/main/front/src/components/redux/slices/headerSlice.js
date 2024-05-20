@@ -8,7 +8,7 @@ const initialState = {
     isRejDel: false
 };
 
-const PATH = 'http://localhost:3000/header/'
+const PATH = 'http://localhost:3000/avatar/'
 
 
 export const updateHeader = createAsyncThunk(
@@ -16,7 +16,7 @@ export const updateHeader = createAsyncThunk(
   async (data,{ rejectWithValue }) => {
     
     try {
-      const response = await instanceWidthCred.post(PATH +"listheader", {
+      const response = await instanceWidthCred.post(PATH +"listavatars", {
         userId: data,
       });
                 return response.data.body;

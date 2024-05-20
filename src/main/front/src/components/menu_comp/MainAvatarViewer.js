@@ -9,7 +9,7 @@ const MainAvatarViewer = ({ nameModule, namePage, showSet }) => {
   const [show, setShow] = useState(showSet)
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
-  const srcValue = "data:image/png;base64, " + auth.avatar
+  const srcValue = "data:image/png;base64, " + localStorage.getItem("avatar")
   const moduleMenu = CircleMenuItems(nameModule, namePage)
   const onAvatarClick = () => {
     dispatch(setSlice(!show))

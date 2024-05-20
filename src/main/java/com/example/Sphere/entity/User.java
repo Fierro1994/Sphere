@@ -29,10 +29,10 @@ public class User {
     private Long id;
     @Column(name = "userId", unique = true)
     private String userId;
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "avatar", columnDefinition = "LONGBLOB")
-    private Blob avatar;
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<Avatar> avatar = new ArrayList<>();
 
     private String firstName;
 
@@ -56,9 +56,6 @@ public class User {
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<ImagePromo> imagePromos = new ArrayList<>();
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<HeaderAvatar> headerAvatars = new ArrayList<>();
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<Gallery> galleries = new ArrayList<>();
@@ -108,13 +105,14 @@ public class User {
         this.password = password;
     }
 
-    public User( String userId, Blob avatar, String email, String password, String firstName, String lastName) {
+    public User( String userId, List<Avatar> avatar, String email, String password, String firstName, String lastName, LocalDateTime lastTimeOnline ) {
         this.userId = userId;
         this.avatar = avatar;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.lastTimeOnline = lastTimeOnline;
     }
 
 

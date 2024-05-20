@@ -9,7 +9,7 @@ import Comment_avatar from "../service/Comment_avatar";
 import InfoModule from "../mainPageModule/MPInfoModule"
 
 const MPHeaderModule = ({info}) => {
-   const PATH = "http://localhost:3000/header"
+   const PATH = "http://localhost:3000/avatar"
    const auth = useSelector((state) => state.auth);
    const header = useSelector((state) => state.header);
    const [infomod, setinfoMod] = useState(null);
@@ -28,7 +28,7 @@ const MPHeaderModule = ({info}) => {
    const [rotation, setRotation] = useState(0);
    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
    const [croppedImage, setCroppedImage] = useState(null);
-
+   const srcValue = "data:image/png;base64, " + localStorage.getItem("avatar")
    const handleImageUpload = async (e) => {
       setImage(URL.createObjectURL(e.target.files[0]));
       setNameImage((e.target.files[0].name));
@@ -120,11 +120,9 @@ const MPHeaderModule = ({info}) => {
 
 
                   <div className={style.header_button_container} >
-                     {header.headerList.map((element, i) => {
-                        return (
-                           <img className={style.promo_img} src={result(element)} key={i} ref={refSlide}></img>
-                        )
-                     })}</div>
+                    
+                           <img className={style.promo_img} src={srcValue}  ref={refSlide}></img>
+                     </div>
                </div>
 
             </div>

@@ -1,5 +1,6 @@
 package com.example.Sphere.service;
 
+import com.example.Sphere.entity.Avatar;
 import com.example.Sphere.entity.Gallery;
 import com.example.Sphere.entity.User;
 import com.example.Sphere.repository.GalleryRepos;
@@ -28,6 +29,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,81 +43,69 @@ public class GalleryService {
     private String nameFolder = "gallery";
 
     @Transactional(rollbackFor = {IOException.class})
-    public Gallery upload(MultipartFile file, String userId) throws IOException {
+    public Gallery upload(String file, String userId) throws IOException {
         String key = UUID.randomUUID().toString();
-        Gallery createdFile = new Gallery(file.getOriginalFilename(), file.getSize(), key, LocalDateTime.now());
-        User user = userRepository.findByuserId(userId).get();
+        String keySmall = UUID.randomUUID().toString();
+        fileManager.upload(file, userId, nameFolder,key, keySmall);
 
-        Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key);
-        File directory = new File(path.getParent().toString());
-        if (!directory.exists()) {
-            directory.mkdirs();
+        Gallery createdFile = new Gallery("gallery",  128, key, keySmall, LocalDateTime.now());
+        List<Gallery> galleries = new ArrayList<>();
+        Optional<User> user = userRepository.findByuserId(userId);
+        if (user.isPresent()){
+            galleries = user.get().getGalleries();
+            galleries.add(createdFile);
+            user.get().setGalleries(galleries);
+            galleryRepos.save(createdFile);
+            userRepository.save(user.get());
         }
-        File convertFile = new File("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key);
-        convertFile.createNewFile();
-        OutputStream out = new FileOutputStream(convertFile);
-        BufferedImage image = ImageIO.read(file.getInputStream());
-        ImageWriter writer = ImageIO.getImageWritersByFormatName("jpeg").next();
-        ImageOutputStream ios = ImageIO.createImageOutputStream(out);
-        writer.setOutput(ios);
-
-        ImageWriteParam param = writer.getDefaultWriteParam();
-        if(param.canWriteCompressed()){
-            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-            param.setCompressionQuality(0.5f);
-        }
-
-        writer.write(null, new IIOImage(image, null, null), param);
-        System.out.println("size posle" + image.getData());
-        out.close();
-        ios.close();
-        writer.dispose();
-
-        List<Gallery> userListGallery = user.getGalleries();
-        userListGallery.add(createdFile);
-        user.setGalleries(userListGallery);
-        galleryRepos.saveAll(userListGallery);
-        userRepository.save(user);
+        galleries.add(createdFile);
+        galleryRepos.save(createdFile);
         return createdFile;
     }
 
-    public ResponseEntity<Object> download(String id, String key) throws IOException {
-        Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
-        File file = new File(path.toUri());
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-        HttpHeaders headers = new HttpHeaders();
-        Resource resource2 = new UrlResource(path.toUri());
-        headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        ResponseEntity<Object>
-                responseEntity = ResponseEntity.ok().headers(headers).contentLength(
-                file.length()).contentType(MediaType.parseMediaType("application/txt")).body(resource);
-        return responseEntity;
-    }
 
-    @Transactional(readOnly = true)
-    public Gallery findByKey(String key) {
-        return galleryRepos.findByKey(key).get();
+    public ResponseEntity<Object> download(String id, String key) throws IOException {
+        return fileManager.download(id,key,nameFolder);
     }
 
     @Transactional(rollbackFor = {IOException.class})
-    public void delete(String id, String key) throws IOException {
+    public ResponseEntity<?> delete(String id, String key) throws IOException {
+        User user = userRepository.findByuserId(id).get();
+        List<Gallery> galleries = user.getGalleries();
+
         Gallery file = galleryRepos.findByKey(key).get();
+
+        galleries.remove(file);
+        user.setGalleries(galleries);
+        userRepository.save(user);
         galleryRepos.delete(file);
-        Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
-        Files.delete(path);
-        fileManager.delete(id, key,nameFolder);
+        try {
+            Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
+            Files.delete(path);
+            Path pathS = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + file.getKeySmall());
+            Files.delete(pathS);
+        }catch (FileNotFoundException e) {
+            System.out.println();
+        }
+
+        galleries = user.getGalleries();
+        List<String> imageKeys = new ArrayList<>();
+        galleries.forEach(element->{
+            imageKeys.add(element.getKey());
+        });
+        return ResponseEntity.ok().body(imageKeys);
     }
 
     public ResponseEntity<?> showAll(String id) throws IOException {
+
+
         User user = userRepository.findByuserId(id).get();
-        List<Gallery> galleryList = user.getGalleries();
+        List<Gallery> galleries = user.getGalleries();
         List<String> imageKeys = new ArrayList<>();
-        galleryList.forEach(el -> {
-            imageKeys.add(el.getKey());
+        galleries.forEach(element->{
+                imageKeys.add(element.getKey());
         });
+
         return ResponseEntity.ok().body(imageKeys);
     }
 }

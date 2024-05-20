@@ -4,6 +4,7 @@ import {addFriendSubscribe, getFriendsList, searchFriends,  } from "../../../src
 import { useEffect, useState } from "react";
 
 const FriendsView =() => {
+  const PATH = "http://localhost:3000/avatar"
 
   const style = setupStyles("friendsPage")
   const auth = useSelector((state) => state.auth);
@@ -11,6 +12,9 @@ const FriendsView =() => {
   const[showPop, setShowPop] = useState(false)
 const dispatch = useDispatch()
 
+function resultsrc(el) {
+  return PATH + "/" + el.userId + "/" + el.avatar
+}
 
 function dateFormat(time) {
   var time_day = ""
@@ -50,7 +54,7 @@ function addFriendHandler(user) {
           left: i * 10 + "vw",
         }}>
       <div>
-      <img onClick={()=> setShowPop(!showPop)} className={style.avatar_img} src={"data:image/png;base64, " + el.avatar}  />
+      <img onClick={()=> setShowPop(!showPop)} className={style.avatar_img} src={resultsrc(el)}  />
       <div className={style.name_p}><p className={style.name}>{el.firstName + " " + el.lastName}</p></div>
       <div className={style.online_p}><p className={style.name}>{dateFormat(el.lastTimeOnline)}</p></div>
       </div>

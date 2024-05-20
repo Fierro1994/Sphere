@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class SearchFrResultRes {
     private String userId;
-    private byte[] avatar;
+    private String avatar;
     private String firstName;
     private String lastName;
     private LocalDateTime lastTimeOnline;

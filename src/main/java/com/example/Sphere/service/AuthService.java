@@ -5,7 +5,6 @@ import com.example.Sphere.models.request.CreateUserRequest;
 import com.example.Sphere.models.request.LoginRequest;
 import com.example.Sphere.models.request.LogoutRequest;
 import com.example.Sphere.models.response.AuthResponse;
-import com.example.Sphere.models.response.MessageResponse;
 import com.example.Sphere.models.response.SimpleResponse;
 import com.example.Sphere.models.response.TokenRefreshResponse;
 import com.example.Sphere.repository.*;
@@ -16,7 +15,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -28,17 +26,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.WebUtils;
 
-import javax.sql.rowset.serial.SerialBlob;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -76,13 +69,17 @@ public class AuthService {
     @Autowired
     ImagePromoService imagePromoService;
     @Autowired
-    HeaderAvatarService headerAvatarService;
-    @Autowired
     InfoModuleService infoModuleService;
+    @Autowired
+    AvatarService avatarService;
+
+    private String nameFolder = "avatars";
+
+
     @Value("${spring.mail.username}")
     private String userName;
 
-    public ResponseEntity<?> authenticateUser( @RequestBody LoginRequest loginRequest, HttpServletResponse response) throws SQLException {
+    public ResponseEntity<?> authenticateUser( @RequestBody LoginRequest loginRequest, HttpServletResponse response) throws SQLException, IOException {
 
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
@@ -114,44 +111,50 @@ public class AuthService {
         ETheme theme = userDetails.getTheme();
         String email = userDetails.getEmail();
         String userId = userDetails.getUserId();
-        Blob blob = userDetails.getAvatar();
-        byte[]  blobAsBytes = null;
-        int blobLength = 1;
-        if(blob!=null){
-            blobLength = (int) blob.length();
-            blobAsBytes = blob.getBytes(1, blobLength);
+        List<Avatar> avatars = userDetails.getAvatar();
+
+        Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + avatars.get(0).getKey());
+        byte[] blobAsBytes = null;
+        try {
+            blobAsBytes = Files.readAllBytes(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         return ResponseEntity.ok()
                 .body(new AuthResponse(blobAsBytes, jwt, userId,  email, itemsMenus, listModulesMainPage, theme));
     }
 
-    public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException, IOException {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException, IOException {
+        Map<String, Object> result = new HashMap<String, Object>();
+
               if (userRepository.existsByEmail(createUserRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+                  result.put("Пользователь с таким именем уже существует!", null);
+
+                  return new ResponseEntity<Map<String, Object>>(result, HttpStatus.BAD_REQUEST);
         }
 
         int length = 14;
         boolean useLetters = true;
         boolean useNumbers = true;
         String userId = RandomStringUtils.random(length, useLetters, useNumbers);
+        List<Avatar> avatars = new ArrayList<>();
+        if (createUserRequest.getAvatar().contains("null")){
+            avatars.add(avatarService.defaultUpload(userId));
+        }else {
+            avatars.add(avatarService.upload(createUserRequest.getAvatar(), userId)) ;
 
-        String partSeparator = ",";
-        Blob b =null;
-        if(createUserRequest.getAvatar()!=null){
-            String encodedImg = createUserRequest.getAvatar().split(partSeparator)[1];
-            byte[] result = Base64.getDecoder().decode(encodedImg);
-            b = new SerialBlob(result);
         }
 
 
         User user = new User(
                 userId,
-                b,
+                avatars,
                 createUserRequest.getEmail(),
                 encoder.encode(createUserRequest.getPassword()),
                 createUserRequest.getFirstName(),
-                createUserRequest.getLastName());
+                createUserRequest.getLastName(),
+                LocalDateTime.now());
 
 
         userRepository.save(user);
@@ -161,7 +164,6 @@ public class AuthService {
         List<ItemsMenu> itemsMenus = new ArrayList<>();
         List<MainPageModule> mainPageModules = new ArrayList<>();
         List<ImagePromo> imagePromos = new ArrayList<>();
-        List<HeaderAvatar> headerAvatars = new ArrayList<>();
         List<InfoModule> infoModules = new ArrayList<>();
         user.setThemes(ETheme.BLACK);
         userRepository.save(user);
@@ -175,7 +177,6 @@ public class AuthService {
             mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
             roles.add(userRole);
             imagePromos.addAll(imagePromoService.defaultUpload(user.getUserId()));
-            headerAvatars.addAll(headerAvatarService.defaultUpload(user.getUserId()));
             infoModules.addAll(infoModuleService.setDefaultInfo(user.getUserId()));
         } else {
             strRoles.forEach(role -> {
@@ -199,11 +200,6 @@ public class AuthService {
                             throw new RuntimeException(e);
                         }
                         try {
-                            headerAvatars.addAll(headerAvatarService.defaultUpload(user.getUserId()));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        try {
                             infoModules.addAll(infoModuleService.setDefaultInfo(user.getUserId()));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
@@ -216,7 +212,6 @@ public class AuthService {
         user.setItemsMenus(itemsMenus);
         user.setMainPageModules(mainPageModules);
         user.setImagePromos(imagePromos);
-        user.setHeaderAvatars(headerAvatars);
         userRepository.save(user);
 
         boolean isValidEmail = emailValidator.test(createUserRequest.getEmail());
@@ -230,7 +225,9 @@ public class AuthService {
             throw new IllegalStateException(String.format("Email %s, not valid", createUserRequest.getEmail()));
         }
 
-        return ResponseEntity.ok(new MessageResponse("Verify email by the link sent on your email address"));
+        result.put("Регистрация прошла успешно!", null);
+
+        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
 
 

@@ -23,7 +23,7 @@ const initialState = {
   _id: localStorage.getItem("userId"),
   activated: "",
   roles: "",
-  avatar: localStorage.getItem("avatar"),
+  avatar: "",
   registerStatus: "",
   registerError: "",
   loginStatus: "",
@@ -63,6 +63,7 @@ export const registerUser = createAsyncThunk(
         avatar: data.get("avatar"),
         roles:[data.get("roles")]
       });
+     
       return token.data;
     } catch (error) {
       console.log(error.response.data);
@@ -110,16 +111,8 @@ const authSlice = createSlice({
     loadUser(state, action) {
       const token = state.token;
       if (token) {
-        const user = jwtDecode(token);
         return {
-          ...state,
-          token,
-          avatar: localStorage.getItem("avatar"),
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email:localStorage.getItem("email"),
-          _id: localStorage.getItem("userId"),
-          isEnabled: user.activateEmail,
+          ...state, 
         };
        
       } else return { ...state, userLoaded: true };

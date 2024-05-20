@@ -1,9 +1,7 @@
 package com.example.Sphere.service;
 
-import com.example.Sphere.entity.ImagePromo;
 import com.example.Sphere.entity.InfoModule;
 import com.example.Sphere.entity.User;
-import com.example.Sphere.repository.HeaderAvatarRepos;
 import com.example.Sphere.repository.InfoModRepos;
 import com.example.Sphere.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,11 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

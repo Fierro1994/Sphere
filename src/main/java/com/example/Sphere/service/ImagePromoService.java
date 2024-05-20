@@ -31,10 +31,11 @@ public class ImagePromoService {
     private String nameFolder = "imagepromo";
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> upload(String file, String name, Long size, String userId) throws IOException {
+    public ResponseEntity<?> upload(String file, String name, int size, String userId) throws IOException {
         String key = UUID.randomUUID().toString();
+        String keySmall = UUID.randomUUID().toString();
 
-        ImagePromo createdFile = new ImagePromo(name, size, key, LocalDateTime.now());
+        ImagePromo createdFile = new ImagePromo(name, size, key, keySmall,LocalDateTime.now());
         User user = userRepository.findByuserId(userId).get();
         List<ImagePromo> imagePromos = user.getImagePromos();
 
@@ -78,18 +79,7 @@ public class ImagePromoService {
         }
 
 
-        Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key);
-        File directory = new File(path.getParent().toString());
-        if (!directory.exists()) {
-            directory.mkdir();
-        }
-        File convertFile = new File("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key);
-        convertFile.createNewFile();
-        String base64ImageString = file.replace("data:image/jpeg;base64,", "");
-        byte[] result = Base64.getDecoder().decode(base64ImageString);
-        OutputStream out = new FileOutputStream(convertFile);
-        out.write(result);
-        out.close();
+      fileManager.upload(file, userId, nameFolder, key, keySmall);
 
         imagePromos.add(createdFile);
 
@@ -115,9 +105,9 @@ public class ImagePromoService {
         FileInputStream img1 = new FileInputStream("src/main/resources/imagepromo/promo_1.jpg");
         FileInputStream img2 = new FileInputStream("src/main/resources/imagepromo/promo_2.jpg");
         FileInputStream img3 = new FileInputStream("src/main/resources/imagepromo/promo_3.jpg");
-        ImagePromo createdFile = new ImagePromo("promo_1",122L, key1, LocalDateTime.now());
-        ImagePromo createdFile2 = new ImagePromo("promo_2",122L, key2, LocalDateTime.now());
-        ImagePromo createdFile3= new ImagePromo("promo_3",122L, key3, LocalDateTime.now());
+        ImagePromo createdFile = new ImagePromo("promo_1",122, key1, LocalDateTime.now());
+        ImagePromo createdFile2 = new ImagePromo("promo_2",122, key2, LocalDateTime.now());
+        ImagePromo createdFile3= new ImagePromo("promo_3",122, key3, LocalDateTime.now());
 
 
         List<ImagePromo> userListImgPromo = new ArrayList<>();
@@ -185,19 +175,7 @@ public class ImagePromoService {
 
 
     public ResponseEntity<Object> download(String id, String key) throws IOException {
-        Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
-        File file = new File(path.toUri());
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-        HttpHeaders headers = new HttpHeaders();
-        Resource resource2 = new UrlResource(path.toUri());
-        headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        ResponseEntity<Object>
-                responseEntity = ResponseEntity.ok().headers(headers).contentLength(
-                file.length()).contentType(MediaType.parseMediaType("application/txt")).body(resource);
-        return responseEntity;
+        return fileManager.download(id,key,nameFolder);
     }
 
     @Transactional(readOnly = true)

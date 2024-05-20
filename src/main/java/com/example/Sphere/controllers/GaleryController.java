@@ -19,7 +19,7 @@ public class GaleryController {
     GalleryService galleryService;
 
     @PostMapping
-    public ResponseEntity<Gallery> upload(@RequestParam("file") MultipartFile file, String userId) throws IOException {
+    public ResponseEntity<Gallery> upload(@RequestParam("file") String file, String userId) throws IOException {
 
         return new ResponseEntity<>(galleryService.upload(file, userId), HttpStatus.CREATED);
 

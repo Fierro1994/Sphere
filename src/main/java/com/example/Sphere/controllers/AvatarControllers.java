@@ -1,7 +1,8 @@
 package com.example.Sphere.controllers;
 
+
 import com.example.Sphere.models.request.GetAllIReq;
-import com.example.Sphere.service.HeaderAvatarService;
+import com.example.Sphere.service.AvatarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,36 +12,36 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping(value = "/header")
+@RequestMapping(value = "/avatar")
 @RequiredArgsConstructor
-public class HeaderAvatarController {
+public class AvatarControllers {
     @Autowired
-    HeaderAvatarService headerAvatarService;
+    AvatarService avatarService;
     @PostMapping(path = "/upload")
     public ResponseEntity<?> upload(@RequestParam("file") String file, String name, Long size, String userId) throws IOException {
-        return new ResponseEntity<>(headerAvatarService.upload( file, name, size, userId),HttpStatus.CREATED);
+        return new ResponseEntity<>(avatarService.upload( file, userId),HttpStatus.CREATED);
 
     }
     @GetMapping(path = "/{id}/{key}")
     public ResponseEntity<Object> download(@PathVariable("id") String id, @PathVariable("key") String key) {
         try {
-            return headerAvatarService.download(id, key);
+            return avatarService.download(id, key);
 
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
-    @PostMapping(path = "/listheader")
+    @PostMapping(path = "/listavatars")
     public ResponseEntity<?> showAll(@RequestBody GetAllIReq req ) throws IOException {
-        return  ResponseEntity.ok(headerAvatarService.showAll(req.getUserId()));
+        return  ResponseEntity.ok(avatarService.showAll(req.getUserId()));
     }
 
     @DeleteMapping(value = "/{id}/{key}")
     public ResponseEntity<?> delete(@PathVariable("id") String id, @PathVariable("key") String key) {
         try {
 
-            return  ResponseEntity.ok(headerAvatarService.delete(id, key));
+            return  ResponseEntity.ok(avatarService.delete(id, key));
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
