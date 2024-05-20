@@ -26,6 +26,7 @@ import FriendsModuleLeft from '../../pages/FriendsPage/modules/FriendsModuleLeft
 import SubscribeUsersModule from '../../pages/FriendsPage/modules/SubscribeUsersModule.js';
 import BlockUserModule from '../../pages/FriendsPage/modules/BlockUserModule.js';
 import SearchFriendModule from '../../pages/FriendsPage/modules/SearchFriendModule.js';
+import SubscriptionsModule from '../../pages/FriendsPage/modules/SubscriptionsModule.js';
 
 function menuModuleChange(nameModule) {
   let listMenuModules = []
@@ -68,6 +69,7 @@ function menuModuleChange(nameModule) {
     listModuleName.push(<FriendsModuleLeft />)
     listModuleName.push(<SearchFriendModule />)
     listModuleName.push(<SubscribeUsersModule />)
+    listModuleName.push(<SubscriptionsModule />)
     listModuleName.push(<BlockUserModule />)
   }
   if (nameModule === "settingsConstruktor") {

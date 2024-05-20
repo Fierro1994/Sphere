@@ -1,138 +1,148 @@
 package com.example.Sphere.service;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.*;
 
 import com.example.Sphere.entity.User;
-import com.example.Sphere.models.request.UserFriendsListReq;
-import com.example.Sphere.models.request.UserFriendsReq;
-import com.example.Sphere.repository.UserFriendsRepository;
+import com.example.Sphere.models.request.SubscribeReq;
+import com.example.Sphere.models.response.SearchFrResultRes;
+import com.example.Sphere.repository.InviteRepos;
+import com.example.Sphere.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 @Service
 public class UserFriendsService {
 
+
     @Autowired
-    private UserFriendsRepository userFriendsRepository;
+    InviteRepos inviteRepos;
+    @Autowired
+    UserRepository userRepository;
 
-    private User saveIfNotExist(String email) {
-
-        User existingUser = this.userFriendsRepository.findByEmail(email);
-        if (existingUser == null) {
-            existingUser = new User();
-            existingUser.setEmail(email);
-            return this.userFriendsRepository.save(existingUser);
-        } else {
-            return existingUser;
+    public ResponseEntity<Map<String, Object>> addSubscriptions(SubscribeReq subscribeReq) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        User user = userRepository.findByuserId(subscribeReq.getRequestor()).get();
+        User toUser = userRepository.findByuserId(subscribeReq.getTarget()).get();
+        if (user.getSubscribers().contains(toUser)){
+            user.getSubscribers().remove(toUser);
+            user.getFriends().add(toUser);
+            userRepository.save(user);
+            result.put("Добавлен в друзья!", null);
+            return ResponseEntity.ok(result);
         }
+        else {
+            user.getSubscriptions().add(toUser);
+            userRepository.save(user);
+            result.put("Заявка отпправлена!", null);
+
+            return ResponseEntity.ok(result);
+        }
+
 
     }
 
 
-    public ResponseEntity<Map<String, Object>> addUserFriends(UserFriendsReq userFriendsRequestEntity) {
-
+    public ResponseEntity<Map<String, Object>> getSubscriberList(String userId) {
         Map<String, Object> result = new HashMap<String, Object>();
+        User user = userRepository.findByuserId(userId).get();
+        List<SearchFrResultRes> listSubscribers = new ArrayList<>();
+        user.getSubscribers().forEach((el) -> {
 
-        if (userFriendsRequestEntity == null) {
-            result.put("Error : ", "Invalid request");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.BAD_REQUEST);
-        }
+            Blob blob = el.getAvatar();
+            byte[] blobAsBytes = null;
+            int blobLength = 1;
+            if (blob != null) {
+                try {
+                    blobLength = (int) blob.length();
+                    blobAsBytes = blob.getBytes(1, blobLength);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            listSubscribers.add(new SearchFrResultRes(el.getUserId(),
+                    blobAsBytes,
+                    el.getFirstName(),
+                    el.getLastName(),
+                    el.getLastTimeOnline()
+            ));
 
-        if (CollectionUtils.isEmpty(userFriendsRequestEntity.getFriends())) {
-            result.put("Error : ", "Friend list cannot be empty");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.BAD_REQUEST);
-        }
-        if (userFriendsRequestEntity.getFriends().size() != 2) {
-            result.put("Info : ", "Please provide 2 emails to make them friends");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.BAD_REQUEST);
-        }
 
-        String email1 = userFriendsRequestEntity.getFriends().get(0);
-        String email2 = userFriendsRequestEntity.getFriends().get(1);
+        });
 
-        if (email1.equals(email2)) {
-            result.put("Info : ", "Cannot make friends, if users are same");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.BAD_REQUEST);
-        }
-
-        User user1 = null;
-        User user2 = null;
-        user1 = this.saveIfNotExist(email1);
-        user2 = this.saveIfNotExist(email2);
-
-        if (user1.getUserFriends().contains(user2)) {
-            result.put("Info : ", "Can't add, they are already friends");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
-        }
-
-        if (user1.getBlockUsers().contains(user2)) {
-            result.put("Info : ", "Can't add, friends are blocked ");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
-        }
-
-        user1.addUserFriends(user2);
-        this.userFriendsRepository.save(user1);
-        result.put("Success", true);
+        result.put("Subscribers", listSubscribers);
 
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
 
 
-    public ResponseEntity<Map<String, Object>> getUserFriendsList(UserFriendsListReq userFriendsListRequestEntity) {
-
+    public ResponseEntity<Map<String, Object>> getSubscribtionsList(String userId) {
         Map<String, Object> result = new HashMap<String, Object>();
+        User user = userRepository.findByuserId(userId).get();
+        List<SearchFrResultRes> listSubscriptions = new ArrayList<>();
+        user.getSubscriptions().forEach((el) -> {
 
-        if (userFriendsListRequestEntity == null) {
-            result.put("Error : ", "Invalid request");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.BAD_REQUEST);
-        }
+            Blob blob = el.getAvatar();
+            byte[] blobAsBytes = null;
+            int blobLength = 1;
+            if (blob != null) {
+                try {
+                    blobLength = (int) blob.length();
+                    blobAsBytes = blob.getBytes(1, blobLength);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            listSubscriptions.add(new SearchFrResultRes(el.getUserId(),
+                    blobAsBytes,
+                    el.getFirstName(),
+                    el.getLastName(),
+                    el.getLastTimeOnline()
+            ));
 
-        User user = this.userFriendsRepository.findByEmail(userFriendsListRequestEntity.getEmail());
-        List<String> friendList = user.getUserFriends().stream().map(User::getEmail).collect(Collectors.toList());
 
-        result.put("success", true);
-        result.put("friends", friendList);
-        result.put("count", friendList.size());
+        });
 
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
-
-    }
-
-    public ResponseEntity<Map<String, Object>> getCommonUserFriends(UserFriendsReq userFriendsRequestEntity) {
-
-        Map<String, Object> result = new HashMap<String, Object>();
-
-        if (userFriendsRequestEntity == null) {
-            result.put("Error : ", "Invalid request");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.BAD_REQUEST);
-        }
-
-        User user1 = null;
-        User user2 = null;
-        user1 = this.userFriendsRepository.findByUserId(userFriendsRequestEntity.getFriends().get(0));
-        user2 = this.userFriendsRepository.findByUserId(userFriendsRequestEntity.getFriends().get(1));
-
-        if (user1.getEmail().equals(user2.getEmail())) {
-            result.put("Info : ", "Both users are same");
-            return new ResponseEntity<Map<String, Object>>(result, HttpStatus.BAD_REQUEST);
-        }
-
-        Set<User> friends = null;
-        friends = user1.getUserFriends();
-        friends.retainAll(user2.getUserFriends());
-
-        result.put("success", true);
-        result.put("friends", friends.stream().map(User::getEmail).collect(Collectors.toList()));
-        result.put("count", friends.size());
-
+        result.put("Subscriptions", listSubscriptions);
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
+
+    public ResponseEntity<Map<String, Object>> getfriendslist(String userId) {
+        Map<String, Object> result = new HashMap<String, Object>();
+        User user = userRepository.findByuserId(userId).get();
+        List<SearchFrResultRes> listFriends = new ArrayList<>();
+        user.getFriends().forEach((el) -> {
+
+            Blob blob = el.getAvatar();
+            byte[] blobAsBytes = null;
+            int blobLength = 1;
+            if (blob != null) {
+                try {
+                    blobLength = (int) blob.length();
+                    blobAsBytes = blob.getBytes(1, blobLength);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            listFriends.add(new SearchFrResultRes(el.getUserId(),
+                    blobAsBytes,
+                    el.getFirstName(),
+                    el.getLastName(),
+                    el.getLastTimeOnline()
+            ));
+
+
+        });
+
+        result.put("Friends", listFriends);
+        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+    }
+
+
+
+
 }

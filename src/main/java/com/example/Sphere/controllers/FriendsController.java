@@ -4,8 +4,6 @@ package com.example.Sphere.controllers;
 import java.util.Map;
 
 import com.example.Sphere.models.request.*;
-import com.example.Sphere.service.BlockUsersService;
-import com.example.Sphere.service.SubscribeService;
 import com.example.Sphere.service.UserFriendsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,40 +14,25 @@ import org.springframework.web.bind.annotation.*;
 public class FriendsController {
 
     @Autowired
-    private UserFriendsService userFriendsService;
-
-    @Autowired
-    private SubscribeService subscribeService;
-
-
-
-    @Autowired
-    private BlockUsersService blockUserService;
+    UserFriendsService userFriendsService;
 
     @RequestMapping(value = "/subscribe", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> subscribeUserRequest(@RequestBody SubscribeReq subscribeUserRequestEntity) {
-        return this.subscribeService.addSubscribeUser(subscribeUserRequestEntity);
+        return this.userFriendsService.addSubscriptions(subscribeUserRequestEntity);
+    }
+//
+    @RequestMapping(value = "/getsubscriberlist", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> getsubscriberlist(@RequestBody GetAllIReq GetAllIReq) {
+        return this.userFriendsService.getSubscriberList(GetAllIReq.getUserId());
+    }
+    @RequestMapping(value = "/getsubscriptionslist", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> getsubscriptionslist(@RequestBody GetAllIReq GetAllIReq) {
+        return this.userFriendsService.getSubscribtionsList(GetAllIReq.getUserId());
     }
 
-
-    @RequestMapping(value = "/getUserFriendList", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> getUserFriendList(@RequestBody UserFriendsListReq userFriendsListReq) {
-        return this.userFriendsService.getUserFriendsList(userFriendsListReq);
+    @RequestMapping(value = "/getfriendslist", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> getfriendslist(@RequestBody GetAllIReq GetAllIReq) {
+        return this.userFriendsService.getfriendslist(GetAllIReq.getUserId());
     }
 
-
-    @PostMapping(value = "/getsubscribedusers")
-    public ResponseEntity<Map<String, Object>> getSubscribedUsers(@RequestBody GetSubscribedUsersReq req) {
-        return this.subscribeService.getSubscribedUser(req);
-    }
-
-    @RequestMapping(value = "/getCommonUserFriends", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> getCommonUserFriends(@RequestBody UserFriendsReq userFriendsReq) {
-        return this.userFriendsService.getCommonUserFriends(userFriendsReq);
-    }
-
-    @RequestMapping(value = "/blockUserRequest", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> blockUserRequest(@RequestBody BlockUserRequest blockUserReq) {
-        return this.blockUserService.addBlockUser(blockUserReq);
-    }
 }

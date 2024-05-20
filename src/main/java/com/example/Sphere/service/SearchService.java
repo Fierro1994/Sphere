@@ -27,7 +27,7 @@ public class SearchService {
         List<SearchFrResultRes> resultRes = new ArrayList<>();
 
         userList.forEach((element->{
-        if (!element.getUserId().equals(user.getUserId())){
+        if (!element.getUserId().equals(user.getUserId()) && !element.getSubscribers().contains(user) && !element.getSubscriptions().contains(user)){
             Blob blob = element.getAvatar();
             byte[]  blobAsBytes = null;
             int blobLength = 1;
