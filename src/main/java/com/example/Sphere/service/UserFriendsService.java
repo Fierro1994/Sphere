@@ -8,7 +8,6 @@ import java.util.*;
 import com.example.Sphere.entity.User;
 import com.example.Sphere.models.request.SubscribeReq;
 import com.example.Sphere.models.response.SearchFrResultRes;
-import com.example.Sphere.repository.InviteRepos;
 import com.example.Sphere.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,9 +17,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserFriendsService {
 
-
-    @Autowired
-    InviteRepos inviteRepos;
     @Autowired
     UserRepository userRepository;
 
