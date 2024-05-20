@@ -1,27 +1,14 @@
 package com.example.Sphere.service;
 
-import com.example.Sphere.entity.Avatar;
+
 import com.example.Sphere.entity.Gallery;
 import com.example.Sphere.entity.User;
 import com.example.Sphere.repository.GalleryRepos;
 import com.example.Sphere.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -96,7 +83,7 @@ public class GalleryService {
         return ResponseEntity.ok().body(imageKeys);
     }
 
-    public ResponseEntity<?> showAll(String id) throws IOException {
+    public ResponseEntity<?> showAll(String id)  {
 
 
         User user = userRepository.findByuserId(id).get();

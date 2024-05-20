@@ -1,27 +1,14 @@
 package com.example.Sphere.service;
 
-import com.example.Sphere.entity.ImagePromo;
+
 import com.example.Sphere.entity.User;
 import com.example.Sphere.models.response.LastTimeOnlineRes;
 import com.example.Sphere.models.response.SimpleResponse;
 import com.example.Sphere.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service
