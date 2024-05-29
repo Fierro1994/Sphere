@@ -1,11 +1,13 @@
 package com.example.Sphere.controllers;
 
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.example.Sphere.models.request.*;
 import com.example.Sphere.service.UserFriendsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,16 +25,22 @@ public class FriendsController {
 //
     @RequestMapping(value = "/getsubscriberlist", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> getsubscriberlist(@RequestBody GetAllIReq GetAllIReq) {
-        return userFriendsService.getSubscriberList(GetAllIReq.getUserId());
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("Friends", userFriendsService.getSubscriberList(GetAllIReq.getUserId()));
+        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
     @RequestMapping(value = "/getsubscriptionslist", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> getsubscriptionslist(@RequestBody GetAllIReq GetAllIReq) {
-        return userFriendsService.getSubscribtionsList(GetAllIReq.getUserId());
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("Friends", userFriendsService.getSubscribtionsList(GetAllIReq.getUserId()));
+        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getfriendslist", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> getfriendslist(@RequestBody GetAllIReq GetAllIReq) {
-        return userFriendsService.getfriendslist(GetAllIReq.getUserId());
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("Friends", userFriendsService.getfriendslist(GetAllIReq.getUserId()));
+        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
 
 }

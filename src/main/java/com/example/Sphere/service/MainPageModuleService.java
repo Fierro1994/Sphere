@@ -39,13 +39,13 @@ public class MainPageModuleService {
     }
 
     public ResponseEntity<?> mainPageModulesGet(@RequestBody MainPageModuleGetReq request)  {
-        User user = userRepository.findById(request.getUserId()).get();
+        User user = userRepository.findByuserId(request.getUserId()).get();
         return ResponseEntity.ok()
                 .body(new MainPageModuleResponse(user.getMainPageModules().stream().toList()));
     }
 
     public ResponseEntity<?> updateMainPageModule(@RequestBody MainPageModuleAddReq request){
-        User user = userRepository.findById(request.getUserId()).get();
+        User user = userRepository.findByuserId(request.getUserId()).get();
 
             List<MainPageModule> mainPageModules = user.getMainPageModules();
 

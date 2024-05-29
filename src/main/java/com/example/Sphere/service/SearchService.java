@@ -1,7 +1,7 @@
 package com.example.Sphere.service;
 
 import com.example.Sphere.entity.User;
-import com.example.Sphere.models.response.SearchFrResultRes;
+import com.example.Sphere.models.response.UsersData;
 import com.example.Sphere.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class SearchService {
     public ResponseEntity<?> getAllUsers(String userId) throws IOException {
         User user = userRepository.findByuserId(userId).get();
         List<User> userList = userRepository.findAll();
-        List<SearchFrResultRes> resultRes = new ArrayList<>();
+        List<UsersData> resultRes = new ArrayList<>();
 
         userList.forEach((element->{
         if (!element.getUserId().equals(user.getUserId()) && !element.getSubscribers().contains(user) && !element.getSubscriptions().contains(user) &&!element.getFriends().contains(user) && !user.getFriends().contains(element)){
@@ -31,7 +31,7 @@ public class SearchService {
             }else {
                 avatar = element.getAvatar().get(0).getKeySmall();
             }
-            resultRes.add(new SearchFrResultRes(element.getUserId(),
+            resultRes.add(new UsersData(element.getUserId(),
                     avatar,
                     element.getFirstName(),
                     element.getLastName(),

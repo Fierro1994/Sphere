@@ -24,6 +24,7 @@ import TreePage from "./pages/TreePage/TreePage";
 import SearchFrPage from "./pages/FriendsPage/searchPage/SearchFrPage";
 import SubscribPage from "./pages/FriendsPage/subscribePage/SubscribPage";
 import SubscriptionsPage from "./pages/FriendsPage/subscriptionsPage/SubscriptionsPage";
+import UsersPage from "./pages/UsersPage/UsersPage";
 
 function App() {
 
@@ -45,6 +46,8 @@ function App() {
             <Route path="/app/friends/search/allusers" element={<RequireAuth><SearchFrPage /></RequireAuth>}/> 
             <Route path="/app/friends/subscribe" element={<RequireAuth><SubscribPage /></RequireAuth>}/> 
             <Route path="/app/friends/subscriptions" element={<RequireAuth><SubscriptionsPage /></RequireAuth>}/> 
+
+            <Route path="/app/friends/:id" element={<RequireAuth><UsersPage /></RequireAuth>} /> 
            
              <Route path="/" element={<RequireAuth><Home /></RequireAuth>}/>
             <Route path="/app/moments/" element={<RequireAuth><MomentsPage /></RequireAuth>}/>

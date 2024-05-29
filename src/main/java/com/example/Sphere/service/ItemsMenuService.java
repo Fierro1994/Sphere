@@ -41,13 +41,13 @@ public class ItemsMenuService {
     }
 
     public ResponseEntity<?> menuItemsSetting(@RequestBody MenuSettingsGetReq request)  {
-        User user = userRepository.findById(request.getUserId()).get();
+        User user = userRepository.findByuserId(request.getUserId()).get();
         return ResponseEntity.ok()
                 .body(new MenuSettingsResponse(user.getItemsMenus().stream().toList()));
     }
 
     public ResponseEntity<?> updateItemsMenu(@RequestBody MenuSettingsAddReq request){
-        User user = userRepository.findById(request.getUserId()).get();
+        User user = userRepository.findByuserId(request.getUserId()).get();
 
 
             List<ItemsMenu> itemsMenus = user.getItemsMenus();

@@ -19,7 +19,7 @@ public class InterfaceService {
     UserRepository userRepository;
 
     public ResponseEntity<?> themeSelect(@RequestBody ThemeSelectReq request)  {
-        User user = userRepository.findById(request.getUserId()).get();
+        User user = userRepository.findByuserId(request.getUserId()).get();
         user.setThemes(request.getName());
         userRepository.save(user);
         return ResponseEntity.ok()
@@ -27,7 +27,7 @@ public class InterfaceService {
     }
 
     public ResponseEntity<?> getThemeSelect(@RequestBody ThemeSelectGetReq request)  {
-        User user = userRepository.findById(request.getUserId()).get();
+        User user = userRepository.findByuserId(request.getUserId()).get();
         return ResponseEntity.ok()
                 .body(new ThemeSelectRes(user.getThemes().name()));
     }

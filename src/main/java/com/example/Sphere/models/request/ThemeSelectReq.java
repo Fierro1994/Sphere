@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ThemeSelectReq {
     private ETheme name;
-    private Long userId;
+    private String userId;
 }

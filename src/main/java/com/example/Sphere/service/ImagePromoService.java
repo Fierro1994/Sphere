@@ -34,45 +34,39 @@ public class ImagePromoService {
         User user = userRepository.findByuserId(userId).get();
         List<ImagePromo> imagePromos = user.getImagePromos();
 
-        Optional<ImagePromo> defpromo = imagePromoRepos.findByName("promo_1");
-        Optional<ImagePromo> defpromo2 = imagePromoRepos.findByName("promo_2");
-        Optional<ImagePromo> defpromo3 = imagePromoRepos.findByName("promo_3");
-
-        if (defpromo.isPresent()){
-            if (imagePromos.contains(defpromo.get())){
-                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + defpromo.get().getName());
-                imagePromos.remove(defpromo);
-                imagePromoRepos.delete(defpromo.get());
+        List<ImagePromo> defpromoList = user.getImagePromos();
+        for (ImagePromo imagePromo : defpromoList) {
+            if (imagePromo.getName().equals("promo_1") ){
+                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + imagePromo.getName());
+                imagePromos.remove(imagePromo);
+                imagePromoRepos.delete(imagePromo);
                 try {
                     Files.delete(path);
                 } catch (IOException e) {
-                    System.out.println("file "  + defpromo.get().getName() + " not found");
+                    System.out.println("file "  + imagePromo.getName() + " not found");
                 }
             }
-            if (imagePromos.contains(defpromo2.get())){
-                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + defpromo2.get().getName());
-                imagePromos.remove(defpromo2);
-                imagePromoRepos.delete(defpromo2.get());
+            if (imagePromo.getName().equals("promo_2") ){
+                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + imagePromo.getName());
+                imagePromos.remove(imagePromo);
+                imagePromoRepos.delete(imagePromo);
                 try {
                     Files.delete(path);
                 } catch (IOException e) {
-                    System.out.println("file "  + defpromo2.get().getName() + " not found");
+                    System.out.println("file "  + imagePromo.getName() + " not found");
                 }
             }
-            if (imagePromos.contains(defpromo3.get())){
-                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + defpromo3.get().getName());
-                imagePromos.remove(defpromo3);
-                imagePromoRepos.delete(defpromo3.get());
+            if (imagePromo.getName().equals("promo_3") ){
+                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + imagePromo.getName());
+                imagePromos.remove(imagePromo);
+                imagePromoRepos.delete(imagePromo);
                 try {
                     Files.delete(path);
                 } catch (IOException e) {
-                    System.out.println("file "  + defpromo3.get().getName() + " not found");
+                    System.out.println("file "  + imagePromo.getName() + " not found");
                 }
             }
-
-
         }
-
 
       fileManager.upload(file, userId, nameFolder, key, keySmall);
 
@@ -205,7 +199,6 @@ public class ImagePromoService {
     }
 
     public ResponseEntity<?> showAll(String id) throws IOException {
-
         User user = userRepository.findByuserId(id).get();
         List<ImagePromo> imagePromos = user.getImagePromos();
         List<String> imageKeys = new ArrayList<>();

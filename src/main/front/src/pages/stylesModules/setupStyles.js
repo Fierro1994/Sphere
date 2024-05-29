@@ -14,6 +14,7 @@ import BlackThemeMPInfo from "./BlackTheme/infomp.module.css";
 import BlackThemeMPActual from "./BlackTheme/mpactual.module.css";
 import BlackThemeFriendsPage from "./BlackTheme/friendspage.module.css"
 import BlackThemeRegLog from "./BlackTheme/reglog.module.css"
+import BlackThemeUPHead from "./BlackTheme/headerup.module.css"
 function setupStyles (name) {
  var style = ""
  const theme = localStorage.getItem("theme")
@@ -30,6 +31,11 @@ function setupStyles (name) {
       style = BlackThemeMPHead
       return style;
     }
+    if (name === "headerUP") {
+      style = BlackThemeUPHead
+      return style;
+    }
+    
     if (name === "friendsPage") {
       style = BlackThemeFriendsPage
       return style;

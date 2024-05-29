@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import setupStyles from "../../pages/stylesModules/setupStyles";
 import {addFriendSubscribe, getFriendsList, searchFriends,  } from "../../../src/components/redux/slices/friendsSlice";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const FriendsView =() => {
   const PATH = "http://localhost:3000/avatar"
@@ -41,11 +42,14 @@ useEffect(() => {
 
 
 function addFriendHandler(user) {
-  const myData = new FormData();
-  myData.append('user', auth._id);
-  myData.append('targetUser', user);
-  dispatch(addFriendSubscribe(myData))
+ 
 }
+
+
+function openProfileHandler(userId) {
+ 
+}
+
   
   const result =
     friendsSl.friendsList?.map((el, i) => {
@@ -60,8 +64,9 @@ function addFriendHandler(user) {
       </div>
       <div className={!showPop ? style.popup_cont : style.popup_cont +  " " + style.open}>
        <div>
-       <span className={style.btn_pop}>Открыть профиль</span>
-        <span className={style.btn_pop} onClick={()=> addFriendHandler(el.userId)}>Добавить в друзья</span>
+       <Link title="Друзья"  className={style.btn_pop} to={"/app/friends/" + el.userId}>Открыть профиль </Link>
+       
+        <span className={style.btn_pop} onClick={()=> addFriendHandler(el.userId)}>Удалить из друзей</span>
        </div>
       
         </div>

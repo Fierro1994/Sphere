@@ -10,6 +10,7 @@ import infoMpReducer from "../components/redux/slices/infoMpSlice"
 import momentsReducer from "../components/redux/slices/momentsSlice"
 import friendsReducer from "../components/redux/slices/friendsSlice"
 import onlineReducer from "../components/redux/slices/userOnlineSlice"
+import usersPagesReducer from "../components/redux/slices/usersPageSlice"
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -22,7 +23,8 @@ export const store = configureStore({
     infomp:infoMpReducer,
     moments: momentsReducer,
     friendsred: friendsReducer,
-    onlinered: onlineReducer
+    onlinered: onlineReducer,
+    userspages: usersPagesReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

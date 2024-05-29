@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Builder
-public class SearchFrResultRes {
+public class UsersData {
     private String userId;
     private String avatar;
     private String firstName;

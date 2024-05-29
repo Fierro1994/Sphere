@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ThemeSelectGetReq {
-    private Long userId;
+    private String userId;
 }

@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class MainPageModuleGetReq {
-    private Long userId;
+    private String userId;
 }

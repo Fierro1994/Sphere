@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MenuSettingsAddReq {
     private String[] name;
-    private Long userId;
+    private String userId;
 }

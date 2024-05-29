@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.*;
 import com.example.Sphere.entity.User;
 import com.example.Sphere.models.request.SubscribeReq;
-import com.example.Sphere.models.response.SearchFrResultRes;
+import com.example.Sphere.models.response.UsersData;
 import com.example.Sphere.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,40 +46,30 @@ public class UserFriendsService {
     }
 
 
-    public ResponseEntity<Map<String, Object>> getSubscriberList(String userId) {
-        Map<String, Object> result = new HashMap<String, Object>();
+    public List<UsersData>  getSubscriberList(String userId) {
         User user = userRepository.findByuserId(userId).get();
-        List<SearchFrResultRes> listSubscribers = new ArrayList<>();
+        List<UsersData> listSubscribers = new ArrayList<>();
         user.getSubscribers().forEach((el) -> {
             String avatar = "";
             if (user.getAvatar().get(0).getName().equals("defavatar")){
                 avatar = el.getAvatar().get(0).getName();
             }else {
                 avatar = el.getAvatar().get(0).getKey();
-
             }
-
-            listSubscribers.add(new SearchFrResultRes(
+            listSubscribers.add(new UsersData(
                     el.getUserId(),
                     avatar,
                     el.getFirstName(),
                     el.getLastName(),
                     el.getLastTimeOnline()
             ));
-
-
         });
-
-        result.put("Subscribers", listSubscribers);
-
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+        return listSubscribers;
     }
 
-
-    public ResponseEntity<Map<String, Object>> getSubscribtionsList(String userId) {
-        Map<String, Object> result = new HashMap<String, Object>();
+    public List<UsersData> getSubscribtionsList(String userId) {
         User user = userRepository.findByuserId(userId).get();
-        List<SearchFrResultRes> listSubscriptions = new ArrayList<>();
+        List<UsersData> listSubscriptions = new ArrayList<>();
         user.getSubscriptions().forEach((el) -> {
             String avatar = "";
             if (user.getAvatar().get(0).getName().equals("defavatar")){
@@ -88,47 +78,34 @@ public class UserFriendsService {
                 avatar = el.getAvatar().get(0).getKey();
 
             }
-
-
-            listSubscriptions.add(new SearchFrResultRes(el.getUserId(),
+            listSubscriptions.add(new UsersData(el.getUserId(),
                     avatar,
                     el.getFirstName(),
                     el.getLastName(),
                     el.getLastTimeOnline()
             ));
-
-
         });
-
-        result.put("Subscriptions", listSubscriptions);
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+        return listSubscriptions;
     }
 
-    public ResponseEntity<Map<String, Object>> getfriendslist(String userId) {
-        Map<String, Object> result = new HashMap<String, Object>();
+    public List<UsersData> getfriendslist(String userId) {
         User user = userRepository.findByuserId(userId).get();
-        List<SearchFrResultRes> listFriends = new ArrayList<>();
+        List<UsersData> listFriends = new ArrayList<>();
         user.getFriends().forEach((el) -> {
             String avatar = "";
             if (user.getAvatar().get(0).getName().equals("defavatar")){
                 avatar = el.getAvatar().get(0).getName();
             }else {
                 avatar = el.getAvatar().get(0).getKey();
-
             }
-
-            listFriends.add(new SearchFrResultRes(el.getUserId(),
+            listFriends.add(new UsersData(el.getUserId(),
                     avatar,
                     el.getFirstName(),
                     el.getLastName(),
                     el.getLastTimeOnline()
             ));
-
-
         });
-
-        result.put("Friends", listFriends);
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+       return listFriends;
     }
 
 }

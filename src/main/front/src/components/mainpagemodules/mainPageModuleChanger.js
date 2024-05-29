@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import MPActualModule from './mainPageModule/MPActualModule.js';
 import MPHeaderModule from './mainPageModule/MPHeaderModule.js';
 import MPInfoModule from './mainPageModule/MPInfoModule.js';
