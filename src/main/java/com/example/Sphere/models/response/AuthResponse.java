@@ -1,5 +1,6 @@
 package com.example.Sphere.models.response;
 
+import com.example.Sphere.entity.Avatar;
 import com.example.Sphere.entity.ETheme;
 import com.example.Sphere.entity.ItemsMenu;
 import com.example.Sphere.entity.MainPageModule;
@@ -15,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 public class AuthResponse {
-    private byte[] avatar;
+    private Avatar avatar;
     private String accessToken;
     private String userId;
     private String email;

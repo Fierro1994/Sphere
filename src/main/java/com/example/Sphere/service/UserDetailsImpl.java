@@ -1,209 +1,80 @@
 package com.example.Sphere.service;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.example.Sphere.entity.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class UserDetailsImpl implements UserDetails {
-    private static final long serialVersionUID = 1L;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+@Data
 
+public class UserDetailsImpl implements UserDetails {
+
+    private User user;
     private Long id;
-    private String userId;
-    private List<Avatar> avatar;
     private String firstName;
     private String lastName;
-
     private String email;
-
-    @JsonIgnore
-    private String password;
-    private Boolean enabled;
-    private ETheme theme;
-    private Collection<? extends GrantedAuthority> authorities;
-    private List<ItemsMenu> itemsMenu;
-
-
-    private List<MainPageModule> listModulesMainPage;
-    private LocalDateTime lastTimeOnline;
+    private String userId;
     private List<ImagePromo> imagePromos;
-    private List<InfoModule> infoModules;
-
-
-    public UserDetailsImpl(Long id,String userId, List<Avatar> avatar,String email, String firstName,  String lastName,  String password,
-                           Collection<? extends GrantedAuthority> authorities, Boolean enabled, List<ItemsMenu> itemsMenu, List<MainPageModule> listModulesMainPage, LocalDateTime lastTimeOnline, ETheme theme, List<ImagePromo> imagePromos,
-                           List<InfoModule> infoModules) {
-        this.id = id;
-        this.userId = userId;
-        this.avatar = avatar;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.authorities = authorities;
-        this.itemsMenu = itemsMenu;
-        this.listModulesMainPage = listModulesMainPage;
-        this.enabled = enabled;
-        this.lastTimeOnline = lastTimeOnline;
-        this.theme = theme;
-        this.imagePromos = imagePromos;
-        this.infoModules = infoModules;
-    }
-
-    public static UserDetailsImpl build(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
-        List<ItemsMenu> itemsMenus = user.getItemsMenus().stream()
-                .toList();
-        List<MainPageModule> mainPageModuleList = user.getMainPageModules().stream().toList();
-
-        return new UserDetailsImpl(
-                user.getId(),
-                user.getUserId(),
-                user.getAvatar(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getPassword(),
-                authorities,
-                user.getEnabled(),
-                itemsMenus,
-                mainPageModuleList,
-                user.getLastTimeOnline(),
-                user.getThemes(),
-                user.getImagePromos(),
-                user.getInfoModules()
-
-        );
-
+    private List<ItemsMenu> itemsMenus = new ArrayList<>();
+    private List<MainPageModule> listModulesMainPage = new ArrayList<>();
+    private ETheme theme;
+    private List<Avatar> avatars = new ArrayList<>();
+    public UserDetailsImpl(User user) {
+        this.user = user;
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.userId = user.getUserId();
+        this.id = user.getId();
+        this.itemsMenus = user.getItemsMenus();
+        this.listModulesMainPage = user.getMainPageModules();
+        this.theme = user.getThemes();
+        this.imagePromos = user.getImagePromos();
+        this.avatars = user.getAvatar();
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
-    }
-
-    public ETheme getTheme() {
-        return theme;
-    }
-
-    public void setTheme(ETheme theme) {
-        this.theme = theme;
-    }
-
-    public Long getId() {
-        return id;
-    }
-    public List<ItemsMenu> getItemsMenu(){
-        return itemsMenu;
-    }
-    public List<MainPageModule> getListModulesMainPage() {
-        return listModulesMainPage;
-    }
-
-    public List<InfoModule> getInfoModules() {
-        return infoModules;
-    }
-
-    public void setInfoModules(List<InfoModule> infoModules) {
-        this.infoModules = infoModules;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
+        // Здесь вы можете преобразовать роли пользователя в объекты типа GrantedAuthority
+        return user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return null;
-    }
-
-    public LocalDateTime getLastTimeOnline() {
-        return lastTimeOnline;
-    }
-
-    public void setLastTimeOnline(LocalDateTime lastTimeOnline) {
-        this.lastTimeOnline = lastTimeOnline;
-    }
-
-    public List<ImagePromo> getImagePromos() {
-        return imagePromos;
-    }
-
-    public void setImagePromos(List<ImagePromo> imagePromos) {
-        this.imagePromos = imagePromos;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-    public String getLastName() {
-        return lastName;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setAvatar(List<Avatar> avatar) {
-        this.avatar = avatar;
-    }
-    public List<Avatar> getAvatar() {
-        return avatar;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
+        return user.getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return true; // Установите соответствующее значение
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return true; // Установите соответствующее значение
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return true; // Установите соответствующее значение
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return true; // Установите соответствующее значение
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        UserDetailsImpl user = (UserDetailsImpl) o;
-        return Objects.equals(id, user.id);
-    }
 }

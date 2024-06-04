@@ -1,32 +1,33 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { instanceWidthCred } from "../../auth/api/api";
+import { instanceWidthCred } from "../../auth/api/RequireAuth";
 
 const initialState = {
     promoList: [],
     isPendDel: false,
     isFulDel: false,
-    isRejDel: false
-
+    isRejDel: false,
+    isUpdFul: true,
+    
 };
 
-const PATH = 'http://localhost:3000/imagepromo/'
+const PATH = 'imagepromo/'
 
 
 export const updatePromo = createAsyncThunk(
   "promo/update",
   async (data,{ rejectWithValue }) => {
-    
     try {
-      const response = await instanceWidthCred.post(PATH +"listpromo", {
-        userId: data,
+      const response = await instanceWidthCred.get("/imagepromo/listpromo", {
+        
       });
-                return response.data.body;
+                      return response.data;
     } catch (error) {
       console.log(error.response.data);
       return rejectWithValue(error.response.data);
     }
   }
 );
+
 
 export const uploadPromo = createAsyncThunk(
   "promo/upload",
@@ -36,9 +37,8 @@ export const uploadPromo = createAsyncThunk(
       const response = await instanceWidthCred.post(PATH +"upload", {
         userId: data.get("id"),
         file: data.get("file"),
-        size: data.get("size"),
-        name: data.get("name"),
       }, config);
+      console.log(response);
                 return response.data.body;
     } catch (error) {
       console.log(error.response.data);
@@ -51,7 +51,9 @@ export const deletePromoFile = createAsyncThunk(
     "promo/deletePromoFile",
     async (data,{ rejectWithValue }) => {
       try {
-        const response = await instanceWidthCred.delete(PATH + data.get("id") + "/" + data.get("key"));
+        console.log(instanceWidthCred.getUri);
+        const response = await instanceWidthCred.delete("imagepromo/"+ data.get("key"));
+        
         
         return response.data.body;
       } catch (error) {
@@ -76,7 +78,7 @@ const promoSlice = createSlice({
  
     
     extraReducers: (builder) => {
-   
+  
       builder.addCase(updatePromo.pending, (state, action) => {
         return { ...state, 
        };
@@ -85,19 +87,23 @@ const promoSlice = createSlice({
           return {
            ...state,
            promoList: action.payload,
-           isPendDel: false
+           isPendDel: false,
           };
       });
       builder.addCase(updatePromo.rejected, (state, action) => {
         return {
           ...state,
+          isUpdFul: false
         };
       });
       builder.addCase(uploadPromo.fulfilled, (state, action) => {
+        console.log(action);
+
         return {
           ...state,
           promoList: action.payload,
-        
+          
+          isUpdFul: true
         };
       });
       builder.addCase(deletePromoFile.pending, (state, action) => {

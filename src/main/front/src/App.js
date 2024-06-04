@@ -5,7 +5,6 @@ import SettingsPageInterface from "./pages/SettingsPage/InterfacePage/SettingsPa
 import { getLastTimeOnline, loadUser } from "./components/redux/slices/authSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector} from "react-redux";
-import RequireAuth from "./components/auth/services/RequireAuth";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import authService from "./components/auth/services/authService";
 import MomentsPage from "./pages/MomentsPage/PreviewPage/MomentsPage";
@@ -25,7 +24,8 @@ import SearchFrPage from "./pages/FriendsPage/searchPage/SearchFrPage";
 import SubscribPage from "./pages/FriendsPage/subscribePage/SubscribPage";
 import SubscriptionsPage from "./pages/FriendsPage/subscriptionsPage/SubscriptionsPage";
 import UsersPage from "./pages/UsersPage/UsersPage";
-
+import { RequireAuth } from "./components/auth/api/RequireAuth";
+import Login from "./pages/LoginPage/Login"
 function App() {
 
 
@@ -50,6 +50,8 @@ function App() {
             <Route path="/app/friends/:id" element={<RequireAuth><UsersPage /></RequireAuth>} /> 
            
              <Route path="/" element={<RequireAuth><Home /></RequireAuth>}/>
+             <Route path="/login" element={<Login/>} />
+
             <Route path="/app/moments/" element={<RequireAuth><MomentsPage /></RequireAuth>}/>
             <Route path="/app/moments/add/" element={<RequireAuth><MomentsAddPage /></RequireAuth>}/>
             <Route path= "/app/moments" element={<RequireAuth><MomentsModuleView /></RequireAuth>}/>

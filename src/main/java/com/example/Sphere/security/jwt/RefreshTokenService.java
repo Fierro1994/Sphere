@@ -1,58 +1,55 @@
 package com.example.Sphere.security.jwt;
 
 import com.example.Sphere.entity.RefreshToken;
+import com.example.Sphere.exception.RefreshTokenException;
 import com.example.Sphere.repository.RefreshTokenRepository;
-import com.example.Sphere.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
+import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenService {
-    @Autowired
-    RefreshTokenRepository refreshTokenRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Value("${jwt.refresh.lifetime}")
-    private Long refreshExp;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    public RefreshToken createRefreshToken(String userId) {
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(userRepository.findByuserId(userId).get());
-        refreshToken.setExpiryDate(Instant.now().plusMillis(refreshExp));
-        refreshToken.setToken(UUID.randomUUID().toString());
-        refreshTokenRepository.save(refreshToken);
+    @Value("${refresh.lifetime}")
+    private Duration refreshExp;
+
+    public RefreshToken createRefreshToken(Long userId){
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUserId(userId);
+        refreshToken.ifPresent(refreshTokenRepository::delete);
+        RefreshToken newRefreshToken = RefreshToken.builder()
+                .userId(userId)
+                .token(UUID.randomUUID().toString())
+                .expiryDate(Instant.now().plusMillis(refreshExp.toMillis()))
+                .build();
+        return refreshTokenRepository.save(newRefreshToken);
+    }
+
+    public Optional<RefreshToken> findByRefreshToken(String token){
+        return refreshTokenRepository.findByToken(token);
+    }
+    public RefreshToken validateRefreshToken(RefreshToken refreshToken){
+        if(refreshToken.getExpiryDate().compareTo(Instant.now())<0){
+            refreshTokenRepository.deleteById(refreshToken.getId());
+            throw new RefreshTokenException(refreshToken.getToken()+ " Refresh token was expired, repeat signin");
+        }
         return refreshToken;
     }
 
-    public Optional<RefreshToken> findByToken(String token){
-        return refreshTokenRepository.findByToken(token);
-    }
-
-    public void  deleteOldRefreshTokenByUserId(Long userId){
-        RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId).get();
-        refreshTokenRepository.delete(refreshToken);
-    }
-
-    public RefreshToken verifyExpiration(RefreshToken token){
-        if(token.getExpiryDate().compareTo(Instant.now())<0){
-            refreshTokenRepository.delete(token);
-            throw new RuntimeException(token.getToken()+ " Refresh token was expired ");
-        }
-        return token;
-    }
-
-    public Cookie generateRefreshJwtCookie(String refreshToken, int timeExp){
-        Cookie cookie = new Cookie("refresh", refreshToken);
-        cookie.setMaxAge(timeExp);
+    public Cookie generateRefreshCookie (String refreshToken){
+        Cookie cookie = new Cookie("refrcook" , refreshToken);
+        cookie.setPath("/api/auth/refresh");
         cookie.setHttpOnly(true);
-        cookie.setPath("/api/auth/**");
-        cookie.setSecure(true);
+        cookie.setMaxAge((int)refreshExp.getSeconds());
         return cookie;
     }
 

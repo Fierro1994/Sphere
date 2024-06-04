@@ -1,65 +1,57 @@
 package com.example.Sphere.controllers;
 
-import com.example.Sphere.exception.AlreadyExistException;
 import com.example.Sphere.models.request.CreateUserRequest;
 import com.example.Sphere.models.request.LoginRequest;
 import com.example.Sphere.models.request.LogoutRequest;
-import com.example.Sphere.models.response.SimpleResponse;
-import com.example.Sphere.repository.UserRepository;
+import com.example.Sphere.models.response.RefreshTokenResponse;
 import com.example.Sphere.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
-
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
 @RequiredArgsConstructor
+@CrossOrigin(value = "http://localhost:3000/", allowCredentials = "true")
 public class AuthController {
+    @Autowired
+    private AuthService authService;
 
-    private final UserRepository userRepository;
-    private final AuthService authService;
 
 
     @PostMapping("/signin")
     public ResponseEntity<?> authResponseResponse(@RequestBody LoginRequest loginRequest, HttpServletResponse response) throws SQLException, IOException {
-        return ResponseEntity.ok(authService.authenticateUser(loginRequest, response));
+        return authService.authenticateUser(loginRequest, response);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<SimpleResponse> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException, IOException {
-             if (userRepository.existsByEmail(createUserRequest.getEmail())) {
-            throw new AlreadyExistException("Пользователь с таким e-mail уже существует!");
-        }
-        authService.registerUser(createUserRequest);
-
-        return ResponseEntity.ok(new SimpleResponse("register ok"));
+    public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException, IOException {
+        return authService.registerUser(createUserRequest);
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshtoken(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            return ResponseEntity.ok(authService.refreshToken(request, response));
-        } catch (Exception e) {
-            return ResponseEntity.ok(new SimpleResponse(e + "refresh error"));
-        }
-
+    @GetMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestHeader("Authorization") String accessToken, @CookieValue("refrcook") String refreshToken, HttpServletResponse response) {
+        return authService.refreshToken(accessToken, refreshToken, response);
     }
 
-@PostMapping("/logout")
-public ResponseEntity<?> logout(@RequestBody LogoutRequest logoutRequest) {
-        return  ResponseEntity.ok(authService.logout(logoutRequest));
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody LogoutRequest logoutRequest) {
+        return authService.logout(logoutRequest);
     }
 
     @GetMapping(path = "/confirm")
     public String confirm(@RequestParam("token") String token) {
         return authService.confirmToken(token);
     }
-
 }
+
+
+
+
+
+

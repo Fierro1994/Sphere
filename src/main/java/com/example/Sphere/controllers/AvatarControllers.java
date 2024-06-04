@@ -14,6 +14,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping(value = "/avatar")
 @RequiredArgsConstructor
+@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
 public class AvatarControllers {
     @Autowired
     AvatarService avatarService;
@@ -23,7 +24,7 @@ public class AvatarControllers {
 
     }
     @GetMapping(path = "/{id}/{key}")
-    public ResponseEntity<Object> download(@PathVariable("id") String id, @PathVariable("key") String key) {
+    public ResponseEntity<?> download(@PathVariable("id") String id, @PathVariable("key") String key) {
         try {
             return avatarService.download(id, key);
 

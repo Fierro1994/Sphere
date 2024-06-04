@@ -51,7 +51,7 @@ public class UserFriendsService {
         List<UsersData> listSubscribers = new ArrayList<>();
         user.getSubscribers().forEach((el) -> {
             String avatar = "";
-            if (user.getAvatar().get(0).getName().equals("defavatar")){
+            if (user.getAvatar().get(0).getName().equals("defavatar.jpg")){
                 avatar = el.getAvatar().get(0).getName();
             }else {
                 avatar = el.getAvatar().get(0).getKey();
@@ -72,7 +72,7 @@ public class UserFriendsService {
         List<UsersData> listSubscriptions = new ArrayList<>();
         user.getSubscriptions().forEach((el) -> {
             String avatar = "";
-            if (user.getAvatar().get(0).getName().equals("defavatar")){
+            if (user.getAvatar().get(0).getName().equals("defavatar.jpg")){
                 avatar = el.getAvatar().get(0).getName();
             }else {
                 avatar = el.getAvatar().get(0).getKey();
@@ -93,7 +93,7 @@ public class UserFriendsService {
         List<UsersData> listFriends = new ArrayList<>();
         user.getFriends().forEach((el) -> {
             String avatar = "";
-            if (user.getAvatar().get(0).getName().equals("defavatar")){
+            if (user.getAvatar().get(0).getName().equals("defavatar.jpg")){
                 avatar = el.getAvatar().get(0).getName();
             }else {
                 avatar = el.getAvatar().get(0).getKey();

@@ -7,9 +7,8 @@ const MPPromoModule = () => {
   
    return (
       <>
-        
          <div className={style.slider_container}>
-         <Slider />
+            <Slider/>
          </div>
       </>
 

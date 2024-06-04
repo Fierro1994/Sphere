@@ -2,9 +2,10 @@ package com.example.Sphere.models.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class TokenRefreshRequest {
+public class RefreshTokenRequest {
     @NotBlank
     private String refreshToken;
+    private String accessToken;
 
     public String getRefreshToken() {
         return refreshToken;

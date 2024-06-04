@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { instanceWidthCred } from "../../auth/api/api";
+import { instanceWidthCred } from "../../auth/api/RequireAuth";
 
 const initialState = {
     headerList: [],
@@ -8,7 +8,7 @@ const initialState = {
     isRejDel: false
 };
 
-const PATH = 'http://localhost:3000/avatar/'
+const PATH = 'avatar/'
 
 
 export const updateHeader = createAsyncThunk(

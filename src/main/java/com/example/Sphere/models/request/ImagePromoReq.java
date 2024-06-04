@@ -13,7 +13,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class ImagePromoReq {
-    private Long userId;
+    private MultipartFile file;
     private String image;
     private String name;
     private Long size;

@@ -41,7 +41,7 @@ public class User {
 
     private String password;
 
-    @ManyToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -52,7 +52,7 @@ public class User {
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<MainPageModule> mainPageModules = new ArrayList<>();
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private List<ImagePromo> imagePromos = new ArrayList<>();
     @OneToMany
@@ -69,14 +69,14 @@ public class User {
     private List<Moments> momentsList = new ArrayList<>();
     private Boolean enabled;
     private LocalDateTime lastTimeOnline;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_friends",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "friend_id") }
     )
     private Set<User> friends = new HashSet<>();
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_subscriptions",
             joinColumns = { @JoinColumn(name = "user_id") },
@@ -84,14 +84,14 @@ public class User {
     )
     private Set<User> subscribers = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_subscriptions",
             joinColumns = { @JoinColumn(name = "subscriber_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id") }
     )
     private Set<User> subscriptions = new HashSet<>();
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "block_users",
             joinColumns = { @JoinColumn(name = "blockUser_id") },

@@ -12,8 +12,9 @@ import java.sql.SQLException;
 
 @RestController
 @RequestMapping("/friends/search")
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
 @RequiredArgsConstructor
+@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
+
 public class SearchController {
     @Autowired
     private SearchService searchService;

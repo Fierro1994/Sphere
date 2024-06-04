@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { instanceWidthCred } from "../../auth/api/api";
+import { instanceWidthCred } from "../../auth/api/RequireAuth";
 
 const initialState = {
     infoList: [],
@@ -10,7 +10,7 @@ const initialState = {
 
 };
 
-const PATH = 'http://localhost:3000/infomodule/'
+const PATH = 'infomodule/'
 
 
 export const updateInfo = createAsyncThunk(

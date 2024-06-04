@@ -14,6 +14,8 @@ import java.sql.SQLException;
 @RestController
 @RequestMapping("/api/mainpage/settings")
 @RequiredArgsConstructor
+@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
+
 public class MainPageController {
     private final MainPageModuleService mainPageModuleService;
 

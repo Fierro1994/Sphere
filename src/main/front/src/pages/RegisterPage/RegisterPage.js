@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import Register from "../../components/auth/registerModule/registerModule";
+import Register from "./registerModule";
 import setupStyles from "../stylesModules/setupStyles";
 
 const RegisterPage = () => {

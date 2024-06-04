@@ -26,7 +26,7 @@ public class SearchService {
         if (!element.getUserId().equals(user.getUserId()) && !element.getSubscribers().contains(user) && !element.getSubscriptions().contains(user) &&!element.getFriends().contains(user) && !user.getFriends().contains(element)){
 
             String avatar = "";
-            if (element.getAvatar().get(0).getName().equals("defavatar")){
+            if (element.getAvatar().get(0).getName().equals("defavatar.jpg")){
                 avatar = element.getAvatar().get(0).getName();
             }else {
                 avatar = element.getAvatar().get(0).getKeySmall();

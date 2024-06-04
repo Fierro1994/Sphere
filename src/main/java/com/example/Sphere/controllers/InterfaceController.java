@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/settings/interface")
 @RequiredArgsConstructor
+@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
+
 public class InterfaceController {
 
     private final InterfaceService interfaceService;

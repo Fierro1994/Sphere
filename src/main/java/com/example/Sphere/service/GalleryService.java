@@ -5,6 +5,7 @@ import com.example.Sphere.entity.Gallery;
 import com.example.Sphere.entity.User;
 import com.example.Sphere.repository.GalleryRepos;
 import com.example.Sphere.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,16 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
+@RequiredArgsConstructor
 @Service
 public class GalleryService {
     @Autowired
-    private GalleryRepos galleryRepos;
+    GalleryRepos galleryRepos;
     @Autowired
-    private FileManager fileManager;
+    FileManager fileManager;
     @Autowired
-    private UserRepository userRepository;
-    private String nameFolder = "gallery";
+    UserRepository userRepository;
+    String nameFolder = "gallery";
 
     @Transactional(rollbackFor = {IOException.class})
     public Gallery upload(String file, String userId) throws IOException {
@@ -35,7 +36,7 @@ public class GalleryService {
         String keySmall = UUID.randomUUID().toString();
         fileManager.upload(file, userId, nameFolder,key, keySmall);
 
-        Gallery createdFile = new Gallery("gallery",  128, key, keySmall, LocalDateTime.now());
+        Gallery createdFile = new Gallery("gallery",  128L, key, keySmall, LocalDateTime.now());
         List<Gallery> galleries = new ArrayList<>();
         Optional<User> user = userRepository.findByuserId(userId);
         if (user.isPresent()){
@@ -51,7 +52,7 @@ public class GalleryService {
     }
 
 
-    public ResponseEntity<Object> download(String id, String key) throws IOException {
+    public ResponseEntity<?> download(String id, String key) throws IOException {
         return fileManager.download(id,key,nameFolder);
     }
 

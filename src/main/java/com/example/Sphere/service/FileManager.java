@@ -2,6 +2,7 @@ package com.example.Sphere.service;
 
 import com.example.Sphere.repository.AvatarRepos;
 import com.example.Sphere.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -12,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -23,13 +25,13 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-
+@RequiredArgsConstructor
 @Service
 public class FileManager{
     @Autowired
-    private AvatarRepos avatarRepos;
+    AvatarRepos avatarRepos;
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
 
     @Transactional(rollbackFor = {IOException.class})
@@ -103,21 +105,19 @@ public class FileManager{
 
 
 
-    public ResponseEntity<Object> download(String id, String key, String nameFolder) throws IOException {
+    public ResponseEntity<Resource> download(String id, String key, String nameFolder) throws IOException {
         Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
-        File file = new File(path.toUri());
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-        HttpHeaders headers = new HttpHeaders();
-        Resource resource2 = new UrlResource(path.toUri());
-        headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        ResponseEntity<Object>
-                responseEntity = ResponseEntity.ok().headers(headers).contentLength(
-                file.length()).contentType(MediaType.parseMediaType("application/txt")).body(resource);
-        return responseEntity;
+        InputStream inputStream = new FileInputStream(path.toFile());
+        Resource resource = new InputStreamResource(inputStream);
+        return ResponseEntity.ok()
+                .headers(getHeaders(path))
+                .body(resource);
     }
 
-
+    private HttpHeaders getHeaders(Path path) throws IOException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        headers.setContentDispositionFormData("attachment", path.getFileName().toString());
+        return headers;
+    }
 }

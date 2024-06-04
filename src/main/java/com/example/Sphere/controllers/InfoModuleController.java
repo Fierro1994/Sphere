@@ -12,6 +12,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping(value = "/infomodule")
 @RequiredArgsConstructor
+@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
+
 public class InfoModuleController {
     @Autowired
     InfoModuleService infoModuleService;

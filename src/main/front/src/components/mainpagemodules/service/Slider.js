@@ -1,19 +1,19 @@
 import { createRef, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import setupStyles from "../../../pages/stylesModules/setupStyles";
-import { deletePromoFile, updatePromo, uploadPromo } from "../../redux/slices/promoSlice";
+import { deletePromoFile, downloadImg, updatePromo, uploadPromo } from "../../redux/slices/promoSlice";
 import { GrFormNext } from "react-icons/gr";
 import { GrFormPrevious } from "react-icons/gr";
-import getCroppedImg from "../../../pages/GaleryPage/GalleryAddPage/Crop";
+import getCroppedImg, { base64ToFile } from "../../../pages/GaleryPage/GalleryAddPage/Crop";
 import Cropper from "react-easy-crop";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { instance, instanceWidthCred } from "../../auth/api/RequireAuth";
 
 
 const Slider = () => {
   const auth = useSelector((state) => state.auth);
   const promosl = useSelector((state) => state.promo);
   const style = setupStyles("sliderPromo")
-  const PATH = "http://localhost:3000/imagepromo"
   const dispatch = useDispatch()
   const [slide, setSlide] = useState(0);
   const [autoPlay, setAutuPlay] = useState(5000)
@@ -28,9 +28,8 @@ const Slider = () => {
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
-
-
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [imageUrls, setImageUrls] = useState([]);
 
   const handleImageUpload = async (e) => {
     setImage(URL.createObjectURL(e.target.files[0]));
@@ -44,6 +43,7 @@ const Slider = () => {
  
   const nextSlide = () => {
     setSlide(slide === promosl.promoList.length - 1 ? 0 : slide + 1);
+    
    
   };
   const prevSlide = () => {
@@ -75,18 +75,89 @@ const Slider = () => {
 
 
   useEffect(() => {
-    dispatch(updatePromo(auth._id));
-
+    dispatch(updatePromo(auth._id));   
   }, []);
 
+  // useEffect(() => {
+  //   const fetchImages = async () => {
+  //     try {
+  //       setIsLoading(true)
+  //       const imageUrls = await Promise.all(promosl.promoList.map(el => result(el)));
+        
+  //   setImageUrlList(imageUrls)
+  //       setIsLoading(false);
+  //     } catch (error) {
+  //       console.error('Failed to fetch images', error);
+        
+  //     }
+  //   };
 
-  function result(el) {
-    return PATH + "/" + auth._id + "/" + el
+    
+  
+  //   fetchImages();
+
+  // }, []);
+
+  // useEffect(() => {
+  //       promosl.promoList.map(el=>{
+  //         imageUrlList.push(result(el))  
+  //       })
+
+  //       console.log(imageUrlList.length);
+  // }, []);
+  
+  // function result(el) {
+  //   return new Promise((resolve, reject) => {
+  //     instanceWidthCred.get(el, { responseType: 'blob' })
+  //       .then(response => {
+  //         const url = URL.createObjectURL(response.data);
+  //         resolve(url);
+  //       })
+  //       .catch(error => {
+  //         console.error('Failed to fetch image', error);
+  //         reject(error);
+  //       });
+  //   });
+  // }
+
+  async function fetchImage(url) {
+    try {
+      const response = await instanceWidthCred.get(url, { responseType: 'blob' });
+      const imageUrl = URL.createObjectURL(response.data);
+      return imageUrl;
+    } catch (error) {
+      console.error('Failed to fetch image', error);
+      throw error;
+    }
   }
+  
+  
+  async function fetchImages(urls) {
+    try {
+      const imageUrlsList = await Promise.all(urls.map(fetchImage));
+      return imageUrlsList;
+    } catch (error) {
+      console.error('Ошибка при получении изображений', error);
+      throw error;
+    }
+  }
+  
+  useEffect(() => {
+    if (promosl.promoList && promosl.isUpdFul) {
+      const urls = promosl.promoList;
+      fetchImages(urls)
+        .then((urls) => {
+          setImageUrls(urls);
+        })
+        .catch((error) => {
+          console.error('Ошибка при получении изображений', error);
+        });
+    }
+  }, [promosl.promoList]);
 
- 
 
-  const onDelete = () => {
+
+   const onDelete = () => {
     
     const myData = new FormData();
     promosl.promoList.map((element, i) => {
@@ -96,7 +167,6 @@ const Slider = () => {
         
       }
     })
-    myData.append('id', auth._id);
    dispatch(deletePromoFile(myData))
    dispatch(updatePromo(auth._id));
    if(promosl.isPendDel == false){
@@ -117,6 +187,7 @@ const Slider = () => {
         rotation
       );
       setCroppedImage(croppedImage);
+      
       setShowCropper(false)
     } catch (e) {
       console.error(e);
@@ -124,12 +195,10 @@ const Slider = () => {
   }, [croppedAreaPixels, rotation, image]);
 
   const onSumbit = (e) => {
-
+    const file = base64ToFile(croppedImage, nameImg)
     const myData = new FormData();
-    myData.append('file', croppedImage);
+    myData.append('file', file);
     myData.append('id', auth._id);
-    myData.append("name", nameImg)
-    myData.append("size", sizeImg)
     dispatch(uploadPromo(myData))
     dispatch(updatePromo(auth._id));
   }
@@ -142,6 +211,7 @@ const Slider = () => {
         setShowPopMenu(false)
       }
       clearInterval(int)
+
     }, 3000)
     
   }
@@ -155,12 +225,14 @@ const Slider = () => {
              setShowPopup(!showPopup)
              
             }}> <BiDotsHorizontalRounded/></div>
+            
           
-          {promosl.promoList.map((element, i) => {
-            return (
-              <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={result(element)} key={i} ref={refSlide}></img>
-            )
-          })}
+            {imageUrls.map((element, i) => {
+             
+             return (
+                 <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={element} key={i} alt={element} ref={refSlide}></img>
+             )
+           })}
         </div>
         <div className={style.slider_control}
           onMouseEnter={(e) => {
@@ -193,11 +265,12 @@ const Slider = () => {
                      e.preventDefault()
                      nextSlide()
                   }} className={style.next_small}><GrFormNext /></button>
-            {promosl.promoList.map((element, i) => {
-            return (
-              <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={result(element)} key={i} ref={refSlide}></img>
-            )
-          })}</>
+           {imageUrls.map((element, i) => {
+             
+             return (
+                 <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={element} key={i} alt={element} ref={refSlide}></img>
+             )
+           })}</>
         }
       
                  {image &&  <div className={style.crop_container}>

@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {jwtDecode} from "jwt-decode";
-import { instanceWidthCred } from "../../auth/api/api";
+import { instanceWidthCred } from "../../auth/api/RequireAuth";
 import authService from "../../auth/services/authService";
+import { log } from "sockjs-client/dist/sockjs";
 
 
 
@@ -98,6 +99,7 @@ export const loginUser = createAsyncThunk(
       localStorage.setItem("avatar",response.data.body.avatar)
       return response.data.body;
     } catch (error) {
+      console.log(error);
       return rejectWithValue(error.response.data);
     }
   }
@@ -119,7 +121,6 @@ const authSlice = createSlice({
     },
  
     logoutUser(state, action) {
-      authService.logout(state._id)
       localStorage.removeItem("menuModules");
       localStorage.removeItem("access");
       localStorage.removeItem("lastTimeOnline")
@@ -181,7 +182,7 @@ const authSlice = createSlice({
           _id: action.payload.userId,
           activated: user.activateEmail,
           roles: user.roles,
-          loginStatus: "success",
+          loginStatus:"success",
           userLoaded: false,
           isEnabled: user.activateEmail
         };

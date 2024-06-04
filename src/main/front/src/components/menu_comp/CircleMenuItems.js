@@ -14,7 +14,7 @@ function CircleMenuItems(nameModule, namePage) {
   const toggleSlice = useSelector((state) => state.toggle);
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate("/")
+    navigate("/login")
     dispatch(logoutUser());
   };
   let listModuleName = menuModuleChange(nameModule)

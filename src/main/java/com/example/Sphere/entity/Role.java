@@ -9,6 +9,7 @@ import lombok.*;
 @Table(name = "Roles")
 @NoArgsConstructor
 @Data
+@ToString()
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

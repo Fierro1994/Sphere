@@ -1,11 +1,14 @@
 
-import { instance, instanceWidthCred } from "../api/api";
+import { useDispatch } from "react-redux";
+import { logoutUser } from "../../redux/slices/authSlice";
+import { instance, instanceWidthCred } from "../api/RequireAuth";
 
 
 
 
-const refresh = async () => {
+export const refresh = async () => {
   try {
+    console.log("sdfsdf");
     const response = await instanceWidthCred.post("/api/auth/refresh",{
     });
     if (response.status.valueOf(404))
@@ -15,6 +18,8 @@ const refresh = async () => {
     
     }
     if(response.data.body.accessToken){localStorage.setItem("access",response.data.body.accessToken)}
+
+    console.log(response);
      
     return response.data;
   } catch (error) {
@@ -24,16 +29,15 @@ const refresh = async () => {
 };
 
 
-const logout = async (_id) => {
-  try {
-    const response = await instance.post(`/api/auth/logout`, {
-      userId: _id
-    });
-   return response;
-  } catch (error) {
-    console.log(error);
-  }
- 
+const Logout = () => {
+  localStorage.removeItem("menuModules");
+  localStorage.removeItem("access");
+  localStorage.removeItem("lastTimeOnline")
+  localStorage.removeItem("mainPageModules");
+  localStorage.removeItem("theme");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("email");
+  localStorage.removeItem("avatar");
 } 
 
 
@@ -54,6 +58,6 @@ const SetOnlineTime = async (_id) => {
  
 } 
 
-const authService = { refresh , logout, SetOnlineTime};
+const authService = { Logout, SetOnlineTime};
 
 export default authService;

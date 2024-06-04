@@ -1,81 +1,99 @@
 package com.example.Sphere.security.jwt;
 
-import java.sql.Blob;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.example.Sphere.repository.RefreshTokenRepository;
-import com.example.Sphere.repository.UserRepository;
 import com.example.Sphere.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
+import java.time.Duration;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
+@Slf4j
 @Component
 public class JwtUtils {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${jwt.lifetime}")
-    private Long jwtExpirationMs;
+    @Value("${refresh.lifetime}")
+    private Duration jwtExpirationMs;
 
-    @Value("${jwtCookieName}")
-    private String jwtRefreshCookie;
 
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    RefreshTokenRepository refreshTokenRepository;
-
-    public String generateJwtToken(UserDetailsImpl userDetails) throws SQLException {
-        return generateTokenFromEmail(userDetails.getEmail(), userDetails);
+    public String generateToken(UserDetailsImpl userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        return buildToken(extraClaims, userDetails);
     }
 
-    public String generateTokenFromEmail(String email, UserDetailsImpl userDetails) throws SQLException {
-
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userDetails.getId());
-        claims.put("firstName", userDetails.getFirstName());
-        claims.put("lastName", userDetails.getLastName());
-
-        return Jwts.builder()
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
-                .addClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
+    public String extractEmail(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
 
     }
 
-    public boolean validateJwtToken(String jwt) {
+    public boolean isTokenValid(String token) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt);
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
             return true;
-        } catch (MalformedJwtException e) {
-            System.err.println(e.getMessage());
-        } catch (SignatureException e) {
-            System.err.println(e.getMessage());
-        } catch (ExpiredJwtException e) {
-            System.err.println(e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            System.err.println(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
+        } catch (MalformedJwtException |
+                 ExpiredJwtException |
+                 UnsupportedJwtException |
+                 IllegalArgumentException e) {
+            log.error(e.getMessage());
         }
-
         return false;
     }
 
-    public String getEmailFromJwtToken(String jwt) {
-        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(jwt).getBody().getSubject();
+    public boolean isTokenValidFromRefresh(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (MalformedJwtException |
+                 UnsupportedJwtException |
+                 IllegalArgumentException e) {
+            return false;
+        }
+        catch (ExpiredJwtException e) {
+            return true;
+        }
+        return true;
     }
 
+
+    private String buildToken(Map<String, Object> extraClaims, UserDetailsImpl userDetails) {
+
+        extraClaims.put("userId", userDetails.getId());
+        extraClaims.put("firstName", userDetails.getFirstName());
+        extraClaims.put("lastName", userDetails.getLastName());
+        Key key = getSigningKey();
+        return Jwts
+                .builder()
+                .setClaims(extraClaims)
+                .setSubject(userDetails.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs.getSeconds()))
+                .signWith(key)
+                .compact();
+    }
+
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 }

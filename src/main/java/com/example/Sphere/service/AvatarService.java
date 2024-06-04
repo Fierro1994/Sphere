@@ -19,11 +19,11 @@ import java.util.List;
 @Service
 public class AvatarService {
     @Autowired
-    private AvatarRepos avatarRepos;
+    AvatarRepos avatarRepos;
     @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
     @Autowired
-    private FileManager fileManager;
+    FileManager fileManager;
     private String nameFolder = "avatars";
 
     @Transactional(rollbackFor = {IOException.class})
@@ -67,12 +67,12 @@ public class AvatarService {
     public Avatar defaultUpload(String userId) throws IOException {
         String key = UUID.randomUUID().toString();
         FileInputStream img = new FileInputStream("src/main/resources/avatars/defavatar.jpg");
-        Avatar createdFile = new Avatar("defavatar",122, key, LocalDateTime.now());
+        Avatar createdFile = new Avatar("defavatar.jpg",122, key, LocalDateTime.now());
         List<Avatar> avatars = new ArrayList<>();
         avatars.add(createdFile);
 
         try {
-            Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + "defavatar");
+            Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + "defavatar.jpg");
             File directory = new File(path.getParent().toString());
 
             if (!directory.exists()) {
@@ -97,7 +97,7 @@ public class AvatarService {
 
 
 
-    public ResponseEntity<Object> download(String id, String key) throws IOException {
+    public ResponseEntity<?> download(String id, String key) throws IOException {
        return fileManager.download(id,key,nameFolder);
     }
 
@@ -136,7 +136,7 @@ public class AvatarService {
         List<Avatar> avatars = user.getAvatar();
         List<String> imageKeys = new ArrayList<>();
         avatars.forEach(element->{
-            if(element.getName().equals("defavatar")){
+            if(element.getName().equals("defavatar.jpg")){
                 imageKeys.add(element.getName());
             }
             else{

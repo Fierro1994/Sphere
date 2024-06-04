@@ -13,6 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
     Optional<User> findByuserId(String userId);
+    Optional<User> findById(Long id);
     @Transactional
     @Modifying
     @Query("UPDATE User a SET a.enabled=true WHERE a.email=?1")

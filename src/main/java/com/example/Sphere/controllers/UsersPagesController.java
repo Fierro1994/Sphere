@@ -15,8 +15,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/app/friends")
-@CrossOrigin(value ="http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
+@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
+
 public class UsersPagesController {
     @Autowired
     UsersPagesService usersPagesService;

@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {jwtDecode} from "jwt-decode";
-import { instanceWidthCred } from "../../auth/api/api";
+import { instanceWidthCred } from "../../auth/api/RequireAuth";
 import authService from "../../auth/services/authService";
 
 

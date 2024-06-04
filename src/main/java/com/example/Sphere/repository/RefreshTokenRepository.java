@@ -1,18 +1,17 @@
 package com.example.Sphere.repository;
 
 import com.example.Sphere.entity.RefreshToken;
-import com.example.Sphere.entity.User;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
+public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByToken(String token);
     @Modifying
-    int deleteByUser(User user);
-    Optional<RefreshToken> findByUser(User user);
+    void deleteByUserId(Long userId);
     Optional<RefreshToken> findByUserId(Long userId);
+    void delete (String token);
 }

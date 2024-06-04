@@ -16,8 +16,9 @@ import java.sql.SQLException;
 
 @RestController
 @RequestMapping("/api/profile/settings")
-@CrossOrigin(value ="http://localhost:3000", allowCredentials = "true")
 @RequiredArgsConstructor
+@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
+
 public class ProfileControllers {
     private final ItemsMenuService settingsService;
     private final ProfileService profileService;

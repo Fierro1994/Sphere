@@ -20,7 +20,7 @@ public class MailConfig {
     private int port;
     @Value("${spring.mail.protocol}")
     private String protocol;
-    @Value("${mail.debug}")
+    @Value("${spring.mail.debug}")
     private String debug;
     @Bean
     public JavaMailSender getMailSender(){

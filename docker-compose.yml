@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  myapp-mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: DD53joexcmk
+      MYSQL_DATABASE: sphere
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+#  myapp-main:
+#    image: sphere-0.0.1
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - myapp-mysql
+#    environment:
+#      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+#      SPRING_DATASOURCE_HOST: "myapp-mysql"
+#      SPRING_DATASOURCE_URL: jdbc:mysql://myapp-mysql:3306/sphere
+#      SPRING_DATASOURCE_USERNAME: root
+#      SPRING_DATASOURCE_PASSWORD: DD53joexcmk
+  redis:
+    image: redis:7.0.12
+    ports:
+      - "6379:6379"
+volumes:
+  mysql-data:
+

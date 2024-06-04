@@ -1,63 +1,65 @@
 package com.example.Sphere.service;
 
+import com.example.Sphere.entity.FileEntity;
 import com.example.Sphere.entity.ImagePromo;
 import com.example.Sphere.entity.User;
 import com.example.Sphere.repository.ImagePromoRepos;
 import com.example.Sphere.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
-
+import java.util.List;
+@RequiredArgsConstructor
 @Service
 public class ImagePromoService {
     @Autowired
-    private ImagePromoRepos imagePromoRepos;
+    ImagePromoRepos imagePromoRepos;
     @Autowired
-    private FileManager fileManager;
+    FileManager fileManager;
     @Autowired
-    private UserRepository userRepository;
-    private String nameFolder = "imagepromo";
+    UserRepository userRepository;
+    String nameFolder = "imagepromo";
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> upload(String file, String name, int size, String userId) throws IOException {
+    public ResponseEntity<?> upload(MultipartFile file) throws IOException {
         String key = UUID.randomUUID().toString();
         String keySmall = UUID.randomUUID().toString();
 
-        ImagePromo createdFile = new ImagePromo(name, size, key, keySmall,LocalDateTime.now());
-        User user = userRepository.findByuserId(userId).get();
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+
+        ImagePromo createdFile = new ImagePromo(file.getOriginalFilename(), file.getSize(), key, keySmall, LocalDateTime.now());//        T entity = null;
+
         List<ImagePromo> imagePromos = user.getImagePromos();
 
         List<ImagePromo> defpromoList = user.getImagePromos();
         for (ImagePromo imagePromo : defpromoList) {
             if (imagePromo.getName().equals("promo_1") ){
-                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + imagePromo.getName());
-                imagePromos.remove(imagePromo);
-                imagePromoRepos.delete(imagePromo);
-                try {
-                    Files.delete(path);
-                } catch (IOException e) {
-                    System.out.println("file "  + imagePromo.getName() + " not found");
-                }
-            }
-            if (imagePromo.getName().equals("promo_2") ){
-                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + imagePromo.getName());
-                imagePromos.remove(imagePromo);
-                imagePromoRepos.delete(imagePromo);
-                try {
-                    Files.delete(path);
-                } catch (IOException e) {
-                    System.out.println("file "  + imagePromo.getName() + " not found");
-                }
-            }
-            if (imagePromo.getName().equals("promo_3") ){
-                Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + imagePromo.getName());
+                Path path = Paths.get("src/main/resources/storage/"+ user.getUserId() + "/" + nameFolder +"/" + imagePromo.getName());
                 imagePromos.remove(imagePromo);
                 imagePromoRepos.delete(imagePromo);
                 try {
@@ -67,9 +69,6 @@ public class ImagePromoService {
                 }
             }
         }
-
-      fileManager.upload(file, userId, nameFolder, key, keySmall);
-
         imagePromos.add(createdFile);
 
         user.setImagePromos(imagePromos);
@@ -77,35 +76,73 @@ public class ImagePromoService {
         imagePromoRepos.save(createdFile);
         userRepository.save(user);
 
-        imagePromos = user.getImagePromos();
+        Path pathS = Paths.get("src/main/resources/storage/"+ userDetails.getUserId() + "/" + nameFolder);
+        File directoryS = pathS.toFile();
+        if (!directoryS.exists()) {
+            directoryS.mkdirs();
+        }
+        Path imagePathS = Paths.get(pathS.toString(), keySmall + ".jpg");
+        try (InputStream inputStreams = file.getInputStream();
+            OutputStream outputStreams = new FileOutputStream(imagePathS.toFile())) {
+            BufferedImage images = ImageIO.read(inputStreams);
+            BufferedImage outputImage = Scalr.resize(images, 600);
+
+            ImageWriter writerS = ImageIO.getImageWritersByFormatName("jpeg").next();
+            ImageWriteParam paramS = writerS.getDefaultWriteParam();
+            if (paramS.canWriteCompressed()) {
+                paramS.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                paramS.setCompressionQuality(0.5f);
+            }
+
+            writerS.setOutput(ImageIO.createImageOutputStream(outputStreams));
+            writerS.write(null, new IIOImage(outputImage, null, null), paramS);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Path imagePathB = Paths.get(pathS.toString(), key + ".jpg");
+        try (InputStream inputStreamB = file.getInputStream();
+             OutputStream outputStreamB = new FileOutputStream(imagePathB.toFile())) {
+            BufferedImage imageB = ImageIO.read(inputStreamB);
+            BufferedImage outputImageB = Scalr.resize(imageB, 600);
+
+            ImageWriter writerB = ImageIO.getImageWritersByFormatName("jpeg").next();
+            ImageWriteParam paramB = writerB.getDefaultWriteParam();
+            if (paramB.canWriteCompressed()) {
+                paramB.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                paramB.setCompressionQuality(0.5f);
+            }
+
+            writerB.setOutput(ImageIO.createImageOutputStream(outputStreamB));
+            writerB.write(null, new IIOImage(outputImageB, null, null), paramB);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         List<String> imageKeys = new ArrayList<>();
-        imagePromos.forEach(element->{
-            imageKeys.add(element.getKey());
+        List<ImagePromo> imagePromoList = userDetails.getImagePromos();
+        imagePromoList.forEach(element->{
+                String path = "http://localhost:3000/imagepromo/" + user.getUserId() + "/" + element.getKey() + ".jpg";
+                imageKeys.add(path);
         });
+        System.out.println(imageKeys.size());
+
         return ResponseEntity.ok().body(imageKeys);
 
     }
 
     @Transactional(rollbackFor = {IOException.class})
     public List<ImagePromo> defaultUpload(String userId) throws IOException {
-        String key1 = UUID.randomUUID().toString();
-        String key2 = UUID.randomUUID().toString();
-        String key3 = UUID.randomUUID().toString();
+        String key = UUID.randomUUID().toString();
+        String keySmall = UUID.randomUUID().toString();
         FileInputStream img1 = new FileInputStream("src/main/resources/imagepromo/promo_1.jpg");
-        FileInputStream img2 = new FileInputStream("src/main/resources/imagepromo/promo_2.jpg");
-        FileInputStream img3 = new FileInputStream("src/main/resources/imagepromo/promo_3.jpg");
-        ImagePromo createdFile = new ImagePromo("promo_1",122, key1, LocalDateTime.now());
-        ImagePromo createdFile2 = new ImagePromo("promo_2",122, key2, LocalDateTime.now());
-        ImagePromo createdFile3= new ImagePromo("promo_3",122, key3, LocalDateTime.now());
-
+        ImagePromo createdFile = new ImagePromo("promo_1",122L, key,keySmall, LocalDateTime.now());
 
         List<ImagePromo> userListImgPromo = new ArrayList<>();
         userListImgPromo.add(createdFile);
-        userListImgPromo.add(createdFile2);
-        userListImgPromo.add(createdFile3);
 
         try {
-            Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + "promo_1");
+            Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + "promo_1.jpg");
             File directory = new File(path.getParent().toString());
 
             if (!directory.exists()) {
@@ -121,40 +158,6 @@ public class ImagePromoService {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-        try {
-            Path path2 = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + "promo_2");
-            File directory2 = new File(path2.getParent().toString());
-
-            if (!directory2.exists()) {
-                directory2.mkdirs();
-            }
-            FileOutputStream fileOut2 = new FileOutputStream(path2.toString());
-            while (img2.available() > 0) {
-                int oneByte = img2.read();
-                fileOut2.write(oneByte);
-            }
-            img2.close();
-            fileOut2.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-                Path path3 = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + "promo_3");
-                File directory3 = new File(path3.getParent().toString());
-
-                if (!directory3.exists()) {
-                    directory3.mkdirs();
-                }
-            FileOutputStream fileOut3 = new FileOutputStream(path3.toString());
-            while (img3.available() > 0) {
-                int oneByte = img3.read();
-                fileOut3.write(oneByte);
-            }
-            img3.close();
-            fileOut3.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
 
         imagePromoRepos.saveAll(userListImgPromo);
         return userListImgPromo;
@@ -163,8 +166,9 @@ public class ImagePromoService {
 
 
 
-    public ResponseEntity<Object> download(String id, String key) throws IOException {
-        return fileManager.download(id,key,nameFolder);
+    public ResponseEntity<?> download(String id, String key) throws IOException {
+        Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
+        return fileManager.download(id, key, nameFolder);
     }
 
     @Transactional(readOnly = true)
@@ -173,8 +177,10 @@ public class ImagePromoService {
     }
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> delete(String id, String key) throws IOException {
-        User user = userRepository.findByuserId(id).get();
+    public ResponseEntity<?> delete(String key) throws IOException {
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
+
+        User user = userRepository.findByuserId(userDetails.getUserId()).get();
         List<ImagePromo> imagePromos = user.getImagePromos();
 
         ImagePromo file = imagePromoRepos.findByKey(key).get();
@@ -184,7 +190,7 @@ public class ImagePromoService {
         userRepository.save(user);
         imagePromoRepos.delete(file);
         try {
-            Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
+            Path path = Paths.get("src/main/resources/storage/"+ user.getUserId() + "/" + nameFolder +"/" + key);
             Files.delete(path);
         }catch (FileNotFoundException e) {
             System.out.println();
@@ -198,19 +204,26 @@ public class ImagePromoService {
         return ResponseEntity.ok().body(imageKeys);
     }
 
-    public ResponseEntity<?> showAll(String id) throws IOException {
-        User user = userRepository.findByuserId(id).get();
-        List<ImagePromo> imagePromos = user.getImagePromos();
-        List<String> imageKeys = new ArrayList<>();
-        imagePromos.forEach(element->{
-            if(element.getName().equals("promo_1") || element.getName().equals("promo_2") || element.getName().equals("promo_3")){
-                imageKeys.add(element.getName());
-            }
-            else{
-                imageKeys.add(element.getKey());
-            }
-        });
+    public ResponseEntity<?> showAll() {
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
+        if (userDetails != null){
+            List<ImagePromo> imagePromos = userDetails.getImagePromos();
 
-        return ResponseEntity.ok().body(imageKeys);
+            List<String> imageKeys = new ArrayList<>();
+            for (ImagePromo imagePromo : imagePromos){
+                if(imagePromo.getName().equals("promo_1")){
+                    String path = "http://localhost:3000/imagepromo/" + userDetails.getUserId() + "/" + imagePromo.getName() + ".jpg";
+                    imageKeys.add(path);
+                }
+                else{
+                    String path = "http://localhost:3000/imagepromo/" + userDetails.getUserId() + "/" + imagePromo.getKey() + ".jpg";
+                    imageKeys.add(path);
+                }
+            }
+
+            return ResponseEntity.ok().body(imageKeys);
+
+        }
+        else return ResponseEntity.notFound().build();
     }
 }
