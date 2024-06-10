@@ -1,6 +1,6 @@
 import setupStyles from "../stylesModules/setupStyles";
 import mainPageModuleChanger from "../../components/mainpagemodules/mainPageModuleChanger";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Content =() => {
   let result = [] 
@@ -9,6 +9,8 @@ const Content =() => {
     const listMainPageModules = JSON.parse(localStorage.getItem("mainPageModules"))
     result = mainPageModuleChanger(listMainPageModules)
   }
+
+
 
 return (
 <div className={style.tablemain}>

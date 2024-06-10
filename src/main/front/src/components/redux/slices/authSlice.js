@@ -1,8 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {jwtDecode} from "jwt-decode";
-import { instanceWidthCred } from "../../auth/api/RequireAuth";
-import authService from "../../auth/services/authService";
-import { log } from "sockjs-client/dist/sockjs";
+import { instanceWidthCred } from "../../auth/api/instance";
 
 
 
@@ -83,23 +81,25 @@ export const loginUser = createAsyncThunk(
         rememberMe: checkbox
       });
       const listItems = []
-      response.data.body.itemsMenus.forEach( (item) =>{
+      response.data.itemsMenus.forEach( (item) =>{
         listItems.push({id: item.id, name:item.name,isEnabled: item.isEnabled, nametwo:item.nametwo})     
      })
+
+
      const listModulesMainPage = []
-     response.data.body.listModulesMainPage.forEach( (item) =>{
+     response.data.listModulesMainPage.forEach( (item) =>{
       listModulesMainPage.push({id: item.id, name:item.name,isEnabled: item.isEnabled, nametwo:item.nametwo, pathImage: item.pathImage})     
    })
       localStorage.setItem("menuModules", JSON.stringify(listItems))
-      localStorage.setItem("userId", response.data.body.userId)
-      localStorage.setItem("email", response.data.body.email)
+      localStorage.setItem("userId", response.data.userId)
+      localStorage.setItem("email", response.data.email)
       localStorage.setItem("mainPageModules", JSON.stringify(listModulesMainPage))
-      localStorage.setItem("access", response.data.body.accessToken);
-      localStorage.setItem("theme",response.data.body.theme)
-      localStorage.setItem("avatar",response.data.body.avatar)
-      return response.data.body;
+      localStorage.setItem("access", response.data.accessToken);
+      localStorage.setItem("theme",response.data.theme)
+      localStorage.setItem("avatar",JSON.stringify(response.data.avatar))
+   
+      return response.data;
     } catch (error) {
-      console.log(error);
       return rejectWithValue(error.response.data);
     }
   }
@@ -192,7 +192,7 @@ const authSlice = createSlice({
       return {
         ...state,
         loginStatus: "rejected",
-        loginError: action.payload,
+        loginError: action.payload && action.payload.message,
       };
     });
   builder.addCase(setSelectedTheme.fulfilled, (state, action) => {

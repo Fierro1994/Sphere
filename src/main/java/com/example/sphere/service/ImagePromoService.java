@@ -128,43 +128,9 @@ public class ImagePromoService {
 
     }
 
-    @Transactional(rollbackFor = {IOException.class})
-    public List<ImagePromo> defaultUpload(String userId) throws IOException {
-        String key = UUID.randomUUID().toString();
-        String keySmall = UUID.randomUUID().toString();
-        FileInputStream img1 = new FileInputStream("src/main/resources/imagepromo/promo_1.jpg");
-        ImagePromo createdFile = new ImagePromo("promo_1",122L, key,keySmall, LocalDateTime.now());
-
-        List<ImagePromo> userListImgPromo = new ArrayList<>();
-        userListImgPromo.add(createdFile);
-
-        try {
-            Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + "promo_1.jpg");
-            File directory = new File(path.getParent().toString());
-
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-            FileOutputStream fileOut = new FileOutputStream(path.toString());
-                while (img1.available() > 0) {
-                    int oneByte = img1.read();
-                    fileOut.write(oneByte);
-                }
-                 img1.close();
-                fileOut.close();
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-
-        imagePromoRepos.saveAll(userListImgPromo);
-        return userListImgPromo;
-
-    }
-
 
 
     public ResponseEntity<?> download(String id, String key) throws IOException {
-        Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
         return fileManager.download(id, key, nameFolder);
     }
 
@@ -206,16 +172,11 @@ public class ImagePromoService {
         if (userDetails != null){
             List<ImagePromo> imagePromos = userDetails.getImagePromos();
 
+
             List<String> imageKeys = new ArrayList<>();
             for (ImagePromo imagePromo : imagePromos){
-                if(imagePromo.getName().equals("promo_1")){
-                    String path = "http://localhost:3000/imagepromo/" + userDetails.getUserId() + "/" + imagePromo.getName() + ".jpg";
+                String path = "http://localhost:3000/imagepromo/" + userDetails.getUserId() + "/" + imagePromo.getKey() + ".jpg";
                     imageKeys.add(path);
-                }
-                else{
-                    String path = "http://localhost:3000/imagepromo/" + userDetails.getUserId() + "/" + imagePromo.getKey() + ".jpg";
-                    imageKeys.add(path);
-                }
             }
 
             return ResponseEntity.ok().body(imageKeys);

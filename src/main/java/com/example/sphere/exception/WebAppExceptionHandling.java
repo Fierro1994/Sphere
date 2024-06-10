@@ -3,7 +3,9 @@ package com.example.sphere.exception;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -55,5 +57,13 @@ public class WebAppExceptionHandling {
                 .body(ErrorResponseBody.builder().message(ex.getMessage()).description("Error").build());
     }
 
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ErrorResponseBody> handleUserNotFoundException(UsernameNotFoundException ex) {
+        return buildResponse(HttpStatus.NOT_FOUND, ex);
+    }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponseBody> handleBadCredentialsException(BadCredentialsException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body((ErrorResponseBody.builder().message("Пользователя не существует, либо введены неверные данные!").build()));
+    }
 
 }

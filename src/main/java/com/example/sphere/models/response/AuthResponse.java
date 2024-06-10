@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 public class AuthResponse {
-    private Avatar avatar;
+    private List<Avatar> avatars;
     private String accessToken;
     private String userId;
     private String email;

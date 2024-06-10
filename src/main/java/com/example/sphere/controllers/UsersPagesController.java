@@ -15,7 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/app/friends")
 @RequiredArgsConstructor
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
 
 public class UsersPagesController {
     @Autowired

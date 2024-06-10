@@ -13,7 +13,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping(value = "/imagepromo")
 @RequiredArgsConstructor
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
 public class ImagePromoController {
     @Autowired
     ImagePromoService imagePromoService;

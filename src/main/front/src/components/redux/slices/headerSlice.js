@@ -1,8 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { instanceWidthCred } from "../../auth/api/RequireAuth";
+import { instanceWidthCred } from "../../auth/api/instance";
+import { avatarClasses } from "@mui/material";
 
 const initialState = {
     headerList: [],
+    isUpdFull: false,
     isPendDel: false,
     isFulDel: false,
     isRejDel: false
@@ -12,14 +14,20 @@ const PATH = 'avatar/'
 
 
 export const updateHeader = createAsyncThunk(
-  "header/update",
-  async (data,{ rejectWithValue }) => {
-    
+  'header/update',
+  async (data, { rejectWithValue }) => {
     try {
-      const response = await instanceWidthCred.post(PATH +"listavatars", {
-        userId: data,
-      });
-                return response.data.body;
+      const response = await instanceWidthCred.get('avatar/listavatars');
+      const urls = response.data.map((promo) => promo);
+
+      const fetchImage = async (url) => {
+        const response = await instanceWidthCred.get(url, { responseType: 'blob' });
+        return URL.createObjectURL(response.data);
+      };
+
+      const imageUrlsList = await Promise.all(urls.map((url)=> fetchImage(url)));
+   
+      return imageUrlsList
     } catch (error) {
       console.log(error.response.data);
       return rejectWithValue(error.response.data);
@@ -33,10 +41,7 @@ export const uploadHeader = createAsyncThunk(
     try {
       const config = {headers: {'Content-Type': 'multipart/form-data'}}
       const response = await instanceWidthCred.post(PATH +"upload", {
-        userId: data.get("id"),
-        file: data.get("file"),
-        size: data.get("size"),
-        name: data.get("name"),
+        avatar: data.get("avatar"),      
       }, config);
                 return response.data.body;
     } catch (error) {
@@ -76,10 +81,12 @@ const headerSlice = createSlice({
      };
     });
     builder.addCase(updateHeader.fulfilled, (state, action) => {
+      localStorage.setItem("avatar", action.payload[0])
         return {
          ...state,
          headerList: action.payload,
-         isPendDel: false
+         isPendDel: false,
+         isUpdFull: true,
         };
     });
     builder.addCase(updateHeader.rejected, (state, action) => {
@@ -90,8 +97,7 @@ const headerSlice = createSlice({
     builder.addCase(uploadHeader.fulfilled, (state, action) => {
       return {
         ...state,
-        headerList: action.payload,
-      
+        isUpdFull: false
       };
     });
     builder.addCase(deleteHeaderFile.pending, (state, action) => {

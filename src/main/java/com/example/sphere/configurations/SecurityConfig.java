@@ -23,6 +23,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
 
 
 @EnableWebSecurity
@@ -31,7 +38,7 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
-   @Autowired
+    @Autowired
     AuthEntryPointJwt authEntryPointJwt;
     private final JwtTokenFilter jwtTokenFilter;
 
@@ -39,6 +46,7 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
@@ -54,16 +62,16 @@ public class SecurityConfig {
     }
 
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         CookieClearingLogoutHandler cookies = new CookieClearingLogoutHandler("refresh");
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(authEntryPointJwt))
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) ->
-                        auth.requestMatchers("/","/api/auth/*","/api/auth/signin", "/api/auth/refresh"
+                        auth.requestMatchers("/api/auth/**"
                                 ).permitAll()
                                 .requestMatchers("/app/admin").hasRole("ADMIN")
                                 .requestMatchers("/app/moderator").hasRole("MODERATOR")
@@ -75,16 +83,9 @@ public class SecurityConfig {
                 .logout((logout) -> logout.logoutUrl("/api/auth/logout/"))
                 .logout((logout) -> logout.addLogoutHandler(cookies))
                 .logout((logout) -> logout.logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler()))
-;
+        ;
 
         return http.build();
     }
 
-
-
-
-
-
-
-
-    }
+}

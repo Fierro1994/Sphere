@@ -1,6 +1,9 @@
 package com.example.sphere.models.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 @Data
@@ -8,7 +11,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class CreateUserRequest {
-    private String avatar;
+    @JsonIgnore
+    private MultipartFile avatar;
     private String email;
     private String password;
     private String firstName;

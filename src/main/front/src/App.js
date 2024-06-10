@@ -2,11 +2,10 @@ import { BrowserRouter, Routes, Route, useNavigate, Link } from "react-router-do
 import Home from "./pages/HomePage/Home";
 import Register from "./pages/RegisterPage/RegisterPage";
 import SettingsPageInterface from "./pages/SettingsPage/InterfacePage/SettingsPageInterface"
-import { getLastTimeOnline, loadUser } from "./components/redux/slices/authSlice";
+import {loadUser } from "./components/redux/slices/authSlice";
 import { useEffect } from "react";
 import { useDispatch, useSelector} from "react-redux";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
-import authService from "./components/auth/services/authService";
 import MomentsPage from "./pages/MomentsPage/PreviewPage/MomentsPage";
 import MomentsAddPage from "./pages/MomentsPage/AddPage/MomentsAddPage";
 import SettingsPageMainPage from "./pages/SettingsPage/settingsPageConstruktorMainPage/konstrMainPage/SettingsPageMainPage";
@@ -27,13 +26,6 @@ import UsersPage from "./pages/UsersPage/UsersPage";
 import { RequireAuth } from "./components/auth/api/RequireAuth";
 import Login from "./pages/LoginPage/Login"
 function App() {
-
-
-  const dispatch = useDispatch();
-  const auth = useSelector((state) => state.auth);
-  useEffect(() => {
-    dispatch(loadUser(null));
-  }, []);
   return (
     <div className="App">
       <BrowserRouter>
@@ -66,10 +58,7 @@ function App() {
             <Route path="/app/settings/konstrukt/profile" element={<RequireAuth><KonstruktProfilePage /></RequireAuth>} />
 
            
-
-           
-            <Route path="/api/auth/confirm?token/:id" element={<RequireAuth><Home /></RequireAuth>} /> 
-            <Route path="app/gallery/photo" element={<RequireAuth><Galery/></RequireAuth>} /> 
+            <Route path="/app/gallery/photo" element={<RequireAuth><Galery/></RequireAuth>} /> 
             <Route path="/app/gallery/add" element={<RequireAuth><GaleryAdd/></RequireAuth>} />
             <Route path="/app/gallery/video" element={<RequireAuth><VideoGaleryPage/></RequireAuth>} />
 

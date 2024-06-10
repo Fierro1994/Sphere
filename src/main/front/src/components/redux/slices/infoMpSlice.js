@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { instanceWidthCred } from "../../auth/api/RequireAuth";
+import { instanceWidthCred } from "../../auth/api/instance";
 
 const initialState = {
     infoList: [],
@@ -77,7 +77,8 @@ const infoMpSlice = createSlice({
           return {
            ...state,
            infoList: action.payload,
-           isPendDel: false
+           isPendDel: false,
+           isUpdFul: true
           };
       });
       builder.addCase(updateInfo.rejected, (state, action) => {

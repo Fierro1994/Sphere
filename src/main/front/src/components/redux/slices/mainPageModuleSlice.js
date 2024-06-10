@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { instanceWidthCred } from "../../auth/api/RequireAuth";
+import { instanceWidthCred } from "../../auth/api/instance";
 
 
 const initialState = {

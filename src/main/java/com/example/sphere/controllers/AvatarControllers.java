@@ -8,24 +8,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/avatar")
 @RequiredArgsConstructor
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
 public class AvatarControllers {
     @Autowired
     AvatarService avatarService;
     @PostMapping(path = "/upload")
-    public ResponseEntity<?> upload(@RequestParam("file") String file, String name, Long size, String userId) throws IOException {
-        return new ResponseEntity<>(avatarService.upload( file, userId),HttpStatus.CREATED);
+    public ResponseEntity<?> upload(@RequestParam("avatar") MultipartFile file) throws IOException {
+        avatarService.upload(file);
+        return ResponseEntity.ok().build();
 
     }
     @GetMapping(path = "/{id}/{key}")
     public ResponseEntity<?> download(@PathVariable("id") String id, @PathVariable("key") String key) {
         try {
+
             return avatarService.download(id, key);
 
         } catch (IOException e) {
@@ -33,9 +35,9 @@ public class AvatarControllers {
         }
     }
 
-    @PostMapping(path = "/listavatars")
-    public ResponseEntity<?> showAll(@RequestBody GetAllIReq req ) throws IOException {
-        return  ResponseEntity.ok(avatarService.showAll(req.getUserId()));
+    @GetMapping(path = "/listavatars")
+    public ResponseEntity<?> showAll( )  {
+        return  avatarService.showAll( );
     }
 
     @DeleteMapping(value = "/{id}/{key}")

@@ -14,7 +14,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping(value = "/moments")
 @RequiredArgsConstructor
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
 
 public class MomentsController {
     private final MomentsService momentsService;

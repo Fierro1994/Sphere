@@ -47,7 +47,9 @@ const MPActualModule = () => {
    }, [moments.isUplPen]);
 
    useEffect(() => {
-      dispatch(updateMoments(auth._id));
+      if(moments.isUpdFul === false){
+         dispatch(updateMoments(auth._id));
+      }
    }, []);
 
    useEffect(() => {

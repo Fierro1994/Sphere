@@ -21,7 +21,7 @@ public class JwtUtils {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
-    @Value("${refresh.lifetime}")
+    @Value("${jwt.lifetime}")
     private Duration jwtExpirationMs;
 
 
@@ -87,7 +87,7 @@ public class JwtUtils {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs.getSeconds()))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs.toMillis()))
                 .signWith(key)
                 .compact();
     }

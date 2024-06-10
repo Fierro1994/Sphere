@@ -12,8 +12,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/friends/search")
 @RequiredArgsConstructor
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
-
 public class SearchController {
     @Autowired
     private SearchService searchService;

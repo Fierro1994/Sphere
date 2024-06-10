@@ -58,13 +58,12 @@ public class AuthService {
 
     public ResponseEntity<AuthResponse> authenticateUser(LoginRequest loginRequest, HttpServletResponse response){
         RefreshToken refreshToken;
-        boolean isRememberMe = loginRequest.getRememberMe();
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String jwt = jwtUtils.generateToken(userDetails);
-        if (loginRequest.getRememberMe() != null && isRememberMe ) {
+        if (loginRequest.getRememberMe() != null && loginRequest.getRememberMe() ) {
             refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
             Cookie cookie = refreshTokenService.generateRefreshCookie(refreshToken.getToken());
             response.addCookie(cookie);
@@ -78,9 +77,10 @@ public class AuthService {
         log.info("Аутентифицирован пользователь {}", userId);
 
         return ResponseEntity.ok()
-                .body(new AuthResponse(avatars.get(0), jwt, userId, email, itemsMenus, listModulesMainPage, theme));
+                .body(new AuthResponse(avatars, jwt, userId, email, itemsMenus, listModulesMainPage, theme));
     }
 
+    @Transactional(rollbackFor = Exception.class)
 
     public ResponseEntity<Map<String, Object>> registerUser(CreateUserRequest createUserRequest) throws SQLException, IOException {
         Map<String, Object> result = new HashMap<>();
@@ -94,12 +94,7 @@ public class AuthService {
         boolean useNumbers = true;
         String userId = RandomStringUtils.random(length, useLetters, useNumbers);
         List<Avatar> avatars = new ArrayList<>();
-        if (createUserRequest.getAvatar() == null) {
-            avatars.add(avatarService.defaultUpload(userId));
-        } else {
-            avatars.add(avatarService.upload(createUserRequest.getAvatar(), userId));
 
-        }
         User user = new User(
                 userId,
                 avatars,
@@ -110,7 +105,9 @@ public class AuthService {
                 LocalDateTime.now());
 
         userRepository.save(user);
-
+        if (createUserRequest.getAvatar() != null) {
+            avatarService.upload(createUserRequest.getAvatar());
+        }
         Set<String> strRoles = createUserRequest.getRoles();
         Set<Role> roles = new HashSet<>();
         List<ItemsMenu> itemsMenus = new ArrayList<>();
@@ -126,7 +123,6 @@ public class AuthService {
             itemsMenus.addAll(itemsMenuService.setDefaultUserItemsMenu());
             mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
             roles.add(userRole);
-            imagePromos.addAll(imagePromoService.defaultUpload(user.getUserId()));
             infoModules.addAll(infoModuleService.setDefaultInfo(user.getUserId()));
         } else {
             strRoles.forEach(role -> {
@@ -140,11 +136,6 @@ public class AuthService {
                     itemsMenus.addAll(itemsMenuService.setDefaultUserItemsMenu());
                     mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
                     roles.add(userRole);
-                    try {
-                        imagePromos.addAll(imagePromoService.defaultUpload(user.getUserId()));
-                    } catch (IOException e) {
-                        log.error("Error uploading image");
-                    }
                     try {
                         infoModules.addAll(infoModuleService.setDefaultInfo(user.getUserId()));
                     } catch (IOException e) {
@@ -278,6 +269,7 @@ public class AuthService {
                      Cookie cookie = refreshTokenService.generateRefreshCookie(resRefreshToken);
 
                      response.addCookie(cookie);
+                     
                      return ResponseEntity.ok().body(new RefreshTokenResponse(resAccessToken));
                 }).orElseThrow(()-> new RefreshTokenException("Refresh token not found"));
     }

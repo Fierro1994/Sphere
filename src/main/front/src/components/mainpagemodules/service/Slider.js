@@ -7,7 +7,7 @@ import { GrFormPrevious } from "react-icons/gr";
 import getCroppedImg, { base64ToFile } from "../../../pages/GaleryPage/GalleryAddPage/Crop";
 import Cropper from "react-easy-crop";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { instance, instanceWidthCred } from "../../auth/api/RequireAuth";
+import imgdefsrc from "../../../assets/promo_1.jpg"
 
 
 const Slider = () => {
@@ -28,9 +28,6 @@ const Slider = () => {
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [imageUrls, setImageUrls] = useState([]);
-
   const handleImageUpload = async (e) => {
     setImage(URL.createObjectURL(e.target.files[0]));
     setNameImage((e.target.files[0].name));
@@ -75,87 +72,10 @@ const Slider = () => {
 
 
   useEffect(() => {
-    dispatch(updatePromo(auth._id));   
-  }, []);
-
-  // useEffect(() => {
-  //   const fetchImages = async () => {
-  //     try {
-  //       setIsLoading(true)
-  //       const imageUrls = await Promise.all(promosl.promoList.map(el => result(el)));
-        
-  //   setImageUrlList(imageUrls)
-  //       setIsLoading(false);
-  //     } catch (error) {
-  //       console.error('Failed to fetch images', error);
-        
-  //     }
-  //   };
-
-    
-  
-  //   fetchImages();
-
-  // }, []);
-
-  // useEffect(() => {
-  //       promosl.promoList.map(el=>{
-  //         imageUrlList.push(result(el))  
-  //       })
-
-  //       console.log(imageUrlList.length);
-  // }, []);
-  
-  // function result(el) {
-  //   return new Promise((resolve, reject) => {
-  //     instanceWidthCred.get(el, { responseType: 'blob' })
-  //       .then(response => {
-  //         const url = URL.createObjectURL(response.data);
-  //         resolve(url);
-  //       })
-  //       .catch(error => {
-  //         console.error('Failed to fetch image', error);
-  //         reject(error);
-  //       });
-  //   });
-  // }
-
-  async function fetchImage(url) {
-    try {
-      const response = await instanceWidthCred.get(url, { responseType: 'blob' });
-      const imageUrl = URL.createObjectURL(response.data);
-      return imageUrl;
-    } catch (error) {
-      console.error('Failed to fetch image', error);
-      throw error;
+    if(promosl.isUpdFul === false){
+      dispatch(updatePromo(auth._id));  
     }
-  }
-  
-  
-  async function fetchImages(urls) {
-    try {
-      const imageUrlsList = await Promise.all(urls.map(fetchImage));
-      return imageUrlsList;
-    } catch (error) {
-      console.error('Ошибка при получении изображений', error);
-      throw error;
-    }
-  }
-  
-  useEffect(() => {
-    if (promosl.promoList && promosl.isUpdFul) {
-      const urls = promosl.promoList;
-      fetchImages(urls)
-        .then((urls) => {
-          setImageUrls(urls);
-        })
-        .catch((error) => {
-          console.error('Ошибка при получении изображений', error);
-        });
-    }
-  }, [promosl.promoList]);
-
-
+  }, [promosl.isUpdFul]);
 
    const onDelete = () => {
     
@@ -198,9 +118,7 @@ const Slider = () => {
     const file = base64ToFile(croppedImage, nameImg)
     const myData = new FormData();
     myData.append('file', file);
-    myData.append('id', auth._id);
     dispatch(uploadPromo(myData))
-    dispatch(updatePromo(auth._id));
   }
 
   const onPopupMenuOpen= (e) => {
@@ -220,20 +138,24 @@ const Slider = () => {
     <>
 
       <div className={style.promo_contain} ref={refSliderContain}>
-        <div className={style.promo_img} >
-          <div className={style.dot} onClick={(e) => {
-             setShowPopup(!showPopup)
-             
-            }}> <BiDotsHorizontalRounded/></div>
-            
-          
-            {imageUrls.map((element, i) => {
-             
-             return (
-                 <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={element} key={i} alt={element} ref={refSlide}></img>
-             )
-           })}
-        </div>
+      <div className={style.promo_img}>
+  <div className={style.dot} onClick={(e) => {
+    setShowPopup(!showPopup)
+  }}> <BiDotsHorizontalRounded/></div>
+  {promosl.promoList && promosl.promoList.length > 0 ? (
+    promosl.promoList.map((element, i) => (
+      <img
+        className={slide === i ? style.promo_img : style.promo_img_hidden}
+        src={element}
+        key={i}
+        alt={element}
+        ref={refSlide}
+      ></img>
+    ))
+  ) : (
+    <img className={style.promo_img} src={imgdefsrc} alt="default"></img>
+  )}
+</div>
         <div className={style.slider_control}
           onMouseEnter={(e) => {
             setAutuPlay(100000)
@@ -265,12 +187,19 @@ const Slider = () => {
                      e.preventDefault()
                      nextSlide()
                   }} className={style.next_small}><GrFormNext /></button>
-           {imageUrls.map((element, i) => {
-             
-             return (
-                 <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={element} key={i} alt={element} ref={refSlide}></img>
-             )
-           })}</>
+        {promosl.promoList && promosl.promoList.length > 0 ? (
+    promosl.promoList.map((element, i) => (
+      <img
+        className={slide === i ? style.promo_img : style.promo_img_hidden}
+        src={element}
+        key={i}
+        alt={element}
+        ref={refSlide}
+      ></img>
+    ))
+  ) : (
+    <img className={style.promo_img} src={imgdefsrc} alt="default"></img>
+  )}</>
         }
       
                  {image &&  <div className={style.crop_container}>

@@ -8,6 +8,7 @@ const Home = () => {
   const style = setupStyles("mainstyle")
   const style2 = setupStyles("circlemenu")
   const toggleSlice = useSelector((state) => state.toggle);
+
   return (
     <>
         <div className={style.container}>

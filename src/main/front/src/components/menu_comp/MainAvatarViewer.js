@@ -3,13 +3,14 @@ import setupStyles from "../../pages/stylesModules/setupStyles";
 import { useDispatch, useSelector } from 'react-redux';
 import { setSlice } from '../../components/view/toggleSlice';
 import CircleMenuItems from "./CircleMenuItems";
+import defAvatar from "../../assets/defavatar.jpg"
 
 const MainAvatarViewer = ({ nameModule, namePage, showSet }) => {
   const style = setupStyles("circlemenu")
   const [show, setShow] = useState(showSet)
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
-  const srcValue = "data:image/png;base64, " + localStorage.getItem("avatar")
+  const header = useSelector((state) => state.header);
   const moduleMenu = CircleMenuItems(nameModule, namePage)
   const onAvatarClick = () => {
     dispatch(setSlice(!show))
@@ -17,10 +18,13 @@ const MainAvatarViewer = ({ nameModule, namePage, showSet }) => {
   }
   return (
     <div className={style.mainAvatarCircle}>
-      <img className={style.open_menu} src={srcValue} onClick={function () {
+      {header.headerList && header.headerList.length > 0 ? <img className={style.open_menu} src={header.headerList[header.headerList.length - 1]} onClick={function () {
         onAvatarClick()
       }
-      } />
+      } /> : <img className={style.open_menu} src={defAvatar} onClick={function () {
+        onAvatarClick()
+      }
+      } />}
       <div className={style.circle}>
         {moduleMenu}
       </div>

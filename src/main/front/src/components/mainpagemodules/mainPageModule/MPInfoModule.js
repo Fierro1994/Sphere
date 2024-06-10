@@ -12,7 +12,9 @@ const MPInfoModule = (blocknum) => {
    const dispatch = useDispatch()
    var listI = []
    useEffect(() => {
-      dispatch(updateInfo(auth._id));
+      if(infomp.isUpdFul === false ){
+         dispatch(updateInfo(auth._id));
+      }
    }, []);
 
    const onSubmitForm1 = (e) => {

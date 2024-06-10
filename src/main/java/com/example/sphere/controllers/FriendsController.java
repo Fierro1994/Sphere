@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/friends")
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
-
 public class FriendsController {
 
     @Autowired

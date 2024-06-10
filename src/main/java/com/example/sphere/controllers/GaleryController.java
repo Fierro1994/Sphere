@@ -14,8 +14,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping(value = "/gallery")
 @RequiredArgsConstructor
-@CrossOrigin(value ="http://localhost:3000/", allowCredentials = "true")
-
 public class GaleryController {
     @Autowired
     GalleryService galleryService;

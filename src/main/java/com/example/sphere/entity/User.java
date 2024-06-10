@@ -29,7 +29,7 @@ public class User {
     @Column(name = "userId", unique = true)
     private String userId;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private List<Avatar> avatar = new ArrayList<>();
 

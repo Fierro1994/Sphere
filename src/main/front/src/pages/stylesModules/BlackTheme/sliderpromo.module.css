@@ -1,7 +1,7 @@
 .promo_contain{
    height: 11vw;
    position: relative;
-   
+   /* background: linear-gradient(rgba(2, 2, 2, 0.6),rgba(7, 7, 7, 0.6)),  url("../../../assets/promo_1.jpg")   no-repeat center/cover; */
 }
 .promo_img{
     
