@@ -2,9 +2,6 @@ import { BrowserRouter, Routes, Route, useNavigate, Link } from "react-router-do
 import Home from "./pages/HomePage/Home";
 import Register from "./pages/RegisterPage/RegisterPage";
 import SettingsPageInterface from "./pages/SettingsPage/InterfacePage/SettingsPageInterface"
-import {loadUser } from "./components/redux/slices/authSlice";
-import { useEffect } from "react";
-import { useDispatch, useSelector} from "react-redux";
 import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import MomentsPage from "./pages/MomentsPage/PreviewPage/MomentsPage";
 import MomentsAddPage from "./pages/MomentsPage/AddPage/MomentsAddPage";

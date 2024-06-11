@@ -1,5 +1,4 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import Register from "./registerModule";
 import setupStyles from "../stylesModules/setupStyles";
 

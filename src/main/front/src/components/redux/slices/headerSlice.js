@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { instanceWidthCred } from "../../auth/api/instance";
-import { avatarClasses } from "@mui/material";
 
 const initialState = {
     headerList: [],

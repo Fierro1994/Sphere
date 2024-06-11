@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client/dist/sockjs';
 import ChatMessage from "./../../components/mainpagemodules/service/ChatMessage";
-import { Button, TextField, Container, Box } from '@mui/material';
 import error from "eslint-plugin-react/lib/util/error.js";
 import { useDispatch, useSelector } from "react-redux";
 import { loadUser } from "../../components/redux/slices/authSlice";
@@ -104,17 +103,17 @@ const MessagesView =({  }) => {
 <div className={style.tablemain}>
 <form className={style.form_profile}>
 <table className={style.tablemain}>
-<Container>
+<div>
       <h2>{connectionStatus}</h2>
-      <Box display="flex" flexDirection="column" justifyContent="center" alignItems="center" mt={2}>
-        <Box sx={{height: '500px', overflow: 'auto', width: '100%'}}>
+      <div display="flex" flexDirection="column" justifyContent="center" alignItems="center" mt={2}>
+        <div sx={{height: '500px', overflow: 'auto', width: '100%'}}>
           {messages.map((message, index) => (
             <ChatMessage key={index} message={message} username={auth.firstName} />
           ))}
           <div ref={messagesEndRef}/>
-        </Box>
-        <Box display="flex" justifyContent="center" alignItems="stretch" mt={2}>
-          <TextField
+        </div>
+        <div display="flex" justifyContent="center" alignItems="stretch" mt={2}>
+          <div
             sx={{
               color: 'white', '& .MuiOutlinedInput-notchedOutline': {borderColor: 'gray'},
               width: '300px',
@@ -135,8 +134,8 @@ const MessagesView =({  }) => {
             placeholder="Type a message..."
             onKeyDown={handleKeyDown}
           />
-          <Box marginLeft={2}>
-            <Button
+          <div marginLeft={2}>
+            <button
               variant="contained"
               color="primary"
               sx={{
@@ -146,11 +145,11 @@ const MessagesView =({  }) => {
               }}
               onClick={sendMessage}>
               Send
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-    </Container>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 </table>
 
 </form>
