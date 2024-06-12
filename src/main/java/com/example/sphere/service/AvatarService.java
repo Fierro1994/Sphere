@@ -114,7 +114,6 @@ public class AvatarService {
 
 
     public ResponseEntity<?> download(String id, String key) throws IOException {
-        System.out.println(id + "  " + key);
         return fileManager.download(id, key, nameFolder);
     }
 
@@ -135,7 +134,7 @@ public class AvatarService {
             Path pathS = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + file.getKeySmall());
             Files.delete(pathS);
         }catch (FileNotFoundException e) {
-            System.out.println();
+            log.error(e.getMessage(), e);
         }
 
         avatars = user.getAvatar();

@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import setupStyles from "../../stylesModules/setupStyles";
-import { addFriendSubscribe, searchFriends } from "../../../components/redux/slices/friendsSlice";
-import { useEffect, useState } from "react";
-import { instanceWidthCred } from "../../../components/auth/api/instance";
+import {addFriendSubscribe, searchFriends} from "../../../components/redux/slices/friendsSlice";
+import {useEffect, useState} from "react";
+import {instanceWidthCred} from "../../../components/auth/api/instance";
 import defsrc from "../../../assets/defavatar.jpg"
 
 const SearchFriendView = () => {
@@ -14,11 +14,11 @@ const SearchFriendView = () => {
     const dispatch = useDispatch();
 
     function dateFormat(time) {
-        var time_day = "";
-        var day = time[2];
-        var mounth = time[1];
+        let time_day = "";
+        let day = time[2];
+        let mounth = time[1];
 
-        var now = new Date();
+        const now = new Date();
 
         if (day < 10) day = "0" + day;
         if (mounth < 10) mounth = "0" + mounth;
@@ -26,8 +26,7 @@ const SearchFriendView = () => {
         if (day !== now.getDay()) {
             time_day = day + "-" + mounth + " в ";
         }
-        var dateFormat = "Был(а): " + time_day + " " + time[3] + ":" + time[4];
-        return dateFormat;
+        return "Был(а): " + time_day + " " + time[3] + ":" + time[4];
     }
 
     useEffect(() => {

@@ -4,6 +4,7 @@ import com.example.sphere.entity.*;
 import com.example.sphere.repository.MomentsRepository;
 import com.example.sphere.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -29,6 +30,7 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MomentsService {
 
     private final UserRepository userRepository;
@@ -63,7 +65,7 @@ public class MomentsService {
             }
         }
         catch(IOException ex){
-            System.out.println(ex.getMessage());
+            log.error(ex.getMessage(), ex);
         }
 if (endTrim == null){
     endTrim = "10";
@@ -174,7 +176,7 @@ if (endTrim == null){
             Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
             Files.delete(path);
         }catch (FileNotFoundException e) {
-            System.out.println();
+            log.error(e.getMessage(), e);
         }
 
         momentsList = user.getMomentsList();

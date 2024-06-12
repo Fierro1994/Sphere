@@ -5,6 +5,7 @@ import com.example.sphere.entity.User;
 import com.example.sphere.repository.ImagePromoRepos;
 import com.example.sphere.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.*;
 import java.util.List;
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class ImagePromoService {
     @Autowired
     ImagePromoRepos imagePromoRepos;
@@ -62,7 +64,7 @@ public class ImagePromoService {
                 try {
                     Files.delete(path);
                 } catch (IOException e) {
-                    System.out.println("file "  + imagePromo.getName() + " not found");
+
                 }
             }
         }
@@ -94,8 +96,8 @@ public class ImagePromoService {
             writerS.setOutput(ImageIO.createImageOutputStream(outputStreams));
             writerS.write(null, new IIOImage(outputImage, null, null), paramS);
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+        log.error(e.getMessage(), e);
+            }
 
 
         Path imagePathB = Paths.get(pathS.toString(), key + ".jpg");
@@ -114,7 +116,7 @@ public class ImagePromoService {
             writerB.setOutput(ImageIO.createImageOutputStream(outputStreamB));
             writerB.write(null, new IIOImage(outputImageB, null, null), paramB);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         List<String> imageKeys = new ArrayList<>();
         List<ImagePromo> imagePromoList = userDetails.getImagePromos();
@@ -122,8 +124,6 @@ public class ImagePromoService {
                 String path = "http://localhost:3000/imagepromo/" + user.getUserId() + "/" + element.getKey() + ".jpg";
                 imageKeys.add(path);
         });
-        System.out.println(imageKeys.size());
-
         return ResponseEntity.ok().body(imageKeys);
 
     }
@@ -156,7 +156,7 @@ public class ImagePromoService {
             Path path = Paths.get("src/main/resources/storage/"+ user.getUserId() + "/" + nameFolder +"/" + key);
             Files.delete(path);
         }catch (FileNotFoundException e) {
-            System.out.println();
+            log.error(e.getMessage(), e);
         }
 
         imagePromos = user.getImagePromos();

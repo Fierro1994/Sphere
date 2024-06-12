@@ -6,6 +6,7 @@ import com.example.sphere.entity.User;
 import com.example.sphere.repository.GalleryRepos;
 import com.example.sphere.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import java.util.UUID;
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class GalleryService {
     @Autowired
     GalleryRepos galleryRepos;
@@ -73,7 +75,7 @@ public class GalleryService {
             Path pathS = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + file.getKeySmall());
             Files.delete(pathS);
         }catch (FileNotFoundException e) {
-            System.out.println();
+            log.error(e.getMessage(), e);
         }
 
         galleries = user.getGalleries();

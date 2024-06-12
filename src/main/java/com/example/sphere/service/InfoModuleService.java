@@ -25,7 +25,6 @@ public class InfoModuleService {
     public List<InfoModule> setDefaultInfo(String userId) throws IOException {
         User user = userRepository.findByuserId(userId).get();
         List<InfoModule> infoModules = new ArrayList<>();
-        System.out.println(user.getInfoModules());
         InfoModule defInfoModule1 = new InfoModule();
         defInfoModule1.setName("Адрес: для примера");
         defInfoModule1.setBlock(1);
