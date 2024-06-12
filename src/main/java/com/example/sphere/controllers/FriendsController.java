@@ -25,21 +25,21 @@ public class FriendsController {
 //
     @RequestMapping(value = "/getsubscriberlist", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> getsubscriberlist(@RequestBody GetAllIReq GetAllIReq) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("Friends", userFriendsService.getSubscriberList(GetAllIReq.getUserId()));
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
     @RequestMapping(value = "/getsubscriptionslist", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> getsubscriptionslist(@RequestBody GetAllIReq GetAllIReq) {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("Friends", userFriendsService.getSubscribtionsList(GetAllIReq.getUserId()));
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 @GetMapping(value = "/getfriendslist")
     public ResponseEntity<Map<String, Object>> getfriendslist() {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("Friends", userFriendsService.getfriendslist());
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }

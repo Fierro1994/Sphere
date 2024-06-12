@@ -1,6 +1,4 @@
 package com.example.sphere.controllers;
-
-import com.example.sphere.models.request.GetAllIReq;
 import com.example.sphere.service.UsersPagesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +20,9 @@ public class UsersPagesController {
 
     @GetMapping("/getusersdata")
     public ResponseEntity<Map<String, Object>>  getmenuelement() throws SQLException {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("UserData", usersPagesService.getUsersData());
-        return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }

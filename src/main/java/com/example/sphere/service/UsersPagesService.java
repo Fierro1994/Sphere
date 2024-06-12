@@ -18,7 +18,7 @@ public class UsersPagesService {
     UserDetailsServiceImpl userDetailsService;
 
     public UsersInfoRes getUsersData() {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
         Optional<User> user = userRepository.findById(userDetails.getId());
 
@@ -39,8 +39,7 @@ public class UsersPagesService {
             usersInfoRes.setSubscriptions(userFriendsService.getSubscribtionsList(user.get().getUserId()));
             return usersInfoRes;
         } else {
-            UsersInfoRes usersInfoRes = new UsersInfoRes();
-            return usersInfoRes;
+            return new UsersInfoRes();
         }
     }
 

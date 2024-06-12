@@ -1,6 +1,5 @@
 package com.example.sphere.models.response;
 
-import com.example.sphere.entity.Avatar;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

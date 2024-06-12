@@ -4,13 +4,14 @@ import com.example.sphere.entity.Avatar;
 import com.example.sphere.entity.User;
 import com.example.sphere.models.response.UsersData;
 import com.example.sphere.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @Service
 public class SearchService {
 
@@ -19,10 +20,13 @@ public class SearchService {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
-    private String nameFolder = "avatars";
-    public ResponseEntity<?> getAllUsers() throws IOException {
+    private final String nameFolder = "avatars";
+    public ResponseEntity<?> getAllUsers() {
         UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
-        User user = userRepository.findById(userDetails.getId()).get();
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> {
+            log.error("User with userId: {} not found", userDetails.getUserId());
+            return new UsernameNotFoundException("User with userId: " + userDetails.getUserId() + " not found");
+        });
         List<User> userList = userRepository.findAll();
         List<UsersData> resultRes = new ArrayList<>();
 

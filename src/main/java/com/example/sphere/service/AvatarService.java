@@ -4,6 +4,7 @@ import com.example.sphere.entity.Avatar;
 import com.example.sphere.entity.User;
 import com.example.sphere.repository.AvatarRepos;
 import com.example.sphere.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,8 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class AvatarService {
     @Autowired
@@ -38,7 +39,7 @@ public class AvatarService {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
-    private String nameFolder = "avatars";
+    private final String nameFolder = "avatars";
 
 
     @Transactional(rollbackFor = {IOException.class})
@@ -79,7 +80,7 @@ public class AvatarService {
             writerS.setOutput(ImageIO.createImageOutputStream(outputStreams));
             writerS.write(null, new IIOImage(outputImage, null, null), paramS);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
 
@@ -99,7 +100,7 @@ public class AvatarService {
             writerB.setOutput(ImageIO.createImageOutputStream(outputStreamB));
             writerB.write(null, new IIOImage(outputImageB, null, null), paramB);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         List<String> imageKeys = new ArrayList<>();
         List<Avatar> avatarList = userDetails.getAvatars();

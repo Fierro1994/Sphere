@@ -8,11 +8,13 @@ import com.example.sphere.entity.User;
 import com.example.sphere.models.request.SubscribeReq;
 import com.example.sphere.models.response.UsersData;
 import com.example.sphere.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+@Slf4j
 @Service
 public class UserFriendsService {
 
@@ -21,12 +23,18 @@ public class UserFriendsService {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
-    private String nameFolder = "avatars";
+    private final String nameFolder = "avatars";
     @Transactional(rollbackFor = {IOException.class})
     public ResponseEntity<Map<String, Object>> addSubscriptions(SubscribeReq subscribeReq) {
-        Map<String, Object> result = new HashMap<String, Object>();
-        User user = userRepository.findByuserId(subscribeReq.getRequestor()).get();
-        User toUser = userRepository.findByuserId(subscribeReq.getTarget()).get();
+        Map<String, Object> result = new HashMap<>();
+        User user = userRepository.findByuserId(subscribeReq.getRequestor()).orElseThrow(() -> {
+            log.error("Requestor User with userId: {} not found", subscribeReq.getRequestor());
+            return new UsernameNotFoundException("Requestor User with userId: " + subscribeReq.getRequestor() + " not found");
+        });
+        User toUser = userRepository.findByuserId(subscribeReq.getTarget()).orElseThrow(() -> {
+            log.error("Target User with userId: {} not found", subscribeReq.getTarget());
+            return new UsernameNotFoundException("Target User with userId: " + subscribeReq.getTarget() + " not found");
+        });
         if (user.getSubscribers().contains(toUser)){
             user.getSubscribers().remove(toUser);
             user.getFriends().add(toUser);
@@ -43,8 +51,6 @@ public class UserFriendsService {
 
             return ResponseEntity.ok(result);
         }
-
-
     }
 
 
@@ -52,7 +58,7 @@ public class UserFriendsService {
         User user = userRepository.findByuserId(userId).get();
         List<UsersData> listSubscribers = new ArrayList<>();
         user.getSubscribers().forEach((el) -> {
-            List<Avatar> avatars = new ArrayList<>();
+            List<Avatar> avatars;
             List<String> imageKeys = new ArrayList<>();
             if (!el.getAvatar().isEmpty()){
                 avatars = el.getAvatar();
@@ -73,10 +79,13 @@ public class UserFriendsService {
     }
 
     public List<UsersData> getSubscribtionsList(String userId) {
-        User user = userRepository.findByuserId(userId).get();
+        User user = userRepository.findByuserId(userId).orElseThrow(() -> {
+            log.error("User with userId: {} not found", userId);
+            return new UsernameNotFoundException("User with userId: " + userId + " not found");
+        });
         List<UsersData> listSubscriptions = new ArrayList<>();
         user.getSubscriptions().forEach((el) -> {
-            List<Avatar> avatars = new ArrayList<>();
+            List<Avatar> avatars;
             List<String> imageKeys = new ArrayList<>();
 
             if (!el.getAvatar().isEmpty()){
@@ -101,7 +110,7 @@ public class UserFriendsService {
         User user = userRepository.findById(userDetails.getId()).get();
         List<UsersData> listFriends = new ArrayList<>();
         user.getFriends().forEach((el) -> {
-            List<Avatar> avatars = new ArrayList<>();
+            List<Avatar> avatars;
             List<String> imageKeys = new ArrayList<>();
             if (!el.getAvatar().isEmpty()){
                 avatars = el.getAvatar();

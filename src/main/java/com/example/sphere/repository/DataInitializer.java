@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class DataInitializer {
 
     @Autowired
-    private RoleRepository roleRepository;
+    RoleRepository roleRepository;
 
     @PostConstruct
     public void init() {

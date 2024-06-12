@@ -1,6 +1,4 @@
 package com.example.sphere.controllers;
-
-import com.example.sphere.models.request.GetAllIReq;
 import com.example.sphere.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

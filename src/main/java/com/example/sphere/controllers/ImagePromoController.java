@@ -34,7 +34,7 @@ public class ImagePromoController {
     }
 
     @GetMapping(path = "/listpromo")
-    public ResponseEntity<?> showAll( ) throws IOException {
+    public ResponseEntity<?> showAll( ) {
         return  imagePromoService.showAll( );
     }
 

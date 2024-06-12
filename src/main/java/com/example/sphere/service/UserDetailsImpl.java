@@ -21,11 +21,11 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
     private String userId;
     private List<ImagePromo> imagePromos;
-    private List<ItemsMenu> itemsMenus = new ArrayList<>();
-    private List<MainPageModule> listModulesMainPage = new ArrayList<>();
+    private List<ItemsMenu> itemsMenus;
+    private List<MainPageModule> listModulesMainPage;
     private ETheme theme;
     List<NavModules> navModules;
-    private List<Avatar> avatars = new ArrayList<>();
+    private List<Avatar> avatars;
     public UserDetailsImpl(User user) {
         this.user = user;
         this.firstName = user.getFirstName();
