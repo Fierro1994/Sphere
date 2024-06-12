@@ -2,6 +2,8 @@ package com.example.sphere.service;
 
 import java.io.IOException;
 import java.util.*;
+
+import com.example.sphere.entity.Avatar;
 import com.example.sphere.entity.User;
 import com.example.sphere.models.request.SubscribeReq;
 import com.example.sphere.models.response.UsersData;
@@ -16,7 +18,8 @@ public class UserFriendsService {
 
     @Autowired
     UserRepository userRepository;
-
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
     private String nameFolder = "avatars";
     @Transactional(rollbackFor = {IOException.class})
@@ -49,15 +52,18 @@ public class UserFriendsService {
         User user = userRepository.findByuserId(userId).get();
         List<UsersData> listSubscribers = new ArrayList<>();
         user.getSubscribers().forEach((el) -> {
-            String avatar = "";
-            if (user.getAvatar().get(0).getName().equals("defavatar.jpg")){
-                avatar = el.getAvatar().get(0).getName();
-            }else {
-                avatar = el.getAvatar().get(0).getKey();
+            List<Avatar> avatars = new ArrayList<>();
+            List<String> imageKeys = new ArrayList<>();
+            if (!el.getAvatar().isEmpty()){
+                avatars = el.getAvatar();
+                for (Avatar avatar : avatars){
+                    String path = "http://localhost:3000/avatar/" + el.getUserId() + "/" + avatar.getKey() + ".jpg";
+                    imageKeys.add(path);
+                }
             }
             listSubscribers.add(new UsersData(
                     el.getUserId(),
-                    avatar,
+                    imageKeys,
                     el.getFirstName(),
                     el.getLastName(),
                     el.getLastTimeOnline()
@@ -70,15 +76,18 @@ public class UserFriendsService {
         User user = userRepository.findByuserId(userId).get();
         List<UsersData> listSubscriptions = new ArrayList<>();
         user.getSubscriptions().forEach((el) -> {
-            String avatar = "";
-            if (user.getAvatar().get(0).getName().equals("defavatar.jpg")){
-                avatar = el.getAvatar().get(0).getName();
-            }else {
-                avatar = el.getAvatar().get(0).getKey();
+            List<Avatar> avatars = new ArrayList<>();
+            List<String> imageKeys = new ArrayList<>();
 
+            if (!el.getAvatar().isEmpty()){
+                avatars = el.getAvatar();
+                for (Avatar avatar : avatars){
+                    String path = "http://localhost:3000/avatar/" + el.getUserId() + "/" + avatar.getKey() + ".jpg";
+                    imageKeys.add(path);
+                }
             }
             listSubscriptions.add(new UsersData(el.getUserId(),
-                    avatar,
+                    imageKeys,
                     el.getFirstName(),
                     el.getLastName(),
                     el.getLastTimeOnline()
@@ -87,18 +96,22 @@ public class UserFriendsService {
         return listSubscriptions;
     }
 
-    public List<UsersData> getfriendslist(String userId) {
-        User user = userRepository.findByuserId(userId).get();
+    public List<UsersData> getfriendslist() {
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
+        User user = userRepository.findById(userDetails.getId()).get();
         List<UsersData> listFriends = new ArrayList<>();
         user.getFriends().forEach((el) -> {
-            String avatar = "";
-            if (user.getAvatar().get(0).getName().equals("defavatar.jpg")){
-                avatar = el.getAvatar().get(0).getName();
-            }else {
-                avatar = el.getAvatar().get(0).getKey();
+            List<Avatar> avatars = new ArrayList<>();
+            List<String> imageKeys = new ArrayList<>();
+            if (!el.getAvatar().isEmpty()){
+                avatars = el.getAvatar();
+                for (Avatar avatar : avatars){
+                    String path = "http://localhost:3000/avatar/" + el.getUserId() + "/" + avatar.getKey() + ".jpg";
+                    imageKeys.add(path);
+                }
             }
             listFriends.add(new UsersData(el.getUserId(),
-                    avatar,
+                    imageKeys,
                     el.getFirstName(),
                     el.getLastName(),
                     el.getLastTimeOnline()

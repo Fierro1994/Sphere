@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {jwtDecode} from "jwt-decode";
-import { instanceWidthCred } from "../../auth/api/instance";
+import {instance, instanceWidthCred} from "../../auth/api/instance";
 
 
 
@@ -53,16 +53,8 @@ export const setSelectedTheme = createAsyncThunk(
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (data,{ rejectWithValue }) => {
-    try {
-      const token = await instanceWidthCred.post(`/api/auth/register`, {
-        email: data.get("email"),
-        firstName: data.get("firstName"),
-        lastName: data.get("lastName"),
-        password: data.get("password"),
-        avatar: data.get("avatar"),
-        roles:[data.get("roles")]
-      });
-     
+     try {
+      const token = await instance.post(`/api/auth/register`, data);
       return token.data;
     } catch (error) {
       console.log(error.response.data);
@@ -75,7 +67,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({email, password, checkbox}, { rejectWithValue }) => {
     try {
-      const response = await instanceWidthCred.post(`/api/auth/signin`, {
+      const response = await instance.post(`/api/auth/signin`, {
         email: email,
         password: password,
         rememberMe: checkbox
@@ -153,7 +145,7 @@ const authSlice = createSlice({
       userLoaded: true };
     });
     builder.addCase(registerUser.fulfilled, (state, action) => {
-        return {
+        return {...state,
           registerStatus: "success",
           userLoaded: false
         };

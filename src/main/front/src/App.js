@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route, useNavigate, Link } from "react-router-dom";
-import Home from "./pages/HomePage/Home";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 import Register from "./pages/RegisterPage/RegisterPage";
 import SettingsPageInterface from "./pages/SettingsPage/InterfacePage/SettingsPageInterface"
-import ProfilePage from "./pages/ProfilePage/ProfilePage";
+import HomePage from "./pages/HomePage/HomePage";
 import MomentsPage from "./pages/MomentsPage/PreviewPage/MomentsPage";
 import MomentsAddPage from "./pages/MomentsPage/AddPage/MomentsAddPage";
 import SettingsPageMainPage from "./pages/SettingsPage/settingsPageConstruktorMainPage/konstrMainPage/SettingsPageMainPage";
@@ -28,7 +28,7 @@ function App() {
       <BrowserRouter>
         <div className="content-container">
           <Routes>
-           <Route path="/app/profile" element={<RequireAuth><ProfilePage /></RequireAuth>}/> 
+           <Route path="/app/profile" element={<RequireAuth><ProfilePage /></RequireAuth>}/>
            <Route path="/app/messages" element={<RequireAuth><MessagesPage /></RequireAuth>}/> 
 
            <Route path="/app/friends" element={<RequireAuth><FriendsPage /></RequireAuth>}/> 
@@ -38,7 +38,7 @@ function App() {
 
             <Route path="/app/friends/:id" element={<RequireAuth><UsersPage /></RequireAuth>} /> 
            
-             <Route path="/" element={<RequireAuth><Home /></RequireAuth>}/>
+             <Route path="/" element={<RequireAuth><HomePage /></RequireAuth>}/>
              <Route path="/login" element={<Login/>} />
 
             <Route path="/app/moments/" element={<RequireAuth><MomentsPage /></RequireAuth>}/>

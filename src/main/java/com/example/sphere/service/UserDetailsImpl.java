@@ -24,6 +24,7 @@ public class UserDetailsImpl implements UserDetails {
     private List<ItemsMenu> itemsMenus = new ArrayList<>();
     private List<MainPageModule> listModulesMainPage = new ArrayList<>();
     private ETheme theme;
+    List<NavModules> navModules;
     private List<Avatar> avatars = new ArrayList<>();
     public UserDetailsImpl(User user) {
         this.user = user;
@@ -37,6 +38,7 @@ public class UserDetailsImpl implements UserDetails {
         this.theme = user.getThemes();
         this.imagePromos = user.getImagePromos();
         this.avatars = user.getAvatar();
+        this.navModules = user.getNavItems();
     }
 
     @Override

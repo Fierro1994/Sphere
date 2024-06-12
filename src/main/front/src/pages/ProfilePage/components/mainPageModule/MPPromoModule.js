@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import setupStyles from "../../../pages/stylesModules/setupStyles";
+import setupStyles from "../../../stylesModules/setupStyles";
 import Slider from '../service/Slider';
 
 

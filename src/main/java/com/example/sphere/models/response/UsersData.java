@@ -1,10 +1,12 @@
 package com.example.sphere.models.response;
 
+import com.example.sphere.entity.Avatar;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class UsersData {
     private String userId;
-    private String avatar;
+    private List<String> avatars;
     private String firstName;
     private String lastName;
     private LocalDateTime lastTimeOnline;

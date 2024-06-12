@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import setupStyles from "../../../pages/stylesModules/setupStyles";
+import setupStyles from "../../../stylesModules/setupStyles";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteMoments, startMoment, updateMoments, uploadMomImage, uploadMoments } from "../../redux/slices/momentsSlice";
-import getCroppedImg from "../../../pages/GaleryPage/GalleryAddPage/Crop";
+import { deleteMoments, startMoment, updateMoments, uploadMomImage, uploadMoments } from "../../../../components/redux/slices/momentsSlice";
+import getCroppedImg from "../../../GaleryPage/GalleryAddPage/Crop";
 import Cropper from "react-easy-crop";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdOutlineClose } from "react-icons/md";

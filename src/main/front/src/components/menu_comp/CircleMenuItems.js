@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React from "react";
 import setupStyles from "../../pages/stylesModules/setupStyles";
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../redux/slices/authSlice';
@@ -18,7 +18,7 @@ function CircleMenuItems(nameModule, namePage) {
     dispatch(logoutUser());
   };
   let listModuleName = menuModuleChange(nameModule)
-  
+
   const result = listModuleName.map((element, i) => {
     var l = listModuleName.length
     if (element.type.name === "LogoutModule") {
@@ -28,7 +28,7 @@ function CircleMenuItems(nameModule, namePage) {
       }}>{element}</span>
     }
     if (element.type.name === namePage) {
-      
+
       return <span className={style.thisPage} key={i} style={{
         left: (50 - 90 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%",
         top: (50 + 90 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%"

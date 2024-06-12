@@ -1,6 +1,5 @@
 import setupStyles from "../stylesModules/setupStyles";
-import mainPageModuleChanger from "../../components/mainpagemodules/mainPageModuleChanger";
-import { useEffect, useState } from "react";
+import mainPageModuleChanger from "./components/mainPageModuleChanger";
 
 const Content =() => {
   let result = [] 

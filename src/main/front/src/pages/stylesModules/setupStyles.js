@@ -13,11 +13,16 @@ import BlackThemeMPHead from "./BlackTheme/mphead.module.css";
 import BlackThemeMPInfo from "./BlackTheme/infomp.module.css";
 import BlackThemeMPActual from "./BlackTheme/mpactual.module.css";
 import BlackThemeFriendsPage from "./BlackTheme/friendspage.module.css"
-import BlackThemeRegLog from "./BlackTheme/reglog.module.css"
+import BlackThemeRegLog from "./BlackTheme/logReg.module.css"
 import BlackThemeUPHead from "./BlackTheme/headerup.module.css"
+import BlackThemeNavModule from "./BlackTheme/mp_nav.module.css"
 function setupStyles (name) {
  var style = ""
  const theme = localStorage.getItem("theme")
+  if (name === "logReg") {
+    style = BlackThemeRegLog
+    return style;
+  }
  if(!localStorage.getItem("theme")){
   style = BlackTheme
   return style
@@ -35,18 +40,16 @@ function setupStyles (name) {
       style = BlackThemeUPHead
       return style;
     }
-    
     if (name === "friendsPage") {
       style = BlackThemeFriendsPage
       return style;
     }
-
-    if (name === "regLog") {
-      style = BlackThemeRegLog
-      return style;
-    }
     if (name === "infoMP") {
       style = BlackThemeMPInfo
+      return style;
+    }
+    if (name === "MPNavStyle") {
+      style = BlackThemeNavModule
       return style;
     }
     if (name === "actualMP") {
@@ -57,7 +60,6 @@ function setupStyles (name) {
       style = BlackMenuStyle
       return style;
     }
-
     if (name === "settingstyle") {
       style = BlackThemeSetings
       return style;
@@ -78,8 +80,6 @@ function setupStyles (name) {
       style = BlackGaleryStyle
       return style;
     }
-    
-  
   }
   if(theme === "WHITE"){
     if (name === "mainstyle") {
@@ -99,9 +99,6 @@ function setupStyles (name) {
       return style;
     }
   }
-  
- 
- 
 }
 
 export default setupStyles;

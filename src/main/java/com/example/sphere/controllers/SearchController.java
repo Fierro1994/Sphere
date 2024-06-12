@@ -17,9 +17,9 @@ public class SearchController {
     private SearchService searchService;
 
 
-    @PostMapping ("/allusers")
-    public ResponseEntity<?> getAllUsers(@RequestBody GetAllIReq req) throws IOException {
-        return ResponseEntity.ok(searchService.getAllUsers(req.getUserId()));
+    @GetMapping ("/allusers")
+    public ResponseEntity<?> getAllUsers() throws IOException {
+        return ResponseEntity.ok(searchService.getAllUsers());
     }
 
 

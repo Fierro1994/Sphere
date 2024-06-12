@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../components/redux/slices/authSlice";
 import { Link, useNavigate } from "react-router-dom";
-import style from "./login.module.css";
 import stylecheck from "../../components/style_modules/checkbox.module.css";
 import { useForm } from "react-hook-form";
+import setupStyles from "../stylesModules/setupStyles";
 
 
 const Login = () => {
+  const style = setupStyles("logReg")
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
@@ -25,7 +26,6 @@ const Login = () => {
     }
   }, [auth.loginStatus]);
 
-
   useEffect(() => {
     if (showMessage) {
       const timeout = setTimeout(() => {
@@ -38,8 +38,6 @@ const Login = () => {
   const viewMessage = () => {
     setShowMessage(true);
   };
-
-
 
   useEffect(() => {
     if (diffS == 0) return
@@ -60,19 +58,15 @@ const Login = () => {
     formState: { errors, isValid },
     register,
     watch,
-
   } = useForm({
     mode: "onBlur"
   });
-
 
   const onSubmit = (data) => {
     try {
       dispatch(loginUser(data))
     } catch (error) {
-      
     }
-
   }
 
   useEffect(() => {
@@ -92,33 +86,30 @@ const Login = () => {
     if (auth.registerStatus === "pending") {
       setRegisterSucess(true)
       setTimeout(setRegisterSucessOff, 4000);
+    }else {
+      setRegisterSucess(false)
     }
   }, [auth.registerStatus]);
+
   function setRegisterSucessOff() {
     setRegisterSucess(false);
   }
-
 
   return (
     <div className={style.container}>
       <div className={style.content}>
         <div className={style.main}>
           <h2>Добро пожаловать</h2>
-
-
           <div className={!registerSucess ? style.registerSucessModal : style.registerSucessModal + " " + style.registerSucessModalOn}>
             <div className={style.window_popup}>
               <div className={style.container_popup}>
                 <p>Cпасибо за регистрацию!</p>
                 <p>Подтвердите учетную запись, по ссылке из сообщения, отправленном на указанный вами e-mail</p>
                 <div className={style.loader_container}><p className={style.loader}></p>
-
                   <div className={style.timer_container}>{`${diffS.toString().padStart(2, '0')}`}</div>
                 </div>
               </div>
             </div>
-
-
           </div>
           <form className={style.form_signin} onSubmit={handleSubmit(onSubmit)}>
             <div className={style.form_container}>
@@ -131,9 +122,7 @@ const Login = () => {
                     required: "Email обязателен!!!",
                     pattern: {
                       value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-
                       message: "Неправильный формат email",
-
                     }
                   })}
                 ></input>
@@ -192,7 +181,6 @@ const Login = () => {
                 <label> Запомнить меня</label>
                 <input {...register("checkbox")} className={stylecheck.check} type="checkbox" />
               </div>
-
               {errors && (<div className={style.errorcontainer} >
                 {(errors?.rememberme) && (
                   <p className={style.error}>{errors.rememberme.message}</p>
@@ -201,11 +189,8 @@ const Login = () => {
                 <div>
                   <button className={style.btn} >Войти</button>
                  {showMessage && <p style={{color: "#fff"}}>{auth.loginError}</p>}
-
                 </div>
-
                 <div>  {auth ? <p className={style.error}>{ }</p> : <></>}</div>
-
               </div>
               <Link className={style.btn_link} to={"/app/register/"}>Регистрация</Link>
             </div>

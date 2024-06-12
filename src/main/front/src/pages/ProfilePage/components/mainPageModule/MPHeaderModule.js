@@ -1,13 +1,13 @@
 import { createRef, useCallback, useEffect, useState } from "react"
-import setupStyles from "../../../pages/stylesModules/setupStyles"
+import setupStyles from "../../../stylesModules/setupStyles"
 import { useDispatch, useSelector } from "react-redux";
-import getCroppedImg, { base64ToFile } from "../../../pages/GaleryPage/GalleryAddPage/Crop";
-import { deleteHeaderFile, updateHeader, uploadHeader } from "../../redux/slices/headerSlice";
+import getCroppedImg, { base64ToFile } from "../../../GaleryPage/GalleryAddPage/Crop";
+import { deleteHeaderFile, updateHeader, uploadHeader } from "../../../../components/redux/slices/headerSlice";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import Cropper from "react-easy-crop";
 import Comment_avatar from "../service/Comment_avatar";
-import InfoModule from "../mainPageModule/MPInfoModule"
-import imgdefsrc from "../../../assets/defavatar.jpg"
+import InfoModule from "./MPInfoModule"
+import imgdefsrc from "../../../../assets/defavatar.jpg"
 
 const MPHeaderModule = ({ info }) => {
    const auth = useSelector((state) => state.auth);

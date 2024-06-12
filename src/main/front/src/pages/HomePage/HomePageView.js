@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import setupStyles from "../stylesModules/setupStyles";
 
-const MyTable =() => {
+const HomePageView =() => {
 
   const style = setupStyles("mainstyle")
    
@@ -36,7 +36,7 @@ const MyTable =() => {
    )
 }
 
-export default MyTable;
+export default HomePageView;
 
 
   

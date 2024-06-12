@@ -35,11 +35,10 @@ public class FriendsController {
         result.put("Friends", userFriendsService.getSubscribtionsList(GetAllIReq.getUserId()));
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
-
-    @RequestMapping(value = "/getfriendslist", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> getfriendslist(@RequestBody GetAllIReq GetAllIReq) {
+@GetMapping(value = "/getfriendslist")
+    public ResponseEntity<Map<String, Object>> getfriendslist() {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("Friends", userFriendsService.getfriendslist(GetAllIReq.getUserId()));
+        result.put("Friends", userFriendsService.getfriendslist());
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
 

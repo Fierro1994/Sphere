@@ -1,11 +1,10 @@
 import { createRef, useEffect, useState } from "react";
-import setupStyles from "../../../pages/stylesModules/setupStyles";
+import setupStyles from "../../../stylesModules/setupStyles";
 import { useDispatch, useSelector } from "react-redux";
 import { Rnd } from "react-rnd";
 import { BsArrows } from "react-icons/bs";
 import { FaArrowsAlt } from "react-icons/fa";
-import { uploadMoments } from "../../redux/slices/momentsSlice";
-import { MdOutlineClose } from "react-icons/md";
+import { uploadMoments } from "../../../../components/redux/slices/momentsSlice";
 
 const VideoEditor = ({ videosrc }) => {
     const style = setupStyles("actualMP")

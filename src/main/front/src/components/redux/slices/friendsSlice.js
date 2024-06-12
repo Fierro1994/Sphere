@@ -5,19 +5,18 @@ const initialState = {
     friendsList: [],
     searchFrList:[],
     subscriptionsList: [],
-    subscribersList: []
+    subscribersList: [],
+    friendAvatars: []
 };
 
-const PATH = 'app/friends/'
+const PATH = '/friends/'
 
 
 export const getFriendsList = createAsyncThunk(
   "friendsSlice/getFriendsList",
   async (data,{ rejectWithValue }) => {
     try {
-      const response = await instanceWidthCred.post(PATH +"getfriendslist", {
-        userId: data,
-      });
+      const response = await instanceWidthCred.get(PATH +"getfriendslist");
                 return response.data.Friends;
     } catch (error) {
       console.log(error.response.data);
@@ -27,14 +26,32 @@ export const getFriendsList = createAsyncThunk(
 );
 
 
+export const updateAvatarForFriend = createAsyncThunk(
+    'friendsSlice/update',
+    async (listImage, { rejectWithValue }) => {
+        try {
+            const urls = listImage.data.map((promo) => promo);
+            const fetchImage = async (url) => {
+                const response = await instanceWidthCred.get(url, { responseType: 'blob' });
+                return URL.createObjectURL(response.data);
+            };
+
+            const imageUrlsList = await Promise.all(urls.map((url)=> fetchImage(url)));
+
+            return imageUrlsList
+        } catch (error) {
+            console.log(error.response.data);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+
 export const searchFriends = createAsyncThunk(
   "friendsSlice/searchFriends",
   async (data,{ rejectWithValue }) => {
-    
     try {
-      const response = await instanceWidthCred.post(PATH +"search/allusers", {
-        userId: data,
-      });
+      const response = await instanceWidthCred.get(PATH +"search/allusers");
                 return response.data.body;
     } catch (error) {
       console.log(error.response.data);
@@ -127,8 +144,6 @@ const friendsSlice = createSlice({
         return {
           ...state,
           searchFrList: action.payload,
-          
-        
         };
       });
       builder.addCase(searchFriends.rejected, (state, action) => {

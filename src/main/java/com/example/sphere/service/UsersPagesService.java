@@ -14,10 +14,13 @@ public class UsersPagesService {
     UserRepository userRepository;
     @Autowired
     UserFriendsService userFriendsService;
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
-    public UsersInfoRes getUsersData(String userId) {
+    public UsersInfoRes getUsersData() {
         Map<String, Object> result = new HashMap<String, Object>();
-        Optional<User> user = userRepository.findByuserId(userId);
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
+        Optional<User> user = userRepository.findById(userDetails.getId());
 
         if (user.isPresent()) {
             UsersInfoRes usersInfoRes = new UsersInfoRes();
@@ -31,7 +34,7 @@ public class UsersPagesService {
             usersInfoRes.setListModulesMainPage(user.get().getMainPageModules());
             usersInfoRes.setLastTimeOnline(user.get().getLastTimeOnline());
             usersInfoRes.setUserId(user.get().getUserId());
-            usersInfoRes.setUserFriends(userFriendsService.getfriendslist(user.get().getUserId()));
+            usersInfoRes.setUserFriends(userFriendsService.getfriendslist());
             usersInfoRes.setSubscribers(userFriendsService.getSubscriberList(user.get().getUserId()));
             usersInfoRes.setSubscriptions(userFriendsService.getSubscribtionsList(user.get().getUserId()));
             return usersInfoRes;

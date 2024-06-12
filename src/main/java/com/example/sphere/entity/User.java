@@ -50,6 +50,9 @@ public class User {
     @JoinColumn(name = "user_id")
     private List<ItemsMenu> itemsMenus = new ArrayList<>();
     @OneToMany
+    @JoinColumn(name = "user_nav")
+    private List<NavModules> navItems = new ArrayList<>();
+    @OneToMany
     @JoinColumn(name = "user_id")
     private List<MainPageModule> mainPageModules = new ArrayList<>();
     @OneToMany(fetch = FetchType.EAGER)

@@ -1,7 +1,7 @@
 import { createRef, useEffect, useState } from "react";
-import setupStyles from "../../../pages/stylesModules/setupStyles";
+import setupStyles from "../../../stylesModules/setupStyles";
 import { useDispatch, useSelector } from "react-redux";
-import { endMoment } from "../../redux/slices/momentsSlice";
+import { endMoment } from "../../../../components/redux/slices/momentsSlice";
 
 
 const ActualPlayer = ({videosrc}) => {

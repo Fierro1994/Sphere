@@ -1,6 +1,15 @@
 .tablemain h2{
    user-select: none;
 }
+.avatar_info{
+ display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.search_avatar {
+    flex: 0 0 calc(10% - 10px);
+    box-sizing: border-box;
+}
 .search_input{
     user-select: none;
     padding: 1vw;

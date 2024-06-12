@@ -1,5 +1,6 @@
 package com.example.sphere.service;
 
+import com.example.sphere.entity.Avatar;
 import com.example.sphere.entity.User;
 import com.example.sphere.models.response.UsersData;
 import com.example.sphere.repository.UserRepository;
@@ -15,24 +16,31 @@ public class SearchService {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    UserDetailsServiceImpl userDetailsService;
 
     private String nameFolder = "avatars";
-    public ResponseEntity<?> getAllUsers(String userId) throws IOException {
-        User user = userRepository.findByuserId(userId).get();
+    public ResponseEntity<?> getAllUsers() throws IOException {
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
+        User user = userRepository.findById(userDetails.getId()).get();
         List<User> userList = userRepository.findAll();
         List<UsersData> resultRes = new ArrayList<>();
 
         userList.forEach((element->{
-        if (!element.getUserId().equals(user.getUserId()) && !element.getSubscribers().contains(user) && !element.getSubscriptions().contains(user) &&!element.getFriends().contains(user) && !user.getFriends().contains(element)){
+        if (!element.getId().equals(user.getId()) && !element.getSubscribers().contains(user) && !element.getSubscriptions().contains(user) &&!element.getFriends().contains(user) && !user.getFriends().contains(element)){
+            List<Avatar> avatars = new ArrayList<>();
+            List<String> imageKeys = new ArrayList<>();
 
-            String avatar = "";
-            if (element.getAvatar().get(0).getName().equals("defavatar.jpg")){
-                avatar = element.getAvatar().get(0).getName();
-            }else {
-                avatar = element.getAvatar().get(0).getKeySmall();
+            if (!element.getAvatar().isEmpty()){
+                avatars = element.getAvatar();
+
+                for (Avatar avatar : avatars){
+                    String path = "http://localhost:3000/avatar/" + element.getUserId() + "/" + avatar.getKey() + ".jpg";
+                    imageKeys.add(path);
+                }
             }
             resultRes.add(new UsersData(element.getUserId(),
-                    avatar,
+                    imageKeys,
                     element.getFirstName(),
                     element.getLastName(),
                     element.getLastTimeOnline()

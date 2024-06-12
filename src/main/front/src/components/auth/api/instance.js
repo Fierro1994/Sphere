@@ -6,6 +6,12 @@ export const instanceWidthCred = axios.create({
 
   });
 
+export const instance = axios.create({
+    baseURL: "http://localhost:8080",
+    withCredentials: true // Этот флаг позволяет отправлять куки вместе с запросом
+
+});
+
 
 let isRefreshing = false;
 let refreshSubscribers = [];
@@ -44,7 +50,6 @@ instanceWidthCred.interceptors.response.use(
           localStorage.clear();
         }
       }
-
       return new Promise(resolve => {
           subscribeTokenRefresh(token => {
               originalRequest.headers['Authorization'] = 'Bearer ' + token;

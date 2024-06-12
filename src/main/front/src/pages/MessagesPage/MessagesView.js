@@ -2,13 +2,13 @@ import setupStyles from "../stylesModules/setupStyles";
 import { useState, useEffect, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client/dist/sockjs';
-import ChatMessage from "./../../components/mainpagemodules/service/ChatMessage";
+import ChatMessage from "../ProfilePage/components/service/ChatMessage";
 import error from "eslint-plugin-react/lib/util/error.js";
 import { useDispatch, useSelector } from "react-redux";
 import { loadUser } from "../../components/redux/slices/authSlice";
 
 
-const MessagesView =({  }) => {
+const MessagesView =() => {
 
   const style = setupStyles("mainstyle")
   const auth = useSelector((state) => state.auth);
@@ -65,8 +65,6 @@ const MessagesView =({  }) => {
 
     newClient.activate();
     setClient(newClient);
-
-    // Disconnect when the component unmounts
     return () => {
       newClient.deactivate();
     };

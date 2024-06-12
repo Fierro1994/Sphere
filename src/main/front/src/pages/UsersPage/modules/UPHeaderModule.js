@@ -2,7 +2,7 @@ import { createRef, useEffect, useState } from "react"
 import setupStyles from "../../../pages/stylesModules/setupStyles"
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import UPInfoModule from "./UPInfoModule";
-import Comment_avatar from "../../../components/mainpagemodules/service/Comment_avatar";
+import CommentAvatar from "../../ProfilePage/components/service/Comment_avatar";
 import { useSelector } from "react-redux";
 
 const UPHeaderModule = ({info}) => {
@@ -50,7 +50,7 @@ const UPHeaderModule = ({info}) => {
          setinfoMod(<UPInfoModule block = {1}/>)
          setinfoMod2(<UPInfoModule  block = {2}/>)
       }
-   }, []);
+   }, [info]);
 
    return (
       <>
@@ -63,7 +63,7 @@ const UPHeaderModule = ({info}) => {
 
 
                   <div className={style.header_button_container} >
-                  <img className={style.promo_img} src={PATH + "/" + userPage.userId + "/" + userPage.avatarList[0].key }  ref={refSlide}></img>
+                  <img className={style.promo_img} src={PATH + "/" + userPage.userId + "/" + userPage.avatarList[0].key }  ref={refSlide} alt={"promo"}></img>
                  </div>
                  
                 
@@ -74,7 +74,7 @@ const UPHeaderModule = ({info}) => {
             </div>
 
             <div className={!showPopup ? style.popup_header : style.popup_header + " " + style.open}>
-               <Comment_avatar/>
+               <CommentAvatar/>
                <div className={style.popup_header_avatar}> 
                <>
                   <div className={style.popup_quad_shadow}>
@@ -93,7 +93,7 @@ const UPHeaderModule = ({info}) => {
                   }} className={style.next}><GrFormNext /></button>
                   {userPage.avatarList.map((element, i) => {
                      return (
-                        <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={result(element.key)} key={i} ref={refSlide}></img>
+                        <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={result(element.key)} key={i} ref={refSlide} alt={"promo"}></img>
                      )
                      })}
 </>

@@ -1,13 +1,13 @@
 import { createRef, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import setupStyles from "../../../pages/stylesModules/setupStyles";
-import { deletePromoFile, downloadImg, updatePromo, uploadPromo } from "../../redux/slices/promoSlice";
+import setupStyles from "../../../stylesModules/setupStyles";
+import { deletePromoFile, downloadImg, updatePromo, uploadPromo } from "../../../../components/redux/slices/promoSlice";
 import { GrFormNext } from "react-icons/gr";
 import { GrFormPrevious } from "react-icons/gr";
-import getCroppedImg, { base64ToFile } from "../../../pages/GaleryPage/GalleryAddPage/Crop";
+import getCroppedImg, { base64ToFile } from "../../../GaleryPage/GalleryAddPage/Crop";
 import Cropper from "react-easy-crop";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import imgdefsrc from "../../../assets/promo_1.jpg"
+import imgdefsrc from "../../../../assets/promo_1.jpg"
 
 
 const Slider = () => {

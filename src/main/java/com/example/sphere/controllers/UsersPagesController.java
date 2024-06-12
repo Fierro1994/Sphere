@@ -20,10 +20,10 @@ public class UsersPagesController {
     @Autowired
     UsersPagesService usersPagesService;
 
-    @PostMapping("/getusersdata")
-    public ResponseEntity<Map<String, Object>>  getmenuelement(@RequestBody GetAllIReq request) throws SQLException {
+    @GetMapping("/getusersdata")
+    public ResponseEntity<Map<String, Object>>  getmenuelement() throws SQLException {
         Map<String, Object> result = new HashMap<String, Object>();
-        result.put("UserData", usersPagesService.getUsersData(request.getUserId()));
+        result.put("UserData", usersPagesService.getUsersData());
         return new ResponseEntity<Map<String, Object>>(result, HttpStatus.OK);
     }
 

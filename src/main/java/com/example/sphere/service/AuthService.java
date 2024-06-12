@@ -52,6 +52,7 @@ public class AuthService {
     private final ImagePromoService imagePromoService;
     private final InfoModuleService infoModuleService;
     private final AvatarService avatarService;
+    private final NavModuleService navModuleService;
 
     @Value("${spring.mail.username}")
     private String userName;
@@ -71,18 +72,20 @@ public class AuthService {
         List<ItemsMenu> itemsMenus = userDetails.getItemsMenus().stream().toList();
         List<MainPageModule> listModulesMainPage = userDetails.getListModulesMainPage().stream().toList();
         ETheme theme = userDetails.getTheme();
+        List<NavModules> navModules = userDetails.getNavModules();
         String email = userDetails.getEmail();
         String userId = userDetails.getUserId();
         List<Avatar> avatars = userDetails.getAvatars();
         log.info("Аутентифицирован пользователь {}", userId);
 
         return ResponseEntity.ok()
-                .body(new AuthResponse(avatars, jwt, userId, email, itemsMenus, listModulesMainPage, theme));
+                .body(new AuthResponse(avatars, jwt, userId, email, itemsMenus, listModulesMainPage, navModules, theme));
     }
 
     @Transactional(rollbackFor = Exception.class)
 
     public ResponseEntity<Map<String, Object>> registerUser(CreateUserRequest createUserRequest) throws SQLException, IOException {
+
         Map<String, Object> result = new HashMap<>();
         boolean isExist = userRepository.existsByEmail(createUserRequest.getEmail());
         if (isExist) {
@@ -105,8 +108,8 @@ public class AuthService {
                 LocalDateTime.now());
 
         userRepository.save(user);
-        if (createUserRequest.getAvatar() != null) {
-            avatarService.upload(createUserRequest.getAvatar());
+        if (createUserRequest.getAvatar() != null && !createUserRequest.getAvatar().isEmpty()) {
+            avatarService.regUpload(user.getEmail(), createUserRequest.getAvatar());
         }
         Set<String> strRoles = createUserRequest.getRoles();
         Set<Role> roles = new HashSet<>();
@@ -114,6 +117,7 @@ public class AuthService {
         List<MainPageModule> mainPageModules = new ArrayList<>();
         List<ImagePromo> imagePromos = new ArrayList<>();
         List<InfoModule> infoModules = new ArrayList<>();
+        List<NavModules> navItems = new ArrayList<>();
         user.setThemes(ETheme.BLACK);
         userRepository.save(user);
 
@@ -122,6 +126,7 @@ public class AuthService {
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             itemsMenus.addAll(itemsMenuService.setDefaultUserItemsMenu());
             mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
+            navItems.addAll(navModuleService.setDefaultNavModules());
             roles.add(userRole);
             infoModules.addAll(infoModuleService.setDefaultInfo(user.getUserId()));
         } else {
@@ -135,6 +140,8 @@ public class AuthService {
                             .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
                     itemsMenus.addAll(itemsMenuService.setDefaultUserItemsMenu());
                     mainPageModules.addAll(mainPageModuleService.setDefaultUserPageModule());
+                    navItems.addAll(navModuleService.setDefaultNavModules());
+
                     roles.add(userRole);
                     try {
                         infoModules.addAll(infoModuleService.setDefaultInfo(user.getUserId()));
@@ -149,18 +156,19 @@ public class AuthService {
         user.setItemsMenus(itemsMenus);
         user.setMainPageModules(mainPageModules);
         user.setImagePromos(imagePromos);
+        user.setNavItems(navItems);
         userRepository.save(user);
 
-        boolean isValidEmail = emailValidator.test(createUserRequest.getEmail());
-        if (isValidEmail) {
-            String tokenForNewUser = userDetailsService.getVerifyEmailToken(user);
-
-            String link = "http://localhost:8080/api/auth/confirm?token=" + tokenForNewUser;
-            emailService.sendEmail(createUserRequest.getEmail(), buildEmail(createUserRequest.getFirstName(), link));
-
-        } else {
-            throw new IllegalStateException(String.format("Email %s, not valid", createUserRequest.getEmail()));
-        }
+//        boolean isValidEmail = emailValidator.test(createUserRequest.getEmail());
+//        if (isValidEmail) {
+//            String tokenForNewUser = userDetailsService.getVerifyEmailToken(user);
+//
+//            String link = "http://localhost:8080/api/auth/confirm?token=" + tokenForNewUser;
+//            emailService.sendEmail(createUserRequest.getEmail(), buildEmail(createUserRequest.getFirstName(), link));
+//
+//        } else {
+//            throw new IllegalStateException(String.format("Email %s, not valid", createUserRequest.getEmail()));
+//        }
 
         result.put("Регистрация прошла успешно!", null);
 

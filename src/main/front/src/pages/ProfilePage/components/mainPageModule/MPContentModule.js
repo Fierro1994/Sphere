@@ -1,4 +1,4 @@
-import setupStyles from "../../../pages/stylesModules/setupStyles";
+import setupStyles from "../../../stylesModules/setupStyles";
 
 
 const MPContentModule = () => {

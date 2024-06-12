@@ -30,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody CreateUserRequest createUserRequest) throws SQLException, IOException {
+    public ResponseEntity<?> registerUser(@ModelAttribute CreateUserRequest createUserRequest) throws SQLException, IOException {
         return authService.registerUser(createUserRequest);
     }
     @GetMapping("/refresh")

@@ -1,6 +1,5 @@
 import setupStyles from "../../../stylesModules/setupStyles";
-import { useEffect, useState } from 'react';
-import Slider from '../../../../components/mainpagemodules/service/Slider';
+import Slider from '../../../ProfilePage/components/service/Slider';
 
 
 const MainPageSetPromo = () => {

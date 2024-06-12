@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import setupStyles from "../../../pages/stylesModules/setupStyles";
-import { updateInfo, uploadInfo } from "../../redux/slices/infoMpSlice";
+import setupStyles from "../../../stylesModules/setupStyles";
+import { updateInfo, uploadInfo } from "../../../../components/redux/slices/infoMpSlice";
 import { createRef, useEffect, useState } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 

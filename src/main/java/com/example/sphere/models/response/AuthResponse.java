@@ -1,9 +1,6 @@
 package com.example.sphere.models.response;
 
-import com.example.sphere.entity.Avatar;
-import com.example.sphere.entity.ETheme;
-import com.example.sphere.entity.ItemsMenu;
-import com.example.sphere.entity.MainPageModule;
+import com.example.sphere.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +18,7 @@ public class AuthResponse {
     private String email;
     private List<ItemsMenu> itemsMenus;
     private List<MainPageModule> listModulesMainPage;
+    private List<NavModules> navModules;
     private ETheme theme;
 }
 
