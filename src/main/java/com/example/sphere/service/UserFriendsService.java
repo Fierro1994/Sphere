@@ -54,8 +54,12 @@ public class UserFriendsService {
     }
 
 
-    public List<UsersData>  getSubscriberList(String userId) {
-        User user = userRepository.findByuserId(userId).get();
+    public List<UsersData>  getSubscriberList() {
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> {
+            log.error("User with userId: {} not found", userDetails.getUserId());
+            return new UsernameNotFoundException("User with userId: " + userDetails.getUserId() + " not found");
+        });;
         List<UsersData> listSubscribers = new ArrayList<>();
         user.getSubscribers().forEach((el) -> {
             List<Avatar> avatars;
@@ -78,10 +82,11 @@ public class UserFriendsService {
         return listSubscribers;
     }
 
-    public List<UsersData> getSubscribtionsList(String userId) {
-        User user = userRepository.findByuserId(userId).orElseThrow(() -> {
-            log.error("User with userId: {} not found", userId);
-            return new UsernameNotFoundException("User with userId: " + userId + " not found");
+    public List<UsersData> getSubscribtionsList() {
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
+        User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> {
+            log.error("User with userId: {} not found", userDetails.getId());
+            return new UsernameNotFoundException("User with userId: " + userDetails.getId() + " not found");
         });
         List<UsersData> listSubscriptions = new ArrayList<>();
         user.getSubscriptions().forEach((el) -> {

@@ -36,11 +36,14 @@ const MainAvatarViewer = ({nameModule, namePage, showSet}) => {
             <div className={style.circle}>
                 {moduleMenu}
             </div>
-            <div className={style.timeOnline}>{
-                auth._id ? "в сети" :
-                    "Был в сети" + " " + auth.onlineTime}</div>
-            <div className={style.profilename}>
-                <p>{auth.firstName + " " + auth.lastName}</p>
+            <div className={style.info_contain}>
+                <div className={style.timeOnline}>
+                    <p>{
+                    auth._id ? "в сети" :
+                        "Был в сети" + " " + auth.onlineTime}</p></div>
+                <div className={style.profilename}>
+                    <p>{auth.firstName + " " + auth.lastName}</p>
+                </div>
             </div>
         </div>
     );

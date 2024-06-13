@@ -35,8 +35,8 @@ public class UsersPagesService {
             usersInfoRes.setLastTimeOnline(user.get().getLastTimeOnline());
             usersInfoRes.setUserId(user.get().getUserId());
             usersInfoRes.setUserFriends(userFriendsService.getfriendslist());
-            usersInfoRes.setSubscribers(userFriendsService.getSubscriberList(user.get().getUserId()));
-            usersInfoRes.setSubscriptions(userFriendsService.getSubscribtionsList(user.get().getUserId()));
+            usersInfoRes.setSubscribers(userFriendsService.getSubscriberList());
+            usersInfoRes.setSubscriptions(userFriendsService.getSubscribtionsList());
             return usersInfoRes;
         } else {
             return new UsersInfoRes();

@@ -71,7 +71,7 @@ const Login = () => {
 
   useEffect(() => {
     if (auth.loginStatus === "success") {
-      navigate("/")
+      window.location.href = "/"
     }
   }, [auth.loginStatus]);
 

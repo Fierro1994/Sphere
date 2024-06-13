@@ -30,8 +30,8 @@ const SearchFriendView = () => {
     }
 
     useEffect(() => {
-        dispatch(searchFriends(auth._id));
-    }, [dispatch, auth._id]);
+        dispatch(searchFriends());
+    }, [dispatch]);
 
     const fetchImage = async (imageUrl, userId) => {
         try {

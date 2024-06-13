@@ -22,17 +22,16 @@ public class FriendsController {
     public ResponseEntity<Map<String, Object>> subscribeUserRequest(@RequestBody SubscribeReq subscribeUserRequestEntity) {
         return userFriendsService.addSubscriptions(subscribeUserRequestEntity);
     }
-//
-    @RequestMapping(value = "/getsubscriberlist", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> getsubscriberlist(@RequestBody GetAllIReq GetAllIReq) {
+    @GetMapping("/getsubscriberlist")
+    public ResponseEntity<Map<String, Object>> getsubscriberlist() {
         Map<String, Object> result = new HashMap<>();
-        result.put("Friends", userFriendsService.getSubscriberList(GetAllIReq.getUserId()));
+        result.put("Subscribers", userFriendsService.getSubscriberList());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    @RequestMapping(value = "/getsubscriptionslist", method = RequestMethod.POST)
-    public ResponseEntity<Map<String, Object>> getsubscriptionslist(@RequestBody GetAllIReq GetAllIReq) {
+    @GetMapping("/getsubscriptionslist")
+    public ResponseEntity<Map<String, Object>> getsubscriptionslist() {
         Map<String, Object> result = new HashMap<>();
-        result.put("Friends", userFriendsService.getSubscribtionsList(GetAllIReq.getUserId()));
+        result.put("Subscriptions", userFriendsService.getSubscribtionsList());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 @GetMapping(value = "/getfriendslist")
