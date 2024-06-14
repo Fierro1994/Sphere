@@ -20,22 +20,13 @@ public class MomentsController {
 
     @PostMapping(path = "/upload")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, String userId, String startTrim, String endTrim) throws IOException, EncoderException {
-        return new ResponseEntity<>(momentsService.upload( file, userId, startTrim, endTrim), HttpStatus.CREATED);
+        return new ResponseEntity<>(momentsService.upload( file, startTrim, endTrim), HttpStatus.CREATED);
 
     }
     @PostMapping(path = "/upload_img")
     public ResponseEntity<?> uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
-        return new ResponseEntity<>(momentsService.uploadImg(file),HttpStatus.CREATED);
+        return new ResponseEntity<>(momentsService.upload(file),HttpStatus.CREATED);
 
-    }
-    @GetMapping(path = "/{id}/{key}.{format}")
-    public ResponseEntity<Object> download(@PathVariable("id") String id, @PathVariable("key") String key,  @PathVariable("format") String format) {
-        try {
-            return momentsService.download(id, key, format);
-
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
     @DeleteMapping(value = "/{id}/{key}")
@@ -48,8 +39,8 @@ public class MomentsController {
         }
     }
     @GetMapping(path = "/listmoments")
-    public ResponseEntity<?> getAll() throws IOException {
-        return  ResponseEntity.ok(momentsService.showAll());
+    public ResponseEntity<?> showAll( ) {
+        return  momentsService.showAll( );
     }
 
 

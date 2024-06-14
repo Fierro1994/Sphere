@@ -43,13 +43,13 @@ const MPActualModule = () => {
          setShowPlayer(true)
          setActV(moments.momentsList.length === 0 ? 0 : 0);
       }
-   }, [moments.isUplPen]);
+   }, [moments.isUplPen, moments.momentsList.length]);
 
    useEffect(() => {
       if(moments.isUpdFull === false){
          dispatch(updateMoments());
       }
-   }, [moments.isUpdFull]);
+   }, [dispatch, moments.isUpdFull]);
 
    useEffect(() => {
       setActV(0);
@@ -61,7 +61,7 @@ const MPActualModule = () => {
       setShowCtrl(false)
       dispatch(startMoment())
      }
-   }, [moments?.isEndMoments]);
+   }, [actV, dispatch, moments.isEndMoments, moments.momentsList.length]);
 
    useEffect(() => {
       const timeoutId = setTimeout(() => {
@@ -142,11 +142,9 @@ const MPActualModule = () => {
                            </span>
                         )
                      })}</span>
-                     {moments.isUplFul && moments.momentsList.map((element, i) => {
-
+                     {moments.momentsList.map((element, i) => {
                         return (
                            <span key={i}>
-                              
                               {actV === i && <ActualPlayer videosrc={element}  />}
                            </span>
                         )

@@ -77,8 +77,6 @@ const Slider = () => {
         }
     }, [promosl.isUpdFul]);
 
-    console.log(promosl.promoList)
-
     const onDelete = () => {
 
         const myData = new FormData();

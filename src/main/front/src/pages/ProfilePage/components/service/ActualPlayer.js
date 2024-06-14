@@ -6,34 +6,21 @@ import { endMoment } from "../../../../components/redux/slices/momentsSlice";
 
 const ActualPlayer = ({videosrc}) => {
    const style = setupStyles("actualMP")
-   const auth = useSelector((state) => state.auth);
-   const moments = useSelector((state) => state.moments);
    const dispatch = useDispatch()
-   const [current, setCurrent] = useState(null)
-   const [duration, setDuration] = useState(null)
    const [progress, setProgress] = useState("0%");
    const refTimeZone = createRef();
    const progressRef = createRef();
    const progressImgRef = createRef();
-   
-   const trimRef = createRef();
    const videoRef = createRef();
-   const PATH = "http://localhost:3000/moments"
    const [format,setFormat] = useState();
 
-   useEffect(() => {
-     setFormat(videosrc.substring(videosrc.indexOf('.')+1))
-   }, [videosrc]);
+    useEffect(() => {
+            setFormat(videosrc.type.split('/')[0])
+    }, [videosrc]);
 
-
-   const onPlayV = (e) => {
-      setDuration(videoRef.current.duration)
-   }
 
 
    const timeUpdate = (e) => {
-      
-  
       if ((videoRef.current.duration - videoRef.current.currentTime ) < 0.3) {
          dispatch(endMoment())
       }
@@ -49,21 +36,18 @@ const ActualPlayer = ({videosrc}) => {
       }
    };
 
-   
-   function result(el) {
-    return PATH + "/" + auth._id + "/" + el 
- }
+
 
  const [diffS, setDiff] = useState(0);
  const [tick, setTick] = useState(false);
 
 
  useEffect(()=> {
-   if(diffS == 100 && format ==="jpeg"){
+   if(diffS == 100 && format ==="image"){
       dispatch(endMoment())
    }
    if (diffS == 100) return 
-   if (format === "jpeg") {
+   if (format === "image") {
       setProgress(diffS+"%")
    }
    setDiff(
@@ -82,17 +66,17 @@ const ActualPlayer = ({videosrc}) => {
 
    return (
       <>
-  {format === "jpeg" && 
+  {format === "image" &&
  <>
  <div className={style.actual_player_show}>
-   <img  src={result(videosrc)}></img></div>
+   <img  src={videosrc.blob}></img></div>
   <div className={style.act_pr_zone} ref={refTimeZone}>
     <div ref={progressImgRef} className={style.progress_act} style={{ width: progress }} ></div></div>
     </>
   }
-      {format === "mp4" && 
+      {format === "video" &&
       <>
-    <video type="video/mp4" onClick={handlePlay}  onTimeUpdate={timeUpdate}  src={result(videosrc)} className={style.videoc} ref={videoRef} autoPlay loop></video>
+    <video type="video/mp4" onClick={handlePlay}  onTimeUpdate={timeUpdate}  src={videosrc.blob} className={style.videoc} ref={videoRef} autoPlay loop></video>
     <div className={style.act_pr_zone} ref={refTimeZone}>
     <div ref={progressRef} className={style.progress_act} style={{ width: progress }} ></div></div>
     </>

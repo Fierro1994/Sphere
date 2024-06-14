@@ -50,43 +50,45 @@ public class MomentsService {
     private MomentsRepository momentsRepository;
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
-    private final String nameFolder = "moments";
+    @Autowired
+    private UrlGenerator urlGenerator;
+    private final String category = "moments";
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> upload(MultipartFile file, String userId, String startTrim, String endTrim) throws IOException, EncoderException {
+    public ResponseEntity<?> upload(MultipartFile file, String startTrim, String endTrim) throws IOException, EncoderException {
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
+
         String key = UUID.randomUUID().toString();
         String keySmall = UUID.randomUUID().toString();
 
 
         String format = "mp4";
-        Path path = Paths.get("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + file.getName() );
+        Path path = Paths.get("src/main/resources/storage/" + userDetails.getUserId() + "/" + category + "/" + file.getName());
         File directory = new File(path.getParent().toString());
         if (!directory.exists()) {
             directory.mkdirs();
         }
-        File convertFile = new File("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + file.getName());
+        File convertFile = new File("src/main/resources/storage/" + userDetails.getUserId() + "/" + category + "/" + file.getName());
         convertFile.createNewFile();
-        try(InputStream fin= file.getInputStream() ;
-            FileOutputStream fos= new FileOutputStream(convertFile)
-        )
-        {
+        try (InputStream fin = file.getInputStream();
+             FileOutputStream fos = new FileOutputStream(convertFile)
+        ) {
             byte[] buffer = new byte[256];
             int count;
-            while((count=fin.read(buffer))!=-1){
+            while ((count = fin.read(buffer)) != -1) {
 
                 fos.write(buffer, 0, count);
             }
-        }
-        catch(IOException ex){
+        } catch (IOException ex) {
             log.error(ex.getMessage(), ex);
         }
-if (endTrim == null){
-    endTrim = "10";
-}
+        if (endTrim == null) {
+            endTrim = "10";
+        }
         float Offset = Float.parseFloat(startTrim);
         float duration = Float.parseFloat(endTrim) - Float.parseFloat(startTrim);
-        File source = new File( convertFile.getPath());
-        File target = new File("src/main/resources/storage/"+ userId + "/" + nameFolder +"/" + key + ".mp4" );
+        File source = new File(convertFile.getPath());
+        File target = new File("src/main/resources/storage/" + userDetails.getUserId() + "/" + category + "/" + key + ".mp4");
         AudioAttributes audio = new AudioAttributes();
         VideoAttributes video = new VideoAttributes();
         EncodingAttributes attrs = new EncodingAttributes();
@@ -105,8 +107,8 @@ if (endTrim == null){
         instance.encode(new MultimediaObject(source), target, attrs, null);
         Files.delete(path);
 
-        Moments createdFile = new Moments(file.getOriginalFilename(), file.getSize(), format,  key, LocalDateTime.now());
-        User user = userRepository.findByuserId(userId).get();
+        Moments createdFile = new Moments(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
+        User user = userRepository.findByuserId(userDetails.getUserId()).get();
         List<Moments> userListMoments = user.getMomentsList();
         userListMoments.add(createdFile);
         user.setMomentsList(userListMoments);
@@ -114,7 +116,7 @@ if (endTrim == null){
         userRepository.save(user);
         List<Moments> momentsList = user.getMomentsList();
         List<String> momentsKeys = new ArrayList<>();
-        momentsList.forEach(element->{
+        momentsList.forEach(element -> {
             momentsKeys.add(element.getKey() + "." + element.getFormat());
         });
         return ResponseEntity.ok().body(momentsKeys);
@@ -122,22 +124,25 @@ if (endTrim == null){
 
 
     @Transactional(rollbackFor = {IOException.class})
-    public ResponseEntity<?> uploadImg(MultipartFile file) throws IOException {
+    public ResponseEntity<?> upload(MultipartFile file) throws IOException {
         String key = UUID.randomUUID().toString();
         String keySmall = UUID.randomUUID().toString();
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 
-        Moments createdFile = new Moments(file.getOriginalFilename(), file.getSize(), key, keySmall, LocalDateTime.now());
+        Moments createdFile = new Moments(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
+        List<Moments> momentsList = user.getMomentsList();
 
-        user.getMomentsList().add(createdFile);
+        momentsList.add(createdFile);
+
+        user.setMomentsList(momentsList);
+
         momentsRepository.save(createdFile);
         userRepository.save(user);
 
-        Path pathS = Paths.get("src/main/resources/storage/"+ userDetails.getUserId() + "/" + nameFolder);
+        Path pathS = Paths.get("src/main/resources/storage/" + userDetails.getUserId() + "/" + category);
         File directoryS = pathS.toFile();
         if (!directoryS.exists()) {
             directoryS.mkdirs();
@@ -181,31 +186,15 @@ if (endTrim == null){
             log.error(e.getMessage(), e);
         }
         List<String> imageKeys = new ArrayList<>();
-        List<ImagePromo> imagePromoList = userDetails.getImagePromos();
-        imagePromoList.forEach(element->{
-            String path = "http://localhost:3000/moments/" + user.getUserId() + "/" + element.getKey() + ".jpg";
+        List<Moments> moments = user.getMomentsList();
+        moments.forEach(element -> {
+            String path = urlGenerator.generateTemporaryUrl(userDetails.getUserId(), element.getKey(), element.getFormat(), category);
             imageKeys.add(path);
         });
         return ResponseEntity.ok().body(imageKeys);
 
     }
 
-
-    public ResponseEntity<Object> download(String id, String key, String format) throws IOException {
-        Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key + "." + format);
-        File file = new File(path.toUri());
-        InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
-        HttpHeaders headers = new HttpHeaders();
-        Resource resource2 = new UrlResource(path.toUri());
-        headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", file.getName()));
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-        ResponseEntity<Object>
-                responseEntity = ResponseEntity.ok().headers(headers).contentLength(
-                file.length()).contentType(MediaType.parseMediaType("video/mp4")).body(resource);
-        return responseEntity;
-    }
 
     @Transactional(rollbackFor = {IOException.class})
     public ResponseEntity<?> delete(String id, String key) throws IOException {
@@ -220,37 +209,37 @@ if (endTrim == null){
         userRepository.save(user);
         momentsRepository.delete(file);
         try {
-            Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
+            Path path = Paths.get("src/main/resources/storage/" + id + "/" + category + "/" + key);
             Files.delete(path);
-        }catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             log.error(e.getMessage(), e);
         }
 
         momentsList = user.getMomentsList();
         List<String> momentsKeys = new ArrayList<>();
-        momentsList.forEach(element->{
+        momentsList.forEach(element -> {
             momentsKeys.add(element.getKey() + "." + element.getFormat());
         });
         return ResponseEntity.ok().body(momentsKeys);
     }
 
-     public ResponseEntity<?> showAll() {
+    public ResponseEntity<?> showAll() {
         UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
-        if (userDetails != null){
+        if (userDetails != null) {
             User user = userRepository.findById(userDetails.getId()).orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             List<Moments> momentsList = user.getMomentsList();
 
 
             List<String> imageKeys = new ArrayList<>();
-            for (Moments moments : momentsList){
-                String path = "http://localhost:3000/moments/" + userDetails.getUserId() + "/" + moments.getKey() + "." + moments.getFormat();
+            for (Moments moments : momentsList) {
+                String path = urlGenerator.generateTemporaryUrl(userDetails.getUserId(), moments.getKey(), moments.getFormat(), category);
+
                 imageKeys.add(path);
             }
 
             return ResponseEntity.ok().body(imageKeys);
 
-        }
-        else return ResponseEntity.notFound().build();
+        } else return ResponseEntity.notFound().build();
     }
 }
