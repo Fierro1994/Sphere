@@ -24,8 +24,8 @@ public class MomentsController {
 
     }
     @PostMapping(path = "/upload_img")
-    public ResponseEntity<?> uploadImg(@RequestParam("file") String file, String name, Long size, String userId, String type) throws IOException {
-        return new ResponseEntity<>(momentsService.uploadimg( file, name, size, userId, type),HttpStatus.CREATED);
+    public ResponseEntity<?> uploadImg(@RequestParam("file") MultipartFile file) throws IOException {
+        return new ResponseEntity<>(momentsService.uploadImg(file),HttpStatus.CREATED);
 
     }
     @GetMapping(path = "/{id}/{key}.{format}")
@@ -47,9 +47,9 @@ public class MomentsController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @PostMapping(path = "/listmoments")
-    public ResponseEntity<?> getAll(@RequestBody GetAllIReq req ) throws IOException {
-        return  ResponseEntity.ok(momentsService.getAll(req.getUserId()));
+    @GetMapping(path = "/listmoments")
+    public ResponseEntity<?> getAll() throws IOException {
+        return  ResponseEntity.ok(momentsService.showAll());
     }
 
 

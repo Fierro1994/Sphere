@@ -1,18 +1,20 @@
 import { createRef, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import setupStyles from "../../../pages/stylesModules/setupStyles";
 import { GrFormNext } from "react-icons/gr";
 import { GrFormPrevious } from "react-icons/gr";
+import {updatePromo} from "../../../components/redux/slices/promoSlice";
+import imgdefsrc from "../../../assets/promo_1.jpg";
+import {updatePromoUsers} from "../../../components/redux/slices/usersPageSlice";
 
 const UPSlider = () => {
   const userPage = useSelector((state) => state.userspages);
   const style = setupStyles("sliderPromo")
-  const PATH = "http://localhost:3000/imagepromo"
   const [slide, setSlide] = useState(0);
   const [autoPlay, setAutuPlay] = useState(5000)
   const refSliderContain = createRef();
   const refSlide = createRef();
-
+  const dispatch = useDispatch();
   const nextSlide = () => {
     setSlide(slide === userPage.promoList.length - 1 ? 0 : slide + 1);
    
@@ -38,23 +40,32 @@ const UPSlider = () => {
     }, [delay]);
 
   }
-
   useInterval(() => {
     setSlide(slide === userPage.promoList.length - 1 ? 0 : slide + 1)
   }, autoPlay);
 
-
- const result = userPage.promoList.map((element, i) => {
-        if (element.name === "promo_1") {
-            return  <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={PATH + "/" + userPage.userId + "/" + element.name} key={i} ref={refSlide} alt={element.userId}></img> 
-        } else return  <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={PATH + "/" + userPage.userId + "/" + element.key} key={i} ref={refSlide} alt={element.userId}></img> 
-    }) 
-  
+  useEffect(() => {
+      // dispatch(updatePromoUsers(userPage.promoList));
+  }, []);
   return (
     <>
       <div className={style.promo_contain} ref={refSliderContain}>
-        <div className={style.promo_img} >
-             {result}
+        <div className={style.promo_img}>
+
+
+          {userPage.blobsPromoList && userPage.blobsPromoList.length > 0 ? (
+              userPage.blobsPromoList.map((element, i) => (
+                  <img
+                      className={slide === i ? style.promo_img : style.promo_img_hidden}
+                      src={element}
+                      key={i}
+                      alt={element}
+                      ref={refSlide}
+                  ></img>
+              ))
+          ) : (
+              <img className={style.promo_img} src={imgdefsrc} alt="default"></img>
+          )}
         </div>
         <div className={style.slider_control}
           onMouseEnter={(e) => {

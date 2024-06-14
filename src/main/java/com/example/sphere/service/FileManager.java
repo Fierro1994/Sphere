@@ -103,18 +103,26 @@ public class FileManager{
 
 
 
-    public ResponseEntity<Resource> download(String id, String key, String nameFolder) throws IOException {
-        Path path = Paths.get("src/main/resources/storage/"+ id + "/" +nameFolder +"/" + key);
+    public ResponseEntity<Resource> download(String id, String category, String key, String format) throws IOException {
+        Path path = null;
+
+        if (format.equals("image/jpeg")){
+            path = Paths.get("src/main/resources/storage/"+ id + "/" +category +"/" + key + "." + "jpg");
+        }
         InputStream inputStream = new FileInputStream(path.toFile());
         Resource resource = new InputStreamResource(inputStream);
         return ResponseEntity.ok()
-                .headers(getHeaders(path))
+                .headers(getHeaders(path, format))
                 .body(resource);
     }
 
-    private HttpHeaders getHeaders(Path path) throws IOException {
+    private HttpHeaders getHeaders(Path path, String format) throws IOException {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
+
+        if (format.equals("image/jpeg")){
+            headers.setContentType(MediaType.IMAGE_JPEG);
+        }
+
         headers.setContentDispositionFormData("attachment", path.getFileName().toString());
         return headers;
     }

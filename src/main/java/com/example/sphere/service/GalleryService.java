@@ -38,7 +38,7 @@ public class GalleryService {
         String keySmall = UUID.randomUUID().toString();
         fileManager.upload(file, userId, nameFolder,key, keySmall);
 
-        Gallery createdFile = new Gallery("gallery",  128L, key, keySmall, LocalDateTime.now());
+        Gallery createdFile = new Gallery("gallery", "jpeg",  128L, key, keySmall, LocalDateTime.now());
         List<Gallery> galleries = new ArrayList<>();
         Optional<User> user = userRepository.findByuserId(userId);
         if (user.isPresent()){
@@ -51,11 +51,6 @@ public class GalleryService {
         galleries.add(createdFile);
         galleryRepos.save(createdFile);
         return createdFile;
-    }
-
-
-    public ResponseEntity<?> download(String id, String key) throws IOException {
-        return fileManager.download(id,key,nameFolder);
     }
 
     @Transactional(rollbackFor = {IOException.class})

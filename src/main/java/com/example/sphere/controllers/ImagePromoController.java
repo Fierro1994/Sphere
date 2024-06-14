@@ -1,5 +1,6 @@
 package com.example.sphere.controllers;
 
+import com.example.sphere.service.FileManager;
 import com.example.sphere.service.ImagePromoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +17,13 @@ import java.io.IOException;
 public class ImagePromoController {
     @Autowired
     ImagePromoService imagePromoService;
+    @Autowired
+    FileManager fileManager;
 
     @PostMapping(path = "/upload")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) throws IOException {
         return new ResponseEntity<>(imagePromoService.upload(file),HttpStatus.CREATED);
 
-    }
-    @GetMapping(path = "/{id}/{key}")
-    public ResponseEntity<?> download(@PathVariable("id") String id, @PathVariable("key") String key) {
-        try {
-
-            return imagePromoService.download(id, key);
-
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 
     @GetMapping(path = "/listpromo")

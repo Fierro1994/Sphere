@@ -24,16 +24,7 @@ public class AvatarControllers {
         return ResponseEntity.ok().build();
 
     }
-    @GetMapping(path = "/{id}/{key}")
-    public ResponseEntity<?> download(@PathVariable("id") String id, @PathVariable("key") String key) {
-        try {
 
-            return avatarService.download(id, key);
-
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
 
     @GetMapping(path = "/listavatars")
     public ResponseEntity<?> showAll( )  {

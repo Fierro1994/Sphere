@@ -37,37 +37,25 @@ public class ImagePromoService {
     FileManager fileManager;
     @Autowired
     UserRepository userRepository;
-    String nameFolder = "imagepromo";
+    private String category = "imagepromo";
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+    @Autowired
+    UrlGenerator urlGenerator;
 
     @Transactional(rollbackFor = {IOException.class})
     public ResponseEntity<?> upload(MultipartFile file) throws IOException {
         String key = UUID.randomUUID().toString();
         String keySmall = UUID.randomUUID().toString();
-
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
 
-        ImagePromo createdFile = new ImagePromo(file.getOriginalFilename(), file.getSize(), key, keySmall, LocalDateTime.now());//        T entity = null;
-
+        ImagePromo createdFile = new ImagePromo(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
+        System.out.println(createdFile);
         List<ImagePromo> imagePromos = user.getImagePromos();
 
-        List<ImagePromo> defpromoList = user.getImagePromos();
-        for (ImagePromo imagePromo : defpromoList) {
-            if (imagePromo.getName().equals("promo_1") ){
-                Path path = Paths.get("src/main/resources/storage/"+ user.getUserId() + "/" + nameFolder +"/" + imagePromo.getName());
-                imagePromos.remove(imagePromo);
-                imagePromoRepos.delete(imagePromo);
-                try {
-                    Files.delete(path);
-                } catch (IOException e) {
-
-                }
-            }
-        }
         imagePromos.add(createdFile);
 
         user.setImagePromos(imagePromos);
@@ -75,7 +63,7 @@ public class ImagePromoService {
         imagePromoRepos.save(createdFile);
         userRepository.save(user);
 
-        Path pathS = Paths.get("src/main/resources/storage/"+ userDetails.getUserId() + "/" + nameFolder);
+        Path pathS = Paths.get("src/main/resources/storage/"+ userDetails.getUserId() + "/" + category);
         File directoryS = pathS.toFile();
         if (!directoryS.exists()) {
             directoryS.mkdirs();
@@ -128,12 +116,6 @@ public class ImagePromoService {
 
     }
 
-
-
-    public ResponseEntity<?> download(String id, String key) throws IOException {
-        return fileManager.download(id, key, nameFolder);
-    }
-
     @Transactional(readOnly = true)
     public ImagePromo findByKey(String key) {
         return imagePromoRepos.findByKey(key).get();
@@ -153,7 +135,7 @@ public class ImagePromoService {
         userRepository.save(user);
         imagePromoRepos.delete(file);
         try {
-            Path path = Paths.get("src/main/resources/storage/"+ user.getUserId() + "/" + nameFolder +"/" + key);
+            Path path = Paths.get("src/main/resources/storage/"+ user.getUserId() + "/" + category +"/" + key);
             Files.delete(path);
         }catch (FileNotFoundException e) {
             log.error(e.getMessage(), e);
@@ -171,16 +153,12 @@ public class ImagePromoService {
         UserDetailsImpl userDetails = userDetailsService.loadUserFromContext();
         if (userDetails != null){
             List<ImagePromo> imagePromos = userDetails.getImagePromos();
-
-
             List<String> imageKeys = new ArrayList<>();
             for (ImagePromo imagePromo : imagePromos){
-                String path = "http://localhost:3000/imagepromo/" + userDetails.getUserId() + "/" + imagePromo.getKey() + ".jpg";
+                String path = urlGenerator.generateTemporaryUrl(userDetails.getUserId(), imagePromo.getKey(),imagePromo.getFormat(), category);
                     imageKeys.add(path);
             }
-
             return ResponseEntity.ok().body(imageKeys);
-
         }
         else return ResponseEntity.notFound().build();
     }

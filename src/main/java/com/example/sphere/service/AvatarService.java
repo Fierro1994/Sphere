@@ -1,6 +1,7 @@
 package com.example.sphere.service;
 
 import com.example.sphere.entity.Avatar;
+import com.example.sphere.entity.ImagePromo;
 import com.example.sphere.entity.User;
 import com.example.sphere.repository.AvatarRepos;
 import com.example.sphere.repository.UserRepository;
@@ -38,8 +39,9 @@ public class AvatarService {
     FileManager fileManager;
     @Autowired
     UserDetailsServiceImpl userDetailsService;
-
-    private final String nameFolder = "avatars";
+    @Autowired
+    UrlGenerator urlGenerator;
+    private final String category = "avatars";
 
 
     @Transactional(rollbackFor = {IOException.class})
@@ -51,7 +53,7 @@ public class AvatarService {
         User user = userRepository.findByEmail(userDetails.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        Avatar createdFile = new Avatar(file.getOriginalFilename(), file.getSize(), key, keySmall, LocalDateTime.now());
+        Avatar createdFile = new Avatar(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
 
         avatarRepos.save(createdFile);
 
@@ -59,7 +61,7 @@ public class AvatarService {
         user.getAvatar().add(createdFile);
         userRepository.save(user);
 
-        Path pathS = Paths.get("src/main/resources/storage/"+ userDetails.getUserId() + "/" + nameFolder);
+        Path pathS = Paths.get("src/main/resources/storage/"+ userDetails.getUserId() + "/" + category);
         File directoryS = pathS.toFile();
         if (!directoryS.exists()) {
             directoryS.mkdirs();
@@ -111,12 +113,6 @@ public class AvatarService {
 
     }
 
-
-
-    public ResponseEntity<?> download(String id, String key) throws IOException {
-        return fileManager.download(id, key, nameFolder);
-    }
-
     @Transactional(rollbackFor = {IOException.class})
     public ResponseEntity<?> delete(String id, String key) throws IOException {
         User user = userRepository.findByuserId(id).get();
@@ -129,9 +125,9 @@ public class AvatarService {
         userRepository.save(user);
         avatarRepos.delete(file);
         try {
-            Path path = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + key);
+            Path path = Paths.get("src/main/resources/storage/"+ id + "/" + category +"/" + key);
             Files.delete(path);
-            Path pathS = Paths.get("src/main/resources/storage/"+ id + "/" + nameFolder +"/" + file.getKeySmall());
+            Path pathS = Paths.get("src/main/resources/storage/"+ id + "/" + category +"/" + file.getKeySmall());
             Files.delete(pathS);
         }catch (FileNotFoundException e) {
             log.error(e.getMessage(), e);
@@ -151,10 +147,9 @@ public class AvatarService {
             List<Avatar> avatars = userDetails.getAvatars();
             List<String> imageKeys = new ArrayList<>();
             for (Avatar avatar : avatars){
-                String path = "http://localhost:3000/avatar/" + userDetails.getUserId() + "/" + avatar.getKey() + ".jpg";
+                String path = urlGenerator.generateTemporaryUrl(userDetails.getUserId(), avatar.getKey(),avatar.getFormat(), category);
                 imageKeys.add(path);
             }
-
             return ResponseEntity.ok().body(imageKeys);
         }
         else return ResponseEntity.notFound().build();
@@ -170,7 +165,7 @@ public class AvatarService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        Avatar createdFile = new Avatar(file.getOriginalFilename(), file.getSize(), key, keySmall, LocalDateTime.now());
+        Avatar createdFile = new Avatar(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
 
         avatarRepos.save(createdFile);
 
@@ -178,7 +173,7 @@ public class AvatarService {
         user.getAvatar().add(createdFile);
         userRepository.save(user);
 
-        Path pathS = Paths.get("src/main/resources/storage/"+ user.getUserId() + "/" + nameFolder);
+        Path pathS = Paths.get("src/main/resources/storage/"+ user.getUserId() + "/" + category);
         File directoryS = pathS.toFile();
         if (!directoryS.exists()) {
             directoryS.mkdirs();

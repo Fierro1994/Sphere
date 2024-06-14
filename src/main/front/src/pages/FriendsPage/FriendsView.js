@@ -2,7 +2,7 @@ import {useDispatch, useSelector} from "react-redux";
 import setupStyles from "../../pages/stylesModules/setupStyles";
 import {addFriendSubscribe, getFriendsList, searchFriends,} from "../../../src/components/redux/slices/friendsSlice";
 import {useEffect, useState} from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {instanceWidthCred} from "../../components/auth/api/instance";
 import defsrc from "../../assets/defavatar.jpg";
 
@@ -13,7 +13,7 @@ const FriendsView = () => {
     const [showPop, setShowPop] = useState(false)
     const dispatch = useDispatch()
     const [imageUrls, setImageUrls] = useState({});
-
+    const navigate = useNavigate();
 
     function dateFormat(time) {
         let time_day = "";
@@ -63,7 +63,7 @@ const FriendsView = () => {
 
 
     function openProfileHandler(userId) {
-
+        navigate(`/app/friends/${userId}`);
     }
 
 
@@ -86,7 +86,7 @@ const FriendsView = () => {
                 </div>
                 <div className={showPop === el.userId ? style.popup_cont + " " + style.open : style.popup_cont}>
                     <div>
-                        <span className={style.btn_pop}>Открыть профиль</span>
+                        <span className={style.btn_pop} onClick={(e)=> openProfileHandler(el.userId)}>Открыть профиль</span>
                         <span
                             className={style.btn_pop}
                             onClick={() => {
@@ -94,7 +94,7 @@ const FriendsView = () => {
                                 addFriendHandler(el.userId);
                             }}
                         >
-              Добавить в друзья
+              Удалить из друзей
             </span>
                     </div>
                 </div>

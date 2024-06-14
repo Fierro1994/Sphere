@@ -10,13 +10,13 @@ function UsersPageModuleChanger(listModule) {
     const listModuleName = []
     var infoModule = []
 
-    listMenuModules.foreach(element => {
+    listMenuModules.map(element => {
         if (element.isEnabled && element.name === "INFO") {
             infoModule.push(<UPInfoModule/>)
         }
     })
 
-    listMenuModules.foreach(element => {
+    listMenuModules.map(element => {
         if (element.isEnabled && element.name === "PROMO") {
             listModuleName.splice(0, 0, <UPPromoModule />)
         }

@@ -3,11 +3,12 @@ import setupStyles from "../../../pages/stylesModules/setupStyles"
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import UPInfoModule from "./UPInfoModule";
 import CommentAvatar from "../../ProfilePage/components/service/Comment_avatar";
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {updateHeader} from "../../../components/redux/slices/headerSlice";
+import {updateAvatarUsers, updatePromoUsers} from "../../../components/redux/slices/usersPageSlice";
+import imgdefsrc from "../../../assets/defavatar.jpg";
 
 const UPHeaderModule = ({info}) => {
-   const PATH = "http://localhost:3000/avatar"
-  
    const userPage = useSelector((state) => state.userspages);
    const [infomod, setinfoMod] = useState(null);
    const [infomod2, setinfoMod2] = useState(null);
@@ -15,6 +16,7 @@ const UPHeaderModule = ({info}) => {
    const [showPopup, setShowPopup] = useState(false)
    const refSlide = createRef();
    const [slide, setSlide] = useState(0);
+   const dispatch = useDispatch();
    const nextSlide = () => {
       setSlide(slide === userPage.avatarList.length - 1 ? 0 : slide + 1);
 
@@ -40,10 +42,10 @@ const UPHeaderModule = ({info}) => {
     var dateFormat = "Был(а): " + time_day + " " + time[3] + ":" + time[4]
     return dateFormat
   }
-  
-   function result(el) {
-      return PATH + "/" + userPage.userId + "/" + el
-   }
+
+    useEffect(() => {
+            // dispatch(updateAvatarUsers(userPage.avatarList));
+    }, []);
 
    useEffect(() => {
       if(info !== null){
@@ -51,31 +53,33 @@ const UPHeaderModule = ({info}) => {
          setinfoMod2(<UPInfoModule  block = {2}/>)
       }
    }, [info]);
-
    return (
       <>
          <div className={style.header}>
          {infomod}
             <div className={style.head_cont}>
-               <div className={style.header_main}  onClick={function () {
-                                  setShowPopup(!showPopup)
-                              }}>
+                <div className={style.header_main} onClick={function () {
+                    setShowPopup(!showPopup)
+                }}>
 
 
-                  <div className={style.header_button_container} >
-                  <img className={style.promo_img} src={PATH + "/" + userPage.userId + "/" + userPage.avatarList[0].key }  ref={refSlide} alt={"promo"}></img>
-                 </div>
-                 
-                
-               </div>
-               <div className={style.users_online}>{dateFormat(userPage.lastTimeOnline)}</div>
-                 <div className={style.users_name}>{userPage.firstName + " " + userPage.lastName}</div>
+                    <div className={style.header_button_container}>
+                        {userPage.blobsAvatarList && userPage.blobsAvatarList.length > 0 ? (
+                                <img className={style.promo_img} src={userPage.blobsAvatarList[userPage.blobsAvatarList.length - 1]}
+                                     ref={refSlide}></img>) :
+                            (<img className={style.promo_img} src={imgdefsrc} ref={refSlide}></img>)}
+                    </div>
+
+
+                </div>
+                <div className={style.users_online}>{dateFormat(userPage.lastTimeOnline)}</div>
+                <div className={style.users_name}>{userPage.firstName + " " + userPage.lastName}</div>
 
             </div>
 
-            <div className={!showPopup ? style.popup_header : style.popup_header + " " + style.open}>
-               <CommentAvatar/>
-               <div className={style.popup_header_avatar}> 
+             <div className={!showPopup ? style.popup_header : style.popup_header + " " + style.open}>
+                 <CommentAvatar/>
+                 <div className={style.popup_header_avatar}>
                <>
                   <div className={style.popup_quad_shadow}>
 
@@ -91,11 +95,11 @@ const UPHeaderModule = ({info}) => {
                      e.preventDefault()
                      nextSlide()
                   }} className={style.next}><GrFormNext /></button>
-                  {userPage.avatarList.map((element, i) => {
-                     return (
-                        <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={result(element.key)} key={i} ref={refSlide} alt={"promo"}></img>
-                     )
-                     })}
+                   {userPage.blobsAvatarList && userPage.blobsAvatarList.length > 0 ?
+                       (userPage.blobsAvatarList.map((element, i) => {
+                           return (
+                               <img className={slide === i ? style.promo_img : style.promo_img_hidden} src={element} key={i} ref={refSlide}></img>
+                           )})) : (<img className={style.promo_img} src={imgdefsrc}  ref={refSlide}></img>)}
 </>
                
 

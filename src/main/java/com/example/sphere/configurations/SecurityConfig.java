@@ -71,7 +71,7 @@ public class SecurityConfig {
                 .exceptionHandling(configurer -> configurer.authenticationEntryPoint(authEntryPointJwt))
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((auth) ->
-                        auth.requestMatchers("/api/auth/register", "/api/auth/signin" ,"/api/auth/refresh"
+                        auth.requestMatchers("/api/auth/register", "/api/auth/signin" ,"/api/auth/refresh", "/files/temp/*"
                                 ).permitAll()
                                 .requestMatchers("/app/admin").hasRole("ADMIN")
                                 .requestMatchers("/app/moderator").hasRole("MODERATOR")

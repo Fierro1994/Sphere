@@ -18,10 +18,11 @@ public class UsersPagesController {
     @Autowired
     UsersPagesService usersPagesService;
 
-    @GetMapping("/getusersdata")
-    public ResponseEntity<Map<String, Object>>  getmenuelement() throws SQLException {
+    @GetMapping("/getusersdata/{id}")
+    public ResponseEntity<Map<String, Object>>  getmenuelement(@PathVariable("id") String id) throws SQLException {
         Map<String, Object> result = new HashMap<>();
-        result.put("UserData", usersPagesService.getUsersData());
+        System.out.println(id);
+        result.put("UserData", usersPagesService.getUsersData(id));
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

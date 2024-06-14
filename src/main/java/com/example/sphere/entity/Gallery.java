@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 public class Gallery extends FileEntity{
-    public Gallery(String name, Long size, String key, String keySmall, LocalDateTime uploadDate) {
-        super(name, size, key, keySmall, uploadDate);
+    public Gallery(String name, String format, Long size, String key, String keySmall, LocalDateTime uploadDate) {
+        super(name,format, size, key, keySmall, uploadDate);
     }
 }

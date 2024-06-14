@@ -13,12 +13,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Builder
 public class UsersInfoRes {
-    private List<Avatar> avatar;
+    private List<String> avatar;
     private String firstName;
     private String lastName;
     private String userId;
     private String email;
-    private List<ImagePromo> imagePromos;
+    private List<String> imagePromos;
     private List<InfoModule> infoModules;
     private List<Moments> momentsList;
     private List<MainPageModule> listModulesMainPage;

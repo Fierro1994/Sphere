@@ -27,8 +27,9 @@ public class FileEntity {
     @Column(name = "upload_date")
     private LocalDateTime uploadDate;
 
-    public FileEntity(String name, Long size, String key, String keySmall, LocalDateTime uploadDate) {
+    public FileEntity(String name, String format, Long size, String key, String keySmall, LocalDateTime uploadDate) {
         this.name = name;
+        this.format = format;
         this.size = size;
         this.key = key;
         this.keySmall = keySmall;

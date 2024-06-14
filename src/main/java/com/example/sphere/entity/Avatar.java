@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 public class Avatar extends FileEntity{
-    public Avatar(String name, Long size, String key, String keySmall, LocalDateTime uploadDate) {
-        super(name, size, key, keySmall, uploadDate);
+    public Avatar(String name, String format, Long size, String key, String keySmall, LocalDateTime uploadDate) {
+        super(name, format, size, key, keySmall, uploadDate);
     }
 }

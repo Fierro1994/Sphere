@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import setupStyles from "../../../stylesModules/setupStyles";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteMoments, startMoment, updateMoments, uploadMomImage, uploadMoments } from "../../../../components/redux/slices/momentsSlice";
-import getCroppedImg from "../../../GaleryPage/GalleryAddPage/Crop";
+import getCroppedImg, {base64ToFile} from "../../../GaleryPage/GalleryAddPage/Crop";
 import Cropper from "react-easy-crop";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdOutlineClose } from "react-icons/md";
@@ -32,7 +32,6 @@ const MPActualModule = () => {
    const handleImageUpload = async (e) => {
       setFileData(e.target.files[0])
       setFile(URL.createObjectURL(e.target.files[0]));
-      console.log(e.target.files[0]);
 
    };
 
@@ -47,10 +46,10 @@ const MPActualModule = () => {
    }, [moments.isUplPen]);
 
    useEffect(() => {
-      if(moments.isUpdFul === false){
-         dispatch(updateMoments(auth._id));
+      if(moments.isUpdFull === false){
+         dispatch(updateMoments());
       }
-   }, []);
+   }, [moments.isUpdFull]);
 
    useEffect(() => {
       setActV(0);
@@ -115,11 +114,8 @@ const MPActualModule = () => {
    }
    const onSumbit = (e) => {
       const myData = new FormData();
-      myData.append('file', croppedImage);
-      myData.append('id', auth._id);
-      myData.append("name", fileData.name)
-      myData.append("size", fileData.size)
-      myData.append("type", fileData.type)
+      const file = base64ToFile(croppedImage, fileData.name)
+      myData.append('file', file);
       dispatch(uploadMomImage(myData))    
   }
 

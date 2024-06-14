@@ -26,9 +26,7 @@ export const updatePromo = createAsyncThunk(
                 const response = await instanceWidthCred.get(url, { responseType: 'blob' });
                 return URL.createObjectURL(response.data);
             };
-
             const imageUrlsList = await Promise.all(urls.map((url)=> fetchImage(url)));
-
             return imageUrlsList
         } catch (error) {
             console.log(error.response.data);

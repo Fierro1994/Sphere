@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 public class ImagePromo extends FileEntity{
-    public ImagePromo(String name, Long size, String key, String keySmall, LocalDateTime uploadDate) {
-        super(name, size, key, keySmall, uploadDate);
+    public ImagePromo(String name, String format, Long size, String key, String keySmall, LocalDateTime uploadDate) {
+        super(name, format, size, key, keySmall, uploadDate);
     }
 }
