@@ -4,7 +4,7 @@ import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import UPInfoModule from "./UPInfoModule";
 import CommentAvatar from "../../ProfilePage/components/service/Comment_avatar";
 import {useDispatch, useSelector} from "react-redux";
-import {updateHeader} from "../../../components/redux/slices/headerSlice";
+import {updateHeader} from "../../../components/redux/slices/avatarSlice";
 import {updateAvatarUsers, updatePromoUsers} from "../../../components/redux/slices/usersPageSlice";
 import imgdefsrc from "../../../assets/defavatar.jpg";
 

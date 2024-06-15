@@ -2,7 +2,7 @@ import { createRef, useCallback, useEffect, useState } from "react"
 import setupStyles from "../../../stylesModules/setupStyles"
 import { useDispatch, useSelector } from "react-redux";
 import getCroppedImg, { base64ToFile } from "../../../GaleryPage/GalleryAddPage/Crop";
-import { deleteHeaderFile, updateHeader, uploadHeader } from "../../../../components/redux/slices/headerSlice";
+import { deleteHeaderFile, updateHeader, uploadHeader } from "../../../../components/redux/slices/avatarSlice";
 import { GrFormNext, GrFormPrevious } from "react-icons/gr";
 import Cropper from "react-easy-crop";
 import Comment_avatar from "../service/Comment_avatar";

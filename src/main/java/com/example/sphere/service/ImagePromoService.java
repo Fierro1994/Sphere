@@ -54,6 +54,7 @@ public class ImagePromoService {
        return ResponseEntity.ok().build();
     }
 
+
     @Transactional(readOnly = true)
     public ImagePromo findByKey(String key) {
         return imagePromoRepos.findByKey(key).get();

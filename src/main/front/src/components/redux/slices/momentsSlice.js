@@ -49,7 +49,7 @@ export const uploadMoments = createAsyncThunk(
                 startTrim: data.get("startTrim"),
                 endTrim: data.get("endTrim")
             }, config);
-            return response.data.body;
+            return response.data;
         } catch (error) {
             console.log(error.response.data);
             return rejectWithValue(error.response.data);

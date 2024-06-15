@@ -5,7 +5,7 @@ import mainpagemoduleReducer from "../components/redux/slices/mainPageModuleSlic
 import galleryReducer from "../components/redux/slices/galerySlice";
 import getToggle from "../components/view/toggleSlice";
 import promoReducer from "../components/redux/slices/promoSlice"
-import headerReducer from "../components/redux/slices/headerSlice"
+import headerReducer from "../components/redux/slices/avatarSlice"
 import infoMpReducer from "../components/redux/slices/infoMpSlice"
 import momentsReducer from "../components/redux/slices/momentsSlice"
 import friendsReducer from "../components/redux/slices/friendsSlice"

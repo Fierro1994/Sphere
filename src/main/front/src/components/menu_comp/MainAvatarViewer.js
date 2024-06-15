@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {setSlice} from '../../components/view/toggleSlice';
 import CircleMenuItems from "./CircleMenuItems";
 import defAvatar from "../../assets/defavatar.jpg"
-import {updateHeader} from "../redux/slices/headerSlice";
+import {updateHeader} from "../redux/slices/avatarSlice";
 
 const MainAvatarViewer = ({nameModule, namePage, showSet}) => {
     const style = setupStyles("circlemenu")

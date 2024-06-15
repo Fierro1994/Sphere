@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 @RestController
 @RequestMapping(value = "/avatar")
@@ -18,10 +19,8 @@ public class AvatarControllers {
     @Autowired
     AvatarService avatarService;
     @PostMapping(path = "/upload")
-    public ResponseEntity<?> upload(@RequestParam("avatar") MultipartFile file) throws IOException {
-        avatarService.upload(file);
-        return ResponseEntity.ok().build();
-
+    public ResponseEntity<?> upload(@RequestParam("avatar") MultipartFile file) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        return new ResponseEntity<>(avatarService.upload(file),HttpStatus.CREATED);
     }
 
 

@@ -21,6 +21,7 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,72 +46,13 @@ public class AvatarService {
 
 
     @Transactional(rollbackFor = {IOException.class})
-    public void upload(MultipartFile file) throws IOException {
-        String key = UUID.randomUUID().toString();
-        String keySmall = UUID.randomUUID().toString();
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        Avatar createdFile = new Avatar(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
-
-        avatarRepos.save(createdFile);
-
-
-        user.getAvatar().add(createdFile);
-        userRepository.save(user);
-
-        Path pathS = Paths.get("src/main/resources/storage/"+ userDetails.getUserId() + "/" + category);
-        File directoryS = pathS.toFile();
-        if (!directoryS.exists()) {
-            directoryS.mkdirs();
-        }
-        Path imagePathS = Paths.get(pathS.toString(), keySmall + ".jpg");
-        try (InputStream inputStreams = file.getInputStream();
-             OutputStream outputStreams = new FileOutputStream(imagePathS.toFile())) {
-            BufferedImage images = ImageIO.read(inputStreams);
-            BufferedImage outputImage = Scalr.resize(images, 600);
-
-            ImageWriter writerS = ImageIO.getImageWritersByFormatName("jpeg").next();
-            ImageWriteParam paramS = writerS.getDefaultWriteParam();
-            if (paramS.canWriteCompressed()) {
-                paramS.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                paramS.setCompressionQuality(0.5f);
-            }
-
-            writerS.setOutput(ImageIO.createImageOutputStream(outputStreams));
-            writerS.write(null, new IIOImage(outputImage, null, null), paramS);
-        } catch (IOException e) {
+    public ResponseEntity<?> upload(MultipartFile file) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        try {
+            fileManager.upload(file,category, null, null);
+        }catch (Exception e) {
             log.error(e.getMessage(), e);
         }
-
-
-        Path imagePathB = Paths.get(pathS.toString(), key + ".jpg");
-        try (InputStream inputStreamB = file.getInputStream();
-             OutputStream outputStreamB = new FileOutputStream(imagePathB.toFile())) {
-            BufferedImage imageB = ImageIO.read(inputStreamB);
-            BufferedImage outputImageB = Scalr.resize(imageB, 600);
-
-            ImageWriter writerB = ImageIO.getImageWritersByFormatName("jpeg").next();
-            ImageWriteParam paramB = writerB.getDefaultWriteParam();
-            if (paramB.canWriteCompressed()) {
-                paramB.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-                paramB.setCompressionQuality(0.5f);
-            }
-
-            writerB.setOutput(ImageIO.createImageOutputStream(outputStreamB));
-            writerB.write(null, new IIOImage(outputImageB, null, null), paramB);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-        List<String> imageKeys = new ArrayList<>();
-        List<Avatar> avatarList = userDetails.getAvatars();
-        avatarList.forEach(element->{
-            String path = "http://localhost:3000/avatar/" + user.getUserId() + "/" + element.getKey() + ".jpg";
-            imageKeys.add(path);
-        });
-
+        return ResponseEntity.ok().build();
     }
 
     @Transactional(rollbackFor = {IOException.class})

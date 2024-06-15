@@ -13,7 +13,7 @@ const PATH = 'avatar/'
 
 
 export const updateHeader = createAsyncThunk(
-    'header/update',
+    'avatar/update',
     async (data, {rejectWithValue}) => {
         try {
             const response = await instanceWidthCred.get('avatar/listavatars');
@@ -35,14 +35,14 @@ export const updateHeader = createAsyncThunk(
 );
 
 export const uploadHeader = createAsyncThunk(
-    "header/upload",
+    "avatar/upload",
     async (data, {rejectWithValue}) => {
         try {
             const config = {headers: {'Content-Type': 'multipart/form-data'}}
             const response = await instanceWidthCred.post(PATH + "upload", {
                 avatar: data.get("avatar"),
             }, config);
-            return response.data.body;
+            return response.data;
         } catch (error) {
             console.log(error.response.data);
             return rejectWithValue(error.response.data);
@@ -51,7 +51,7 @@ export const uploadHeader = createAsyncThunk(
 );
 
 export const deleteHeaderFile = createAsyncThunk(
-    "header/deleteHeaderFile",
+    "avatar/deleteHeaderFile",
     async (data, {rejectWithValue}) => {
         try {
             const response = await instanceWidthCred.delete(PATH + data.get("id") + "/" + data.get("key"));
@@ -65,8 +65,8 @@ export const deleteHeaderFile = createAsyncThunk(
 );
 
 
-const headerSlice = createSlice({
-    name: "header",
+const avatarSlice = createSlice({
+    name: "avatar",
     initialState,
     reducers: {},
 
@@ -125,6 +125,6 @@ const headerSlice = createSlice({
 });
 
 
-export const {} = headerSlice.actions;
+export const {} = avatarSlice.actions;
 
-export default headerSlice.reducer;
+export default avatarSlice.reducer;

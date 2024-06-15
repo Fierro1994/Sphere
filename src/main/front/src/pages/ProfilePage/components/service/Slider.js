@@ -72,10 +72,10 @@ const Slider = () => {
 
 
     useEffect(() => {
-        if(promosl.isUpdFul === false){
-            dispatch(updatePromo(auth._id));
+        if(promosl.isUpdFull === false){
+            dispatch(updatePromo());
         }
-    }, [promosl.isUpdFul]);
+    }, [dispatch, promosl.isUpdFull]);
 
     const onDelete = () => {
 
