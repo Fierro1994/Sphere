@@ -1,4 +1,4 @@
-package com.example.sphere.controllers;
+package com.example.sphere.controllers.filesControllers;
 
 import com.example.sphere.service.FileManager;
 import com.example.sphere.service.ImagePromoService;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 @RestController
 @RequestMapping(value = "/imagepromo")
@@ -21,9 +22,8 @@ public class ImagePromoController {
     FileManager fileManager;
 
     @PostMapping(path = "/upload")
-    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) throws IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         return new ResponseEntity<>(imagePromoService.upload(file),HttpStatus.CREATED);
-
     }
 
     @GetMapping(path = "/listpromo")

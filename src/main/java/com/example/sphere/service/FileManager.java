@@ -1,30 +1,111 @@
 package com.example.sphere.service;
 
-import com.example.sphere.repository.AvatarRepos;
-import com.example.sphere.repository.UserRepository;
+import com.example.sphere.entity.*;
+import com.example.sphere.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.multipart.MultipartFile;
+import ws.schild.jave.Encoder;
+import ws.schild.jave.EncoderException;
+import ws.schild.jave.MultimediaObject;
+import ws.schild.jave.encode.AudioAttributes;
+import ws.schild.jave.encode.EncodingAttributes;
+import ws.schild.jave.encode.VideoAttributes;
+import ws.schild.jave.info.VideoSize;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.MalformedInputException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
-public class FileManager{
+public class FileManager<T extends FileEntity> {
+    private final ExecutorService fileWritingExecutor = Executors.newFixedThreadPool(1);
+    private final ExecutorService dbOperationExecutor = Executors.newFixedThreadPool(3);
+
+
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     private AvatarRepos avatarRepos;
     @Autowired
-    private UserRepository userRepository;
+    private MomentsRepository momentsRepository;
+    @Autowired
+    private ImagePromoRepos imagePromoRepos;
 
+    @Transactional(rollbackFor = {IOException.class})
+    public void upload(MultipartFile file, String category, String startTrim, String endTrim) throws IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        String key = UUID.randomUUID().toString();
+        String keySmall = UUID.randomUUID().toString();
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (file.getContentType().startsWith("image")){
+            saveImageInStorage(file, key, keySmall, userDetails.getUserId(), category);
+        }
+
+        if (file.getContentType().startsWith("video")){
+            fileWritingExecutor.submit(() -> {
+                try {
+                    saveVideoInStorage(file, key, keySmall, userDetails.getUserId(), category, startTrim, endTrim);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } catch (EncoderException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+
+        dbOperationExecutor.submit(() -> {
+            switch (category) {
+                case "avatars":
+                    Avatar createdFile = new Avatar(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
+                    user.getAvatar().add( createdFile);
+                    avatarRepos.save( createdFile);
+                    break;
+                case "moments":
+                    Moments createdFile2 = new Moments(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
+                    user.getMomentsList().add( createdFile2);
+                    momentsRepository.save( createdFile2);
+                    break;
+                case "imagepromo":
+                    ImagePromo createdFile3 = new ImagePromo(file.getOriginalFilename(), file.getContentType(), file.getSize(), key, keySmall, LocalDateTime.now());
+                    user.getImagePromos().add(createdFile3);
+                    imagePromoRepos.save( createdFile3);
+                    break;
+                default:
+                    break;
+            }
+            userRepository.save(user);
+        });
+
+    }
 
     public ResponseEntity<Resource> download(HttpHeaders headers, String id, String category, String key, String format) throws IOException {
 
@@ -86,5 +167,100 @@ public class FileManager{
 
         headers.setContentDispositionFormData("attachment", path.getFileName().toString());
         return headers;
+    }
+
+
+    private synchronized void saveImageInStorage(MultipartFile file, String key, String keySmall, String userId, String category){
+        Path pathS = Paths.get("src/main/resources/storage/"+ userId + "/" + category);
+        File directoryS = pathS.toFile();
+        if (!directoryS.exists()) {
+            directoryS.mkdirs();
+        }
+
+        Path imagePathS = Paths.get(pathS.toString(), keySmall + ".jpg");
+        try (InputStream inputStreams = file.getInputStream();
+             OutputStream outputStreams = new FileOutputStream(imagePathS.toFile())) {
+            BufferedImage images = ImageIO.read(inputStreams);
+            BufferedImage outputImage = Scalr.resize(images, 600);
+
+            ImageWriter writerS = ImageIO.getImageWritersByFormatName("jpeg").next();
+            ImageWriteParam paramS = writerS.getDefaultWriteParam();
+            if (paramS.canWriteCompressed()) {
+                paramS.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                paramS.setCompressionQuality(0.5f);
+            }
+
+            writerS.setOutput(ImageIO.createImageOutputStream(outputStreams));
+            writerS.write(null, new IIOImage(outputImage, null, null), paramS);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+
+
+        Path imagePathB = Paths.get(pathS.toString(), key + ".jpg");
+        try (InputStream inputStreamB = file.getInputStream();
+             OutputStream outputStreamB = new FileOutputStream(imagePathB.toFile())) {
+            BufferedImage imageB = ImageIO.read(inputStreamB);
+            BufferedImage outputImageB = Scalr.resize(imageB, 600);
+
+            ImageWriter writerB = ImageIO.getImageWritersByFormatName("jpeg").next();
+            ImageWriteParam paramB = writerB.getDefaultWriteParam();
+            if (paramB.canWriteCompressed()) {
+                paramB.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+                paramB.setCompressionQuality(0.5f);
+            }
+
+            writerB.setOutput(ImageIO.createImageOutputStream(outputStreamB));
+            writerB.write(null, new IIOImage(outputImageB, null, null), paramB);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
+
+    private void saveVideoInStorage(MultipartFile file, String key, String keySmall, String userId, String category, String startTrim, String endTrim) throws IOException, EncoderException {
+        Path path = Paths.get("src/main/resources/storage/" + userId+ "/" + category + "/" + file.getName());
+        File directory = new File(path.getParent().toString());
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        File convertFile = new File("src/main/resources/storage/" + userId+ "/" + category + "/" + file.getName());
+        convertFile.createNewFile();
+        try (InputStream fin = file.getInputStream();
+             FileOutputStream fos = new FileOutputStream(convertFile)
+        ) {
+            byte[] buffer = new byte[256];
+            int count;
+            while ((count = fin.read(buffer)) != -1) {
+
+                fos.write(buffer, 0, count);
+            }
+        } catch (IOException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+        if (endTrim == null) {
+            endTrim = "10";
+        }
+        float Offset = Float.parseFloat(startTrim);
+        float duration = Float.parseFloat(endTrim) - Float.parseFloat(startTrim);
+        File source = new File(convertFile.getPath());
+        File target = new File("src/main/resources/storage/" + userId + "/" + category + "/" + key + ".mp4");
+        AudioAttributes audio = new AudioAttributes();
+        VideoAttributes video = new VideoAttributes();
+        EncodingAttributes attrs = new EncodingAttributes();
+        attrs.setAudioAttributes(audio);
+        attrs.setVideoAttributes(video);
+        audio.setBitRate(192000);
+        audio.setSamplingRate(44100);
+        audio.setChannels(2);
+        video.setBitRate(1000000);
+        video.setFrameRate(30);
+        video.setSize(new VideoSize(1280, 720));
+        attrs.setOffset(Offset);
+        attrs.setDuration(duration);
+        attrs.setOutputFormat("mp4");
+        Encoder instance = new Encoder();
+        instance.encode(new MultimediaObject(source), target, attrs, null);
+        Files.delete(path);
+
     }
 }

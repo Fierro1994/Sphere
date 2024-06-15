@@ -1,4 +1,4 @@
-package com.example.sphere.controllers;
+package com.example.sphere.controllers.filesControllers;
 
 import com.example.sphere.service.FileManager;
 import io.jsonwebtoken.Claims;

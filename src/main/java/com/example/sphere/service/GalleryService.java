@@ -36,7 +36,6 @@ public class GalleryService {
     public Gallery upload(String file, String userId) throws IOException {
         String key = UUID.randomUUID().toString();
         String keySmall = UUID.randomUUID().toString();
-        fileManager.upload(file, userId, nameFolder,key, keySmall);
 
         Gallery createdFile = new Gallery("gallery", "jpeg",  128L, key, keySmall, LocalDateTime.now());
         List<Gallery> galleries = new ArrayList<>();

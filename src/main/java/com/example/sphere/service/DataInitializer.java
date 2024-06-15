@@ -1,7 +1,8 @@
-package com.example.sphere.repository;
+package com.example.sphere.service;
 
 import com.example.sphere.entity.ERole;
 import com.example.sphere.entity.Role;
+import com.example.sphere.repository.RoleRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

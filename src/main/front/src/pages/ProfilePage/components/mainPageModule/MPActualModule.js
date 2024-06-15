@@ -26,7 +26,7 @@ const MPActualModule = () => {
    const [croppedImage, setCroppedImage] = useState(null);
    const [showCtrl, setShowCtrl] = useState(false)
    const [actV, setActV] = useState(null)
-   const [showPlayer, setShowPlayer] = useState(true)
+   const [showPlayer, setShowPlayer] = useState(false)
    const dispatch = useDispatch()
 
    const handleImageUpload = async (e) => {
@@ -142,7 +142,7 @@ const MPActualModule = () => {
                            </span>
                         )
                      })}</span>
-                     {moments.momentsList.map((element, i) => {
+                     {showPlayer&&moments.momentsList.map((element, i) => {
                         return (
                            <span key={i}>
                               {actV === i && <ActualPlayer videosrc={element}  />}

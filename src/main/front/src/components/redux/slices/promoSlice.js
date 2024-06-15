@@ -43,7 +43,7 @@ export const uploadPromo = createAsyncThunk(
       const response = await instanceWidthCred.post(PATH +"upload", {
         file: data.get("file"),
       }, config);
-      return response.data.body;
+      return response.data;
     } catch (error) {
       console.log(error.response.data);
       return rejectWithValue(error.response.data);
@@ -91,9 +91,8 @@ const promoSlice = createSlice({
       builder.addCase(updatePromo.fulfilled, (state, action) => {
           return {
            ...state,
-           promoList: action.payload,
            isPendDel: false,
-           isUpdFul: true
+              promoList: action.payload
           };
       });
       builder.addCase(updatePromo.rejected, (state, action) => {

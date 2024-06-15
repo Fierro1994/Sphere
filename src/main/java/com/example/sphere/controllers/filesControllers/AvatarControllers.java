@@ -1,7 +1,6 @@
-package com.example.sphere.controllers;
+package com.example.sphere.controllers.filesControllers;
 
 
-import com.example.sphere.models.request.GetAllIReq;
 import com.example.sphere.service.AvatarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

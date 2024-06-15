@@ -1,4 +1,4 @@
-package com.example.sphere.controllers;
+package com.example.sphere.controllers.authControllers;
 
 import com.example.sphere.models.request.CreateUserRequest;
 import com.example.sphere.models.request.LoginRequest;
